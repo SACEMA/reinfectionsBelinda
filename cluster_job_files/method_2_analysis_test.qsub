@@ -1,0 +1,21 @@
+#!/bin/bash
+#PBS -l select=5:ncpus=24:mpiprocs=20
+#PBS -P CBBI1106
+#PBS -q normal
+#PBS -l walltime=3:00:00
+#PBS -o /mnt/lustre/users/blombard/analysis/std_m2_test.out
+#PBS -e /mnt/lustre/users/blombard/analysis/std_m2_test.err
+#PBS -N observe_analysis_m2_test
+#PBS -M belindalombard@sun.ac.za
+#PBS -m be
+
+# Add R module (includes appropriate openMPI and gcc modules)
+module add chpc/R/3.5.1-gcc7.2.0
+
+# explicitly calculate number of processes.
+nproc=`cat $PBS_NODEFILE | wc -l`
+
+# make sure we're in the correct working directory.
+cd /mnt/lustre/users/blombard/analysis/
+
+mpirun -np $nproc -machinefile $PBS_NODEFILE  R --slave -f method_2_analysis/method_2_analysis_test.R --args 11 20 2

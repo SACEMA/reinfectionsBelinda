@@ -1,0 +1,25 @@
+{
+  "reinf_hazard": 1.38866e-08, 
+  "pscale": 2.614707,
+  "wave_split": "2021-05-01",
+  "observe_prob": 0.4,
+  "observe_prob_first": 0.2,
+  "dprob_first": 0.01,
+  "infections_for_changing_obs": 10633, //using median for infections
+  "observe_prob_first_basic": 0.3,
+  "observe_prob_first_changing": 0.1,
+  "logistic_first": {
+    "min": 0.05,
+    "max": 0.2,
+    "steep": 0.00005,
+    "x_m": 50000
+  },
+    "func_second": {
+    "min": 0.1,
+    "max": 0.5,
+    "steep": 0.00005,
+    "x_m": 50000
+  }
+}
+//value from lambda.post: 1.38866e-08
+//value from pscale.post: 2.614707
