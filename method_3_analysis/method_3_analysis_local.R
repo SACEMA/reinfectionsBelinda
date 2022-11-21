@@ -5,6 +5,7 @@ cutoff <- 90
 mcmc <- list(rand_init=TRUE, burnin=2000, n_iter=10000, n_posterior=1600, n_chains=4)
 n_sims_per_param <- 100
 fit_through <- '2021-02-28'
+wave_split <- '2021-05-01'
 
 library(data.table)
 library(iterators)
