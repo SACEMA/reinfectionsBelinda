@@ -1,22 +1,14 @@
-argos = commandArgs(trailingOnly =TRUE)
-min = as.numeric(argos[1])
-max = as.numeric(argos[2])
-spl = as.numeric(argos[3])
-splseq = seq(from=min, to=max-spl+1, length.out=(max-min)/spl)
-
-#Parameters defined
+load(file="method_4_analysis/utils/m4_parameters.RData")
 window_days <- 7
 reinf_hazard <- 1.38866e-08
 cutoff <- 90
-mcmc <- list(rand_init=TRUE, burnin=2000, n_iter=10000, n_posterior=1600, n_chains=4)
-n_sims_per_param <- 100
+mcmc <- list(rand_init=TRUE, burnin=1000, n_iter=2500, n_posterior=160, n_chains=4)
+n_sims_per_param <- 10
 fit_through <- '2021-02-28'
 wave_split <- '2021-05-01'
 
 library(data.table)
 library(iterators)
-library(Rmpi)
-library(doMPI)
 library(foreach)
 library(doParallel)
 library(coda)
@@ -24,13 +16,9 @@ library(parallel)
 library(dplyr)
 library(ggplot2)
 
+parameters.r <- save_params
 
-
-#### creating result list
-resultList= list()
-
-
-funcMakeResults <- function(){
+funcMakeResults <- function(a){
   results <- list()
   
   ############## MCMC FUNCTIONS ############
@@ -91,7 +79,7 @@ funcMakeResults <- function(){
     current.params <- init.params
     
     nfitted <- length(current.params) # How maby parameters are we trying to fit? 
-
+    
     vv <- 2 # MCMC iteration at which we are currently at. 
     
     accept <- 0 ## initialize proportion of iterations accepted
@@ -220,24 +208,27 @@ funcMakeResults <- function(){
   ## 2: Calculate the number of primary infections and reinfections
   #Method 3 adjustment
   for (day in 1:nrow(ts)) {
-    ts$infections[day] = rbinom(1, ts$infections[day], parameters.r$pobs_1[i])
+    ts$infections[day] = rbinom(1, ts$infections[day], parameters.r$dprob[a])
   }
   
   ts[, reinfections := 0]
   ts[, eligible_for_reinf := shift(cumsum(infections), cutoff-1)]
   ts$infections_ma = frollmean(ts$infections, window_days)
   
+  for (day in 1:nrow(ts))
+    ts$deaths[day] = rbinom(1, ts$infections[day], parameters.r$dprob[a])
+  
   for (day in (cutoff+1):nrow(ts)) { 
-    ts$eligible_for_reinf[day] = ts$eligible_for_reinf[day] - sum(ts$reinfections[1:day-1])
+    ts$eligible_for_reinf[day] = ts$eligible_for_reinf[day] - sum(ts$reinfections[1:day-1]) - sum(parameters.r$dprob[1:day-1])
     if (ts$date[day]<=wave_split) {
       ts$reinfections[day] = round(reinf_hazard * ts$infections[day] * ts$eligible_for_reinf[day])
     } else {
-      ts$reinfections[day] = round(reinf_hazard * ts$infections[day] * ts$eligible_for_reinf[day] * parameters.r$pscale[i])
+      ts$reinfections[day] = round(reinf_hazard * ts$infections[day] * ts$eligible_for_reinf[day] * parameters.r$pscale[a])
     } 
     #Method 2 adjustment
-    ts$reinfections[day] = rbinom(1, ts$reinfections[day], parameters.r$pobs_2[i])
+    ts$reinfections[day] = rbinom(1, ts$reinfections[day], parameters.r$pobs_2[a])
   }
-
+  
   
   ## 3: Rename column names for MCMC
   names(ts)[2] <- "cases"
@@ -274,18 +265,18 @@ funcMakeResults <- function(){
   
   
   sims <- sapply(rep(1:mcmc$n_posterior, n_sims_per_param), sim_reinf)
-
+  
   
   #6: analysis
   sri <- data.table(date = ts_adjusted$date, sims)
   sri_long <- melt(sri, id.vars = 'date')
   sri_long[, ma_val := frollmean(value, 7), variable]
-
+  
   eri_ma <- sri_long[, .(exp_reinf = median(ma_val, na.rm = TRUE)
                          , low_reinf = quantile(ma_val, 0.025, na.rm = TRUE)
                          , upp_reinf = quantile(ma_val, 0.975, na.rm = TRUE)), keyby = date]
   eri_ma <- eri_ma[date > fit_through]
-
+  
   
   number_of_days <- nrow(eri_ma)
   
@@ -314,47 +305,24 @@ funcMakeResults <- function(){
   proportion_aw <- length(days_diff[days_diff==1])/number_of_days_aw
   date_first_aw <- which(conseq_diff_aw==5)[1]
   
-  results <- list(pobs_1=parameters.r$pobs_1[i] 
-          , pobs_2=parameters.r$pobs_2[i]
-          , pscale = parameters.r$pscale[i]
-          , lambda_con = lambda_convergence
-          , kappa_con = kappa_convergence
-          , proportion = proportion
-          , date_first = which(conseq_diff==5)[1]
-          , proportion_after_wavesplit = proportion_aw
-          , date_first_after_wavesplit = which(conseq_diff_aw==5)[1]
+  results <- list(pobs_1=parameters.r$pobs_1[a] 
+                  , pobs_2=parameters.r$pobs_2[a]
+                  , pscale = parameters.r$pscale[a]
+                  , dprob = parameters.r$dprob[a]
+                  , lambda_con = lambda_convergence
+                  , kappa_con = kappa_convergence
+                  , proportion = proportion
+                  , date_first = which(conseq_diff==5)[1]
+                  , proportion_after_wavesplit = proportion_aw
+                  , date_first_after_wavesplit = which(conseq_diff_aw==5)[1]
   )
   save(results, file='data.RData')
   return(results)
 }
 
-
-for (a in splseq){
-  load(file="method_3_analysis/utils/m3_parameters.RData")
-  parameters.r <- save_params[seq(a,(a-1+spl),1),]
-
-  cl <- startMPIcluster()
-  registerDoMPI(cl)
-
-  finalMatrix <- foreach(i=1:spl,
-                           .packages = c('deSolve','foreach','Rmpi','iterators',
-                                         'doMPI','doParallel','data.table', 'dplyr', 'coda')) %dopar% {
-                                           tempMatrix = funcMakeResults()
-
-                                           tempMatrix #Equivalent to finalMatrix = cbind(finalMatrix, tempMatrix)
-                                         }
-
-    saveRDS(finalMatrix, file=paste0("resultList_CHPC_m3", a,".RDS"))
-
-    #closeCluster(cl)
+for (a in 1:2) {
+  gc()
+  next_results <- funcMakeResults(a)
+  saveRDS(list(next_results), file=paste0('method_4_analysis/output/resultList_local',a,'.RDS'))
 }
-
-resultList <- vector(mode = "list")
-for (a in splseq){
-  resultList = c(resultList,readRDS(file=paste0("resultList_CHPC_m3", a,".RDS")))
-}
-
-saveRDS(resultList, file="resultList_CHPC_m3.RData")
-
-
 

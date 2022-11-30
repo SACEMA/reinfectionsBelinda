@@ -4,7 +4,7 @@
   "wave_split": "2021-05-01",
   "observe_prob": 0.4,
   "observe_prob_first": 0.2,
-  "dprob_first": 0.01,
+  "dprob_first": 0.01, // 0.001, 0.01, 0.05
   "infections_for_changing_obs": 10633, //using median for infections
   "observe_prob_first_basic": 0.3,
   "observe_prob_first_changing": 0.1,
