@@ -329,7 +329,6 @@ funcMakeResults <- function(){
                   , proportion_after_wavesplit = proportion_aw
                   , date_first_after_wavesplit = which(conseq_diff_aw==5)[1]
   )
-  save(results, file='data.RData')
   return(results)
 }
 
