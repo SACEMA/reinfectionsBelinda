@@ -8,7 +8,7 @@ splseq = seq(from=min, to=max-spl+1, length.out=(max-min)/spl)
 window_days <- 7
 reinf_hazard <- 1.38866e-08
 cutoff <- 90
-mcmc <- list(rand_init=TRUE, burnin=2000, n_iter=10000, n_posterior=1600, n_chains=4)
+mcmc <- list(rand_init=TRUE, burnin=2000, n_iter=5000, n_posterior=1600, n_chains=4)
 n_sims_per_param <- 100
 fit_through <- '2021-02-28'
 wave_split <- '2021-05-01'
@@ -210,6 +210,9 @@ funcMakeResults <- function(){
   ###### DATA GENERATION #####
   
   ### 1: Get the data
+  
+  write(paste0("Starting ", i),file="myfile.txt",append=TRUE)
+  
   ts <- readRDS('data/inf_for_sbv.RDS')
   set.seed(0)
   
@@ -253,8 +256,10 @@ funcMakeResults <- function(){
   #Adjust the ts to have columns needed for analysis
   ts_adjusted <- ts[, c("date", "observed", "ma_tot", "cases" )]
   
+  write(paste0("Doing MCMC ", i),file="myfile.txt",append=TRUE)
   #Run MCMC
   output <- do.mcmc(mcmc$n_chains)
+  write(paste0("MCMC Done ", i),file="myfile.txt",append=TRUE)
   
   
   #Save posterior
@@ -276,8 +281,10 @@ funcMakeResults <- function(){
     return(rnbinom(length(ex), size=1/kappa.post[ii], mu =c(0, diff(ex))))
   }
   
+  write(paste0("Starting Sims ", i),file="myfile.txt",append=TRUE)
   
   sims <- sapply(rep(1:mcmc$n_posterior, n_sims_per_param), sim_reinf)
+  write(paste0("Sims Done ", i),file="myfile.txt",append=TRUE)
   
   
   #6: analysis
@@ -329,6 +336,8 @@ funcMakeResults <- function(){
                   , proportion_after_wavesplit = proportion_aw
                   , date_first_after_wavesplit = which(conseq_diff_aw==5)[1]
   )
+  write(paste0("Done with ", i),file="myfile.txt",append=TRUE)
+  
   return(results)
 }
 
@@ -336,7 +345,8 @@ funcMakeResults <- function(){
 for (a in splseq){
   load(file="method_4_analysis/utils/m4_parameters.RData")
   parameters.r <- save_params[seq(a,(a-1+spl),1),]
-
+  write(paste0(a,"Start batch a"),file="myfile.txt",append=TRUE)
+  
   cl <- startMPIcluster()
   registerDoMPI(cl)
 
@@ -349,7 +359,7 @@ for (a in splseq){
                                          }
 
     saveRDS(finalMatrix, file=paste0("resultList_CHPC_m4_", a,".RDS"))
-
+    write("Start end batch ",file="myfile.txt",append=TRUE)
 }
 
 resultList <- vector(mode = "list")
