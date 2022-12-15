@@ -2,7 +2,7 @@
   "reinf_hazard": 1.38866e-08, 
   "pscale": 2.614707,
   "wave_split": "2021-05-01",
-  "observe_prob": 0.4,
+  "observe_prob": 0.5,
   "observe_prob_first": 0.2,
   "dprob_first": 0.01, // 0.001, 0.01, 0.05
   "infections_for_changing_obs": 10633, //using median for infections
@@ -11,7 +11,7 @@
   "logistic_first": {
     "min": 0.05,
     "max": 0.2,
-    "steep": 0.00005,
+    "steep": 0.0005,
     "x_m": 50000
   },
     "func_second": {

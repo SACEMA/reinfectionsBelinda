@@ -82,7 +82,7 @@ funcMakeResults <- function(){
   
   mcmcSampler <- function(init.params, ## initial parameter guess
                           randInit = TRUE, ## if T then randomly sample initial parameters instead of above value
-                          seed = 2, ## RNG seed
+                          seed = 3, ## RNG seed
                           ref.params=disease_params(), ## fixed parameters
                           data = ts_adjusted[date <= fit_through], ## data
                           proposer = default.proposer(sdProps), ## proposal distribution
@@ -219,7 +219,7 @@ funcMakeResults <- function(){
   
   ### 1: Get the data (METHOD 2)
   ts <- readRDS('data/inf_for_sbv.RDS')
-  set.seed(1)
+  set.seed(2)
   
   ts[, infections_ma := frollmean(infections, window_days)]
   
@@ -263,7 +263,7 @@ funcMakeResults <- function(){
   }
   
   #5: Run simulations
-  set.seed(2022)
+  set.seed(2023)
   sim_reinf <- function(ii){
     tmp <- list(lambda = lambda.post[ii], kappa = kappa.post[ii])
     ex <- expected(data=ts_adjusted, parms = tmp)$expected_infections # Calculate expected reinfections using posterior
@@ -319,8 +319,7 @@ funcMakeResults <- function(){
           , proportion_after_wavesplit = proportion_aw
           , date_first_after_wavesplit = which(conseq_diff_aw==5)[1]
   )
-  
-  save(results, file='data.RData')
+  saveRDS(results, file=paste0("raw_output/m2/results_", a+i-1,".RDS"))
   return(results)
 }
 
@@ -340,14 +339,14 @@ for (a in splseq){
                                            tempMatrix #Equivalent to finalMatrix = cbind(finalMatrix, tempMatrix)
                                          }
 
-    saveRDS(finalMatrix, file=paste0("resultList_CHPC", a,".RDS"))
+    saveRDS(finalMatrix, file=paste0("resultList_CHPC_m2_", a,".RDS"))
 
     #closeCluster(cl)
 }
 
 resultList <- vector(mode = "list")
 for (a in splseq){
-  resultList = c(resultList,readRDS(file=paste0("resultList_CHPC", a,".RDS")))
+  resultList = c(resultList,readRDS(file=paste0("resultList_CHPC_m2_", a,".RDS")))
 }
 
 saveRDS(resultList, file="resultList_CHPC.RData")

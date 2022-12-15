@@ -338,6 +338,8 @@ funcMakeResults <- function(){
   )
   write(paste0("Done with ", i),file="myfile.txt",append=TRUE)
   
+  saveRDS(results, file=paste0("raw_output/m4/results_", a+i-1,".RDS"))
+  
   return(results)
 }
 

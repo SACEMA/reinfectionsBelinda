@@ -218,10 +218,6 @@ funcMakeResults <- function(){
   
   
   ## 2: Calculate the number of primary infections and reinfections
-  #Method 3 adjustment
-  for (day in 1:nrow(ts)) {
-    ts$infections[day] = rbinom(1, ts$infections[day], parameters.r$pobs_1[i])
-  }
   
   ts[, reinfections := 0]
   ts[, eligible_for_reinf := shift(cumsum(infections), cutoff-1)]
@@ -234,8 +230,6 @@ funcMakeResults <- function(){
     } else {
       ts$reinfections[day] = round(reinf_hazard * ts$infections[day] * ts$eligible_for_reinf[day] * parameters.r$pscale[i])
     } 
-    #Method 2 adjustment
-    ts$reinfections[day] = rbinom(1, ts$reinfections[day], parameters.r$pobs_2[i])
   }
 
   
@@ -314,9 +308,7 @@ funcMakeResults <- function(){
   proportion_aw <- length(days_diff[days_diff==1])/number_of_days_aw
   date_first_aw <- which(conseq_diff_aw==5)[1]
   
-  results <- list(pobs_1=parameters.r$pobs_1[i] 
-          , pobs_2=parameters.r$pobs_2[i]
-          , pscale = parameters.r$pscale[i]
+  results <- list(pscale = parameters.r$pscale[i]
           , lambda_con = lambda_convergence
           , kappa_con = kappa_convergence
           , proportion = proportion
@@ -324,13 +316,13 @@ funcMakeResults <- function(){
           , proportion_after_wavesplit = proportion_aw
           , date_first_after_wavesplit = which(conseq_diff_aw==5)[1]
   )
-  saveRDS(results, file=paste0("raw_output/m3/results_", a+i-1,".RDS"))
+  saveRDS(results, file=paste0("raw_output/m1/results_", a+i-1,".RDS"))
   return(results)
 }
 
 
 for (a in splseq){
-  load(file="method_3_analysis/utils/m3_parameters.RData")
+  load(file="method_1_analysis/utils/m1_parameters.RData")
   parameters.r <- save_params[seq(a,(a-1+spl),1),]
 
   cl <- startMPIcluster()
@@ -344,16 +336,16 @@ for (a in splseq){
                                            tempMatrix #Equivalent to finalMatrix = cbind(finalMatrix, tempMatrix)
                                          }
 
-    saveRDS(finalMatrix, file=paste0("resultList_CHPC_m3_", a,".RDS"))
+    saveRDS(finalMatrix, file=paste0("resultList_CHPC_m1_", a,".RDS"))
 
 }
 
 resultList <- vector(mode = "list")
 for (a in splseq){
-  resultList = c(resultList,readRDS(file=paste0("resultList_CHPC_m3_", a,".RDS")))
+  resultList = c(resultList,readRDS(file=paste0("resultList_CHPC_m1_", a,".RDS")))
 }
 
-saveRDS(resultList, file="resultList_CHPC_m3.RData")
+saveRDS(resultList, file="resultList_CHPC_m1.RData")
 
 
 
