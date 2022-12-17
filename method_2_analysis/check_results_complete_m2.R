@@ -1,3 +1,4 @@
+library('dplyr')
 method <-2 
 
 results_dataframe_file <- paste0('method_', method, '_analysis/combined_results.RDS')
@@ -34,6 +35,7 @@ if (length(do_still)>0){
   print("Parameter sets outstanding")
   print(do_still)
 }
+
 if (length(do_still)==0){
   print("All Done :) ")
 }

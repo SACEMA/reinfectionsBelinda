@@ -2,7 +2,7 @@ library(ggplot2)
 library(ggtext)
 method <- 4
 
-load(paste0('method_',method,'_analysis/combined_results.RDS'))
+final_RDS <- readRDS(paste0('method_',method,'_analysis/combined_results.RDS'))
 
 
 lambda_con_plot <- (ggplot(final_RDS)

@@ -82,7 +82,7 @@ funcMakeResults <- function(){
   
   mcmcSampler <- function(init.params, ## initial parameter guess
                           randInit = TRUE, ## if T then randomly sample initial parameters instead of above value
-                          seed = 3, ## RNG seed
+                          seed = 5, ## RNG seed
                           ref.params=disease_params(), ## fixed parameters
                           data = ts_adjusted[date <= fit_through], ## data
                           proposer = default.proposer(sdProps), ## proposal distribution
@@ -219,7 +219,7 @@ funcMakeResults <- function(){
   
   ### 1: Get the data (METHOD 2)
   ts <- readRDS('data/inf_for_sbv.RDS')
-  set.seed(2)
+  set.seed(4)
   
   ts[, infections_ma := frollmean(infections, window_days)]
   
@@ -263,7 +263,7 @@ funcMakeResults <- function(){
   }
   
   #5: Run simulations
-  set.seed(2023)
+  set.seed(2025)
   sim_reinf <- function(ii){
     tmp <- list(lambda = lambda.post[ii], kappa = kappa.post[ii])
     ex <- expected(data=ts_adjusted, parms = tmp)$expected_infections # Calculate expected reinfections using posterior

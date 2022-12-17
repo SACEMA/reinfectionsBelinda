@@ -34,6 +34,12 @@ combineBatchFiles = function (method, batch_number) {
   if (method == 2)
     final_RDS <- final_RDS %>% distinct(pobs_2, pscale, .keep_all = TRUE)
   
+  if (method == 3)
+    final_RDS <- final_RDS %>% distinct(pobs_2, pscale, pobs_1, .keep_all = TRUE)
+  
+  if (method == 4)
+    final_RDS <- final_RDS %>% distinct(pobs_2, pscale, pobs_1, dprob, .keep_all = TRUE)
+  
   saveRDS(final_RDS, file=paste0("method_",method,"_analysis/output/final_output_data/batch_", batch_number,"_results.RDS"))
 }
 

@@ -2,7 +2,7 @@ library(ggplot2)
 library(ggtext)
 method <- 2
 
-final_RDS <- readRDS(paste0('method_',method,'_analysis/output/final_output_data/batch_1_results.RDS'))
+final_RDS <- readRDS(paste0('method_',method,'_analysis/combined_results.RDS'))
 
 #plots useless as different pscale don't affect convergence
 lambda_con_plot <- (ggplot(final_RDS)
@@ -93,3 +93,4 @@ ggsave(lambda_con_plot, filename=paste0('method_',method,'_analysis/plots/lambda
 ggsave(kappa_con_plot, filename=paste0('method_',method,'_analysis/plots/kappa_convergence.png'))
 ggsave(cluster_proportion_plot_aw, filename=paste0('method_',method,'_analysis/plots/cluster_proportion_aw.png'))
 ggsave(cluster_proportion_plot, filename=paste0('method_',method,'_analysis/plots/cluster_proportion.png'))
+

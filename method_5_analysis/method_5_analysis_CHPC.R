@@ -8,8 +8,8 @@ splseq = seq(from=min, to=max-spl+1, length.out=(max-min)/spl)
 window_days <- 7
 reinf_hazard <- 1.38866e-08
 cutoff <- 90
-mcmc <- list(rand_init=TRUE, burnin=2000, n_iter=3000, n_posterior=160, n_chains=1)
-n_sims_per_param <- 10
+mcmc <- list(rand_init=TRUE, burnin=2000, n_iter=5000, n_posterior=1600, n_chains=4)
+n_sims_per_param <- 100
 fit_through <- '2021-02-28'
 wave_split <- '2021-05-01'
 
@@ -32,6 +32,14 @@ resultList= list()
 
 funcMakeResults <- function(){
   results <- list()
+  
+  write(paste0("Starting ", i),file="m5_test.txt",append=TRUE)
+  
+  # function to calculate observe prob
+  logistic_func <- function(min, max, cases, s, x_m){
+    prob = min + (max-min)/(1+exp(s*(cases-x_m)))
+    return(prob)
+  }
   
   ############## MCMC FUNCTIONS ############
   disease_params <- function(lambda = .000000015 ## hazard coefficient 0.000000015
@@ -75,6 +83,8 @@ funcMakeResults <- function(){
   colnames(initBounds) <- c('lower','upper')
   rownames(initBounds) <- c('loglambda','logkappa')
   class(initBounds[,2]) <- class(initBounds[,1]) <- 'numeric'
+  
+  
   
   mcmcSampler <- function(init.params, ## initial parameter guess
                           randInit = TRUE, ## if T then randomly sample initial parameters instead of above value
@@ -211,20 +221,27 @@ funcMakeResults <- function(){
   
   ### 1: Get the data
   ts <- readRDS('data/inf_for_sbv.RDS')
-  
   set.seed(1)
   
   #ts[infections < 0, infections := 0]
   ts[, infections_ma := frollmean(infections, window_days)]
-
+  
   
   ## 2: Calculate the number of primary infections and reinfections
+  #Method 3 adjustment
+  for (day in 1:nrow(ts)) {
+    observe_prob_first <-  logistic_func(min=parameters.r$pobs_1_min[i]
+                                         , max=parameters.r$pobs_1_max[i]
+                                         , cases = ts$infections[day]
+                                         , s =parameters.r$steep[i]
+                                         , x_m=parameters.r$xm[i]
+                                         )
+    ts$infections[day] = rbinom(1, ts$infections[day], observe_prob_first)
+  }
   
   ts[, reinfections := 0]
   ts[, eligible_for_reinf := shift(cumsum(infections), cutoff-1)]
   ts$infections_ma = frollmean(ts$infections, window_days)
-  
-  write(paste0('TS ',str(ts)),file="m1_output.txt",append=TRUE)
   
   for (day in (cutoff+1):nrow(ts)) { 
     ts$eligible_for_reinf[day] = ts$eligible_for_reinf[day] - sum(ts$reinfections[1:day-1])
@@ -233,9 +250,16 @@ funcMakeResults <- function(){
     } else {
       ts$reinfections[day] = round(reinf_hazard * ts$infections[day] * ts$eligible_for_reinf[day] * parameters.r$pscale[i])
     } 
+    #Method 2 adjustment
+    observe_prob_second <- logistic_func(min=parameters.r$pobs_2_min[i]
+                                         , max=parameters.r$pobs_2_max[i]
+                                         , cases = ts$infections[day]
+                                         , s =parameters.r$steep[i]
+                                         , x_m=parameters.r$xm[i]
+                                         )
+    ts$reinfections[day] = rbinom(1, ts$reinfections[day], observe_prob_second)
   }
-  write(paste0(a,"DONE with Calculations"),file="m1_output.txt",append=TRUE)
-  
+
   
   ## 3: Rename column names for MCMC
   names(ts)[2] <- "cases"
@@ -247,8 +271,12 @@ funcMakeResults <- function(){
   #Adjust the ts to have columns needed for analysis
   ts_adjusted <- ts[, c("date", "observed", "ma_tot", "cases" )]
   
+  write(paste0("Starting MCMC ", i),file="m5_test.txt",append=TRUE)
+  
   #Run MCMC
   output <- do.mcmc(mcmc$n_chains)
+  
+  write(paste0("Done MCMC ", i),file="m5_test.txt",append=TRUE)
   
   
   #Save posterior
@@ -270,9 +298,11 @@ funcMakeResults <- function(){
     return(rnbinom(length(ex), size=1/kappa.post[ii], mu =c(0, diff(ex))))
   }
   
+  write(paste0("Starting SIMS ", i),file="m5_test.txt",append=TRUE)
   
   sims <- sapply(rep(1:mcmc$n_posterior, n_sims_per_param), sim_reinf)
 
+  write(paste0("End SIMS ", i),file="m5_test.txt",append=TRUE)
   
   #6: analysis
   sri <- data.table(date = ts_adjusted$date, sims)
@@ -312,7 +342,14 @@ funcMakeResults <- function(){
   proportion_aw <- length(days_diff[days_diff==1])/number_of_days_aw
   date_first_aw <- which(conseq_diff_aw==5)[1]
   
-  results <- list(pscale = parameters.r$pscale[i]
+  results <- list(pobs_1_min=parameters.r$pobs_1_min[i]
+          , pobs_1_max=parameters.r$pobs_1_max[i]
+          , pobs_2_min=parameters.r$pobs_2_min[i]
+          , pobs_2_max=parameters.r$pobs_2_max[i]
+          , steep = parameters.r$steep[i]
+          , xm = parameters.r$steep[i]
+          , multiplier = parameters.r$multiplier[i]
+          , pscale = parameters.r$pscale[i]
           , lambda_con = lambda_convergence
           , kappa_con = kappa_convergence
           , proportion = proportion
@@ -320,15 +357,14 @@ funcMakeResults <- function(){
           , proportion_after_wavesplit = proportion_aw
           , date_first_after_wavesplit = which(conseq_diff_aw==5)[1]
   )
-  saveRDS(results, file=paste0("raw_output/m1/results_", a+i-1,".RDS"))
+  saveRDS(results, file=paste0("raw_output/m5/results_", a+i-1,".RDS"))
   return(results)
 }
 
 
 for (a in splseq){
-  load("method_1_analysis/utils/m1_parameters.RData")
+  load(file="method_5_analysis/utils/m5_parameters.RData")
   parameters.r <- save_params[seq(a,(a-1+spl),1),]
-  write(paste0(a,"Start batch"),file="m1_output.txt",append=TRUE)
 
   cl <- startMPIcluster()
   registerDoMPI(cl)
@@ -341,16 +377,16 @@ for (a in splseq){
                                            tempMatrix #Equivalent to finalMatrix = cbind(finalMatrix, tempMatrix)
                                          }
 
-    saveRDS(finalMatrix, file=paste0("resultList_CHPC_m1_", a,".RDS"))
+    saveRDS(finalMatrix, file=paste0("resultList_CHPC_m5_", a,".RDS"))
 
 }
 
 resultList <- vector(mode = "list")
 for (a in splseq){
-  resultList = c(resultList,readRDS(file=paste0("resultList_CHPC_m1_", a,".RDS")))
+  resultList = c(resultList,readRDS(file=paste0("resultList_CHPC_m5_", a,".RDS")))
 }
 
-saveRDS(resultList, file="resultList_CHPC_m1.RData")
+saveRDS(resultList, file="resultList_CHPC_m5.RData")
 
 
 
