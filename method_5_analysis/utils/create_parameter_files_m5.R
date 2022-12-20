@@ -27,7 +27,15 @@ parameters <- expand.grid(
 parameters$pobs_2_min <- parameters$multiplier * parameters$pobs_1_min
 parameters$pobs_2_max <- parameters$multiplier * parameters$pobs_1_max
 
+final <- as.data.frame(parameters)
 
-save_params <- as.data.frame(parameters)
+save_params <- data.frame()
+
+for (i in 1:nrow(final)) { 
+  row <- final[i, ]
+  if ( row$pobs_1_max != row$pobs_1_min && row$pobs_2_max!=row$pobs_2_min )
+    save_params <- rbind(save_params, row)
+}
+
 save(save_params, file = paste0('method_', method, '_analysis/utils/m', method, '_parameters.RData'))
 

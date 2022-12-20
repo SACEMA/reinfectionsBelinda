@@ -4,6 +4,8 @@ max = as.numeric(argos[2])
 spl = as.numeric(argos[3])
 splseq = seq(from=min, to=max-spl+1, length.out=(max-min)/spl)
 
+seed_batch<-10
+
 #Parameters defined
 window_days <- 7
 reinf_hazard <- 1.38866e-08
@@ -34,6 +36,8 @@ resultList= list()
 
 
 funcMakeResults <- function(){
+  write('running',file="m2_output.txt",append=TRUE)
+  
   results <- list()
   
   
@@ -82,7 +86,7 @@ funcMakeResults <- function(){
   
   mcmcSampler <- function(init.params, ## initial parameter guess
                           randInit = TRUE, ## if T then randomly sample initial parameters instead of above value
-                          seed = 5, ## RNG seed
+                          seed = seed_batch, ## RNG seed
                           ref.params=disease_params(), ## fixed parameters
                           data = ts_adjusted[date <= fit_through], ## data
                           proposer = default.proposer(sdProps), ## proposal distribution
@@ -219,7 +223,7 @@ funcMakeResults <- function(){
   
   ### 1: Get the data (METHOD 2)
   ts <- readRDS('data/inf_for_sbv.RDS')
-  set.seed(4)
+  set.seed(seed_batch-1)
   
   ts[, infections_ma := frollmean(infections, window_days)]
   
@@ -263,7 +267,7 @@ funcMakeResults <- function(){
   }
   
   #5: Run simulations
-  set.seed(2025)
+  set.seed(seed_batch+2022)
   sim_reinf <- function(ii){
     tmp <- list(lambda = lambda.post[ii], kappa = kappa.post[ii])
     ex <- expected(data=ts_adjusted, parms = tmp)$expected_infections # Calculate expected reinfections using posterior

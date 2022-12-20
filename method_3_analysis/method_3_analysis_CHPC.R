@@ -31,6 +31,8 @@ resultList= list()
 
 
 funcMakeResults <- function(){
+  write("Running",file="m3_output.txt",append=TRUE)
+  
   results <- list()
   
   ############## MCMC FUNCTIONS ############

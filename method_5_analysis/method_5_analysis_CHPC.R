@@ -347,7 +347,7 @@ funcMakeResults <- function(){
           , pobs_2_min=parameters.r$pobs_2_min[i]
           , pobs_2_max=parameters.r$pobs_2_max[i]
           , steep = parameters.r$steep[i]
-          , xm = parameters.r$steep[i]
+          , xm = parameters.r$xm[i]
           , multiplier = parameters.r$multiplier[i]
           , pscale = parameters.r$pscale[i]
           , lambda_con = lambda_convergence

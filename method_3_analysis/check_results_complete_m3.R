@@ -1,3 +1,5 @@
+library('dplyr')
+
 method <-3 
 results_dataframe_file <- paste0('method_', method, '_analysis/combined_results.RDS')
 parameter_set_file <- paste0('method_', method, '_analysis/utils/m', method, '_parameters.RData')
