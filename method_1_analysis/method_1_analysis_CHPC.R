@@ -4,7 +4,7 @@ max = as.numeric(argos[2])
 spl = as.numeric(argos[3])
 splseq = seq(from=min, to=max-spl+1, length.out=(max-min)/spl)
 
-seed_base <- 14
+seed_base <- 18
 
 
 #Parameters defined

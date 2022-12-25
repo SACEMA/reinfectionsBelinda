@@ -3,9 +3,9 @@
 #PBS -P CBBI1106
 #PBS -q normal
 #PBS -l walltime=7:30:00
-#PBS -o /mnt/lustre/users/blombard/analysis/std_m3.out
-#PBS -e /mnt/lustre/users/blombard/analysis/std_m3.err
-#PBS -N m3_analysis
+#PBS -o /mnt/lustre/users/blombard/analysis/std_m5.out
+#PBS -e /mnt/lustre/users/blombard/analysis/std_m5.err
+#PBS -N m5_analysis
 #PBS -M belindalombard@sun.ac.za
 #PBS -m be
 
@@ -18,4 +18,4 @@ nproc=`cat $PBS_NODEFILE | wc -l`
 # make sure we're in the correct working directory.
 cd /mnt/lustre/users/blombard/analysis/
 
-mpirun -np $nproc -machinefile $PBS_NODEFILE  R --slave -f method_3_analysis/method_3_analysis_CHPC.R --args 1 100 20
+mpirun -np $nproc -machinefile $PBS_NODEFILE  R --slave -f method_5_analysis/method_5_analysis_CHPC.R --args 421 495 15

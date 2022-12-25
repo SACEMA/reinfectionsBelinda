@@ -1,11 +1,11 @@
 #!/bin/bash
-#PBS -l select=5:ncpus=24:mpiprocs=20
+#PBS -l select=3:ncpus=24:mpiprocs=20
 #PBS -P CBBI1106
 #PBS -q normal
-#PBS -l walltime=6:00:00
+#PBS -l walltime=10:00:00
 #PBS -o /mnt/lustre/users/blombard/analysis/std_m2.out
 #PBS -e /mnt/lustre/users/blombard/analysis/std_m2.err
-#PBS -N observe_analysis_m2
+#PBS -N m2_analysis
 #PBS -M belindalombard@sun.ac.za
 #PBS -m be
 
@@ -18,4 +18,4 @@ nproc=`cat $PBS_NODEFILE | wc -l`
 # make sure we're in the correct working directory.
 cd /mnt/lustre/users/blombard/analysis/
 
-mpirun -np $nproc -machinefile $PBS_NODEFILE  R --slave -f method_2_analysis/method_2_analysis_CHPC.R --args 81 105 5
+mpirun -np $nproc -machinefile $PBS_NODEFILE  R --slave -f method_2_analysis/method_2_analysis_CHPC.R --args 1 105 15
