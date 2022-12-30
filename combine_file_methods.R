@@ -61,6 +61,8 @@ get_median_values <- function(method) {
   if (method==2)
             rds_1 <- final_RDS %>% group_by(pscale, pobs_2) 
   
+  if (method==3)
+            rds_1 <- final_RDS %>% group_by(pscale, pobs_1, pobs_2)
   calculate_values <- rds_1 %>% 
                             summarise(kappa_con = median(kappa_con)
                             , lambda_con = median(lambda_con)
