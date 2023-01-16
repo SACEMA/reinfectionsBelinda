@@ -24,6 +24,7 @@ data[, eligible_for_reinf := shift(cumsum(infections), cutoff-1)]
 
 pscale <- 1
 
+
 for (day in (cutoff+1):nrow(data)) { 
   data$eligible_for_reinf[day] = data$eligible_for_reinf[day] - sum(data$reinfections[1:day-1])
   if (data$date[day]<=wave_split){
@@ -35,3 +36,4 @@ for (day in (cutoff+1):nrow(data)) {
 }
 
 saveRDS(data, file=target)
+

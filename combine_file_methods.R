@@ -2,7 +2,7 @@ library('dplyr')
 
 ## Combine results that we are currently busy with ###
 combineResultsCurrent = function (method) {
-  files <- list.files(path=paste0("method_",method,"_analysis/output/"), pattern="*.RDS", full.names=TRUE, recursive=FALSE)
+  files <- list.files(path=paste0("method_",method,"_analysis/output/batch2"), pattern="*.RDS", full.names=TRUE, recursive=FALSE)
   resultList <- vector(mode = "list")
   for (f in files) {
     resultList = c(resultList,readRDS(f))
@@ -63,6 +63,7 @@ get_median_values <- function(method) {
   
   if (method==3)
             rds_1 <- final_RDS %>% group_by(pscale, pobs_1, pobs_2)
+  
   calculate_values <- rds_1 %>% 
                             summarise(kappa_con = median(kappa_con)
                             , lambda_con = median(lambda_con)
@@ -79,12 +80,3 @@ get_median_values <- function(method) {
 }
   
   
-  
-#cmd to get distinct rows in combined_results
-combined_results <- combined_results %>% distinct(pobs_2, pscale, .keep_all = TRUE)
-
-
-### Combine the RDS in the final_output_data folder and save it for plot usage
-
-
-## Code that I can reuse
