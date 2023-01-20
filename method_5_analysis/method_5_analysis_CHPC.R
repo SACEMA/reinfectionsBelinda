@@ -230,11 +230,14 @@ funcMakeResults <- function(){
   
   
   ## 2: Calculate the number of primary infections and reinfections
-  #Method 3 adjustment
+  #Method 5 adjustment
+  #Save primary infections initially reported: 
+  ts$original_infections <- ts$infections
+  
   for (day in 1:nrow(ts)) {
     observe_prob_first <-  logistic_func(min=parameters.r$pobs_1_min[i]
                                          , max=parameters.r$pobs_1_max[i]
-                                         , cases = ts$infections[day]
+                                         , cases = ts$original_infections[day]
                                          , s =parameters.r$steep[i]
                                          , x_m=parameters.r$xm[i]
                                          )
@@ -255,7 +258,7 @@ funcMakeResults <- function(){
     #Method 2 adjustment
     observe_prob_second <- logistic_func(min=parameters.r$pobs_2_min[i]
                                          , max=parameters.r$pobs_2_max[i]
-                                         , cases = ts$infections[day]
+                                         , cases = ts$original_infections[day]
                                          , s =parameters.r$steep[i]
                                          , x_m=parameters.r$xm[i]
                                          )
