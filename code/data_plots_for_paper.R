@@ -70,3 +70,25 @@ m4_reinfections <- ggplot(data, aes(x=date)) +
   ylab('Reinfections') + 
   ggtitle('Observed reinfections for changing deaths probability') +
   theme(plot.title = element_text(hjust = 0.5))
+
+
+## Method 5
+#function
+load('utils/observe_prob_functions.RData')
+x <- seq(1, 100000)
+y <- logistic_func(0.1, 0.5, x, 0.0002, 50000)
+options(scipen=999)
+log_plot <- plot(x,y,type='line', xlab='Infections', ylab='Observation Probability')
+
+data <- readRDS('data/m5_ts_data_for_analysis.RDS')
+datam1 <- readRDS('data/m1_ts_data_for_analysis.RDS')
+
+m5.1 <- ggplot() +
+  geom_line(data=data, aes(x=date, y = infections_ma), color='green') + 
+  geom_line(data=datam1, aes(x=date, y=infections_ma), color='blue') + 
+  xlab('Date') + 
+  ylab('Reinfections') + 
+  ggtitle('Observed reinfections') +
+  theme(plot.title = element_text(hjust = 0.5))
+
+

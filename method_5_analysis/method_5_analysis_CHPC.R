@@ -13,7 +13,7 @@ n_sims_per_param <- 100
 fit_through <- '2021-02-28'
 wave_split <- '2021-05-01'
 
-seed_number <-2
+seed_number <-1
 
 library(data.table)
 library(iterators)

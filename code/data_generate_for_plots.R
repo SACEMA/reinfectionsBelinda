@@ -61,3 +61,45 @@ for (dprob in c(0.001, 0.01, 0.05)) {
   df <- rbind(df, ts)
 }
 saveRDS(df, file='data/m4_ts_data_for_analysis.RDS')
+
+### Method 5: First, primary infections
+steep <- 0.0002
+x_m <-  50000
+pobs_1_max <-  0.2
+pobs_1_min <-  0.1
+pobs_2_max <-  0.4
+pobs_2_min <-  0.2
+
+load('utils/observe_prob_functions.RData')
+library('data.table')
+ts <- readRDS('data/infection_data.RDS')
+
+for (day in 1:nrow(ts)) {
+  observe_prob_first <-  logistic_func(min=pobs_1_min
+                                       , max=pobs_1_max
+                                       , cases = ts$infections[day]
+                                       , s =steep
+                                       , x_m=xm
+  )
+  ts$infections[day] = rbinom(1, ts$infections[day], observe_prob_first)
+}
+
+ts[, reinfections := 0]
+ts[, eligible_for_reinf := shift(cumsum(infections), cutoff-1)]
+ts$infections_ma = frollmean(ts$infections, window_days)
+
+for (day in (cutoff+1):nrow(ts)) { 
+  ts$eligible_for_reinf[day] = ts$eligible_for_reinf[day] - sum(ts$reinfections[1:day-1])
+  ts$reinfections[day] = round(reinf_hazard * ts$infections[day] * ts$eligible_for_reinf[day])
+
+  #Method 2 adjustment
+  observe_prob_second <- logistic_func(min=pobs_2_min
+                                       , max=pobs_2_max
+                                       , cases = ts$infections[day]
+                                       , s =steep
+                                       , x_m=xm
+  )
+  ts$reinfections[day] = rbinom(1, ts$reinfections[day], observe_prob_second)
+}
+ts$reinfections_ma = frollmean(ts$reinfections, window_days)
+saveRDS(ts, file = 'data/m5_ts_data_for_analysis.RDS')

@@ -2,7 +2,7 @@ library('dplyr')
 
 ## Combine results that we are currently busy with ###
 combineResultsCurrent = function (method) {
-  files <- list.files(path=paste0("method_",method,"_analysis/output/batch2"), pattern="*.RDS", full.names=TRUE, recursive=FALSE)
+  files <- list.files(path=paste0("method_",method,"_analysis/output"), pattern="*.RDS", full.names=TRUE, recursive=FALSE)
   resultList <- vector(mode = "list")
   for (f in files) {
     resultList = c(resultList,readRDS(f))
