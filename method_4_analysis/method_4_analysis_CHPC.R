@@ -4,7 +4,7 @@ max = as.numeric(argos[2])
 spl = as.numeric(argos[3])
 splseq = seq(from=min, to=max-spl+1, length.out=(max-min)/spl)
 
-seed_number <-3
+seed_number <-4
 
 #Parameters defined
 window_days <- 7

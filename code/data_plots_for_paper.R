@@ -78,7 +78,7 @@ load('utils/observe_prob_functions.RData')
 x <- seq(1, 100000)
 y <- logistic_func(0.1, 0.5, x, 0.0002, 50000)
 options(scipen=999)
-log_plot <- plot(x,y,type='line', xlab='Infections', ylab='Observation Probability')
+log_plot <- plot(x,y,type='line', xlab='Primary infections', ylab='Observation Probability')
 
 data <- readRDS('data/m5_ts_data_for_analysis.RDS')
 datam1 <- readRDS('data/m1_ts_data_for_analysis.RDS')

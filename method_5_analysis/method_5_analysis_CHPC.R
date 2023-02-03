@@ -13,7 +13,7 @@ n_sims_per_param <- 100
 fit_through <- '2021-02-28'
 wave_split <- '2021-05-01'
 
-seed_number <-1
+seed_number <-2
 
 library(data.table)
 library(iterators)
@@ -228,16 +228,15 @@ funcMakeResults <- function(){
   #ts[infections < 0, infections := 0]
   ts[, infections_ma := frollmean(infections, window_days)]
   
+  original_infections <- ts[, c('date', 'infections')]
+  
   
   ## 2: Calculate the number of primary infections and reinfections
-  #Method 5 adjustment
-  #Save primary infections initially reported: 
-  ts$original_infections <- ts$infections
-  
+  #Method 3 adjustment
   for (day in 1:nrow(ts)) {
     observe_prob_first <-  logistic_func(min=parameters.r$pobs_1_min[i]
                                          , max=parameters.r$pobs_1_max[i]
-                                         , cases = ts$original_infections[day]
+                                         , cases = original_infections$infections[day]
                                          , s =parameters.r$steep[i]
                                          , x_m=parameters.r$xm[i]
                                          )
@@ -247,6 +246,7 @@ funcMakeResults <- function(){
   ts[, reinfections := 0]
   ts[, eligible_for_reinf := shift(cumsum(infections), cutoff-1)]
   ts$infections_ma = frollmean(ts$infections, window_days)
+  
   
   for (day in (cutoff+1):nrow(ts)) { 
     ts$eligible_for_reinf[day] = ts$eligible_for_reinf[day] - sum(ts$reinfections[1:day-1])
@@ -258,7 +258,7 @@ funcMakeResults <- function(){
     #Method 2 adjustment
     observe_prob_second <- logistic_func(min=parameters.r$pobs_2_min[i]
                                          , max=parameters.r$pobs_2_max[i]
-                                         , cases = ts$original_infections[day]
+                                         , cases = original_infections$infections[day]
                                          , s =parameters.r$steep[i]
                                          , x_m=parameters.r$xm[i]
                                          )
