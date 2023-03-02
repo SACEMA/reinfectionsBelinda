@@ -217,29 +217,35 @@ funcMakeResults <- function(){
   ts <- readRDS('data/inf_for_sbv.RDS')
   set.seed(seed_number-1)
   
-  #ts[infections < 0, infections := 0]
   ts[, infections_ma := frollmean(infections, window_days)]
   
+  ts[, reinfections := 0]
   
-  ## 2: Calculate the number of primary infections and reinfections
-  #Method 3 adjustment
-  for (day in 1:nrow(ts)) {
-    ts$infections[day] = rbinom(1, ts$infections[day], parameters.r$pobs_1[i])
+  
+  underlying <- ts[, c('infections', 'reinfections')]
+  
+  for (day in (cutoff+1):nrow(ts)){
+    ts$infections[day] = rbinom(1, underlying$infections[day], parameters.r$pobs_1[i])
   }
   
-  ts[, reinfections := 0]
   ts[, eligible_for_reinf := shift(cumsum(infections), cutoff-1)]
-  ts$infections_ma = frollmean(ts$infections, window_days)
+  underlying$eligible_for_reinf= shift(cumsum(ts$infections), cutoff-1)
   
+  #adjust infections observed according to observation probability
+  
+  #distinction: underlying is the underlying 'true' infections, etc. and ts is the observed (what the data can see)
   for (day in (cutoff+1):nrow(ts)) { 
+    
+    underlying$eligible_for_reinf[day] = underlying$eligible_for_reinf[day] - sum(underlying$reinfections[1:day-1])
     ts$eligible_for_reinf[day] = ts$eligible_for_reinf[day] - sum(ts$reinfections[1:day-1])
+
     if (ts$date[day]<=wave_split) {
-      ts$reinfections[day] = round(reinf_hazard * ts$infections[day] * ts$eligible_for_reinf[day])
+      underlying$reinfections[day] = round(reinf_hazard * underlying$infections[day] * underlying$eligible_for_reinf[day])
     } else {
-      ts$reinfections[day] = round(reinf_hazard * ts$infections[day] * ts$eligible_for_reinf[day] * parameters.r$pscale[i])
+      underlying$reinfections[day] = round(reinf_hazard * underlying$infections[day] * underlying$eligible_for_reinf[day] * parameters.r$pscale[i])
     } 
-    #Method 2 adjustment
-    ts$reinfections[day] = rbinom(1, ts$reinfections[day], parameters.r$pobs_2[i])
+    
+    ts$reinfections[day] = rbinom(1, underlying$reinfections[day], parameters.r$pobs_2[i])
   }
 
   

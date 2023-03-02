@@ -4,7 +4,7 @@ max = as.numeric(argos[2])
 spl = as.numeric(argos[3])
 splseq = seq(from=min, to=max-spl+1, length.out=(max-min)/spl)
 
-seed_batch<-22
+seed_batch<-2
 
 #Parameters defined
 window_days <- 7
@@ -225,21 +225,32 @@ funcMakeResults <- function(){
   ts <- readRDS('data/inf_for_sbv.RDS')
   set.seed(seed_batch-1)
   
+  
   ts[, infections_ma := frollmean(infections, window_days)]
   
   ts[, reinfections := 0]
   ts[, eligible_for_reinf := shift(cumsum(infections), cutoff-1)]
   
+
+  underlying <- ts[, c('infections', 'eligible_for_reinf', 'reinfections')]
+
+  #distinction: underlying is the underlying 'true' infections, etc. and ts is the observed (what the data can see)
   for (day in (cutoff+1):nrow(ts)) { 
+
+    underlying$eligible_for_reinf[day] = underlying$eligible_for_reinf[day] - sum(underlying$reinfections[1:day-1])
     ts$eligible_for_reinf[day] = ts$eligible_for_reinf[day] - sum(ts$reinfections[1:day-1])
+    
+
     if (ts$date[day]<=wave_split) {
-      ts$reinfections[day] = round(reinf_hazard * ts$infections[day] * ts$eligible_for_reinf[day])
+      underlying$reinfections[day] = round(reinf_hazard * underlying$infections[day] * underlying$eligible_for_reinf[day])
     } else {
-      ts$reinfections[day] = round(reinf_hazard * ts$infections[day] * ts$eligible_for_reinf[day] * parameters.r$pscale[i])
+      underlying$reinfections[day] = round(reinf_hazard * underlying$infections[day] * underlying$eligible_for_reinf[day] * parameters.r$pscale[i])
     } 
-    ts$reinfections[day] = rbinom(1, ts$reinfections[day], parameters.r$pobs_2[i])
+
+    ts$reinfections[day] = rbinom(1, underlying$reinfections[day], parameters.r$pobs_2[i])
   }
 
+  write('5',file="m2_output.txt",append=TRUE)
   
   ## 3: Rename column names for MCMC
   names(ts)[2] <- "cases"
