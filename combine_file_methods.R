@@ -8,6 +8,10 @@ combineResultsCurrent = function (method) {
     resultList = c(resultList,readRDS(f))
   }
   final_RDS <- do.call(rbind.data.frame, resultList)
+  
+  if (method == 2)
+    final_RDS <- final_RDS %>% distinct(pobs_2, pscale, .keep_all = TRUE)
+  
   saveRDS(final_RDS, file=paste0("method_",method,"_analysis/combined_results.RDS"))
 }
 

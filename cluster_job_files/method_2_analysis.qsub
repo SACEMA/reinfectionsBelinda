@@ -1,5 +1,5 @@
 #!/bin/bash
-#PBS -l select=3:ncpus=24:mpiprocs=20
+#PBS -l select=1:ncpus=24:mpiprocs=20
 #PBS -P CBBI1106
 #PBS -q normal
 #PBS -l walltime=10:00:00

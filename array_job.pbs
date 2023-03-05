@@ -1,0 +1,19 @@
+#!/bin/bash
+
+#PBS -P CBBI1106
+#PBS -N array_job
+#PBS -l select=1:ncpus=1:mem=5gb
+#PBS -o /mnt/lustre/users/blombard/analysis/std_m2.out
+#PBS -e /mnt/lustre/users/blombard/analysis/std_m2.err
+#PBS -l walltime=1:30:00
+#PBS -J 21-30
+sleep 60
+
+
+
+module add chpc/BIOMODULES R/4.1.0
+
+#Change into it
+cd /mnt/lustre/users/blombard/analysis/
+
+Rscript arrayjob.R $PBS_ARRAY_INDEX

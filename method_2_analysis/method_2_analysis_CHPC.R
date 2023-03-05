@@ -4,14 +4,14 @@ max = as.numeric(argos[2])
 spl = as.numeric(argos[3])
 splseq = seq(from=min, to=max-spl+1, length.out=(max-min)/spl)
 
-seed_batch<-2
+seed_batch<-5
 
 #Parameters defined
 window_days <- 7
 reinf_hazard <- 1.38866e-08
 cutoff <- 90
-mcmc <- list(rand_init=TRUE, burnin=2000, n_iter=5000, n_posterior=1600, n_chains=4)
-n_sims_per_param <- 100
+mcmc <- list(rand_init=TRUE, burnin=2000, n_iter=3000, n_posterior=160, n_chains=2)
+n_sims_per_param <- 10
 fit_through <- '2021-02-28'
 wave_split <- '2021-05-01'
 
@@ -286,7 +286,7 @@ funcMakeResults <- function(){
   }
   
   
-  sims <- sapply(rep(1:mcmc$n_posterior, n_sims_per_param), sim_reinf)
+  sims <- parSapply(rep(1:mcmc$n_posterior, n_sims_per_param), sim_reinf)
 
   
   #6: analysis

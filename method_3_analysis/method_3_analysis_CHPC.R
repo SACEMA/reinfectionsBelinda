@@ -343,9 +343,14 @@ for (a in splseq){
   load(file="method_3_analysis/utils/m3_parameters.RData")
   parameters.r <- save_params[seq(a,(a-1+spl),1),]
 
+  
+  
   cl <- startMPIcluster()
   registerDoMPI(cl)
 
+  #load('utils/fit_functions.RData')
+  #exportDoMPI(cl )
+  
   finalMatrix <- foreach(i=1:spl,
                            .packages = c('deSolve','foreach','Rmpi','iterators',
                                          'doMPI','doParallel','data.table', 'dplyr', 'coda')) %dopar% {
@@ -359,6 +364,7 @@ for (a in splseq){
 }
 
 resultList <- vector(mode = "list")
+
 for (a in splseq){
   resultList = c(resultList,readRDS(file=paste0("resultList_CHPC_m3_", a,".RDS")))
 }
