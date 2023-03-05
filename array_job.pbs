@@ -6,7 +6,7 @@
 #PBS -o /mnt/lustre/users/blombard/analysis/std_m2.out
 #PBS -e /mnt/lustre/users/blombard/analysis/std_m2.err
 #PBS -l walltime=1:30:00
-#PBS -J 21-30
+#PBS -J 1-100
 sleep 60
 
 
