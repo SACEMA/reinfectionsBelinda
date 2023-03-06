@@ -266,9 +266,10 @@ funcMakeResults <- function(){
   #Adjust the ts to have columns needed for analysis
   ts_adjusted <- ts[, c("date", "observed", "ma_tot", "cases" )]
   
-  #Run MCMC
-  output <- do.mcmc(mcmc$n_chains)
+  write('6',file="m2_output.txt",append=TRUE)
   
+  #Run MCMC
+  output <- do.mcmc(mcmc$n_chains, ts_adjusted)
   
   #Save posterior
   lambda.post <- kappa.post <- numeric(0)

@@ -75,16 +75,18 @@ mcmcSampler <- function(init.params, ## initial parameter guess
                         randInit = TRUE, ## if T then randomly sample initial parameters instead of above value
                         seed = 1, ## RNG seed
                         ref.params=disease_params(), ## fixed parameters
-                        data = ts_adjusted[date <= fit_through], ## data
+                        data = ts_adjusted, ## data
                         proposer = default.proposer(sdProps), ## proposal distribution
                         niter = mcmc$n_iter, ## MCMC iterations
                         nburn = mcmc$burnin){ ## iterations to automatically burn
   write('mcmc function running', 'mcmc_output.txt', append=TRUE)
-  write(paste0("ts_adjusted head mcmc func", head(ts_adjusted)), 'mcmc_output.txt', append=TRUE)
-  write(paste0("ts_adjusted str mcmc func", str(ts_adjusted)), 'mcmc_output.txt', append=TRUE)
+  write(paste0('ts_adjusted MCMC exists ', exists("ts_adjusted")), 'mcmc_output.txt', append=TRUE)
+  write(paste0('data MCMC exists ', exists("data")), 'mcmc_output.txt', append=TRUE)
   
-  #write(paste0("Fit through", fit_through), 'mcmc_output.txt', append=TRUE)
-  #write(paste0("Init parameters",init.params), 'mcmc_output.txt', append=TRUE)
+  #data <- data[date<=fit_through]
+  
+  write(paste0("Fit through", fit_through), 'mcmc_output.txt', append=TRUE)
+  write(paste0("Init parameters",init.params), 'mcmc_output.txt', append=TRUE)
   
   set.seed(seed) #Set seed for when generating random numbers
   if(randInit) #randInit = T means we have to use a randomly generated initial value 
@@ -180,10 +182,15 @@ mcmcParams <- list(init.params = c(lambda = NA, kappa = NA)
 
 
 doChains <- function(x, mcmcParams, ts_adjusted) {
-  write(paste0("ts_adjusted head dochains func", head(ts_adjusted)), 'mcmc_output.txt', append=TRUE)
-  write(paste0("ts_adjusted str dochains func", str(ts_adjusted)), 'mcmc_output.txt', append=TRUE)
+  #write(paste0("ts_adjusted head dochains func", colnames(ts_adjusted)), 'mcmc_output.txt', append=TRUE)
+  #write(paste0("ts_adjusted str dochains func", str(ts_adjusted)), 'mcmc_output.txt', append=TRUE)
+  args <- mcmcParams
   
-  chains <- mclapply(x, function(x) do.call(mcmcSampler, within(mcmcParams, {seed <- x})))
+  args$data <- ts_adjusted
+  
+  #write(paste0("MCMC params rand init ", colnames(mcmcParams$randInit)), 'mcmc_output.txt', append=TRUE)
+  
+  chains <- mclapply(x, function(x) do.call(mcmcSampler, within(args, {seed <- x})))
   aratio <- mean(unlist(lapply(chains, '[[', 'aratio'))) ## average across chains
   chains <- lapply(chains, '[[', 'samp') ## pull out posterior samples only
   chains <- as.mcmc.list(chains) ## make into mcmc.list
