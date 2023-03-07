@@ -39,7 +39,11 @@ funcMakeResults <- function(){
   ts_adjusted <- ts[, c("date", "observed", "ma_tot", "cases" )]
   
   ##Run MCMC
+  write('doing mcmc',file="m2_output.txt",append=TRUE) 
+  
   output <- do.mcmc(mcmc$n_chains, ts_adjusted)
+  
+  write('mcmc',file="m2_output.txt",append=TRUE) 
   
   ##Save posterior
   lambda.post <- kappa.post <- numeric(0)
@@ -52,19 +56,26 @@ funcMakeResults <- function(){
     kappa.post <- c(kappa.post, output$chains[[ii]][seq(1,mcmc$n_iter-mcmc$burnin,jump),2])
   }
   
+  write('MCMC stuff done',file="m2_output.txt",append=TRUE) 
+  
   ## Run simulations
   set.seed(seed_batch+2022)
 
-  #define sim-reinf here to avoid parsing big arrays too many times
-  sim_reinf <- function(ii){
-    tmp <- list(lambda = lambda.post[ii], kappa = kappa.post[ii])
-    ex <- expected(data=ts_adjusted, parms = tmp)$expected_infections # Calculate expected reinfections using posterior
-    return(rnbinom(length(ex), size=1/kappa.post[ii], mu =c(0, diff(ex))))
-  }
   
+  write('MCMC stuff done',file="m2_output.txt",append=TRUE) 
+  
+  sim_reinf <- function(ii){
+    tmp <- list(lambda = lambda.post[ii], kappa = kappa.post[ii], lambda2 = lambda2.post[ii])
+    answer <- expected(parms = tmp, data = ts_adjusted, delta = cutoff)
+    ex2 <- Reduce("+", answer)
+    ex2 <- c(rep(0,90),ex2)
+    return(rnbinom(length(ex2), size=1/kappa.post[ii], mu =c(0, diff(ex2))))
+  }
   
   sims <- sapply(rep(1:mcmc$n_posterior, n_sims_per_param), sim_reinf)
 
+  write('sims done',file="m2_output.txt",append=TRUE) 
+  
   ## Analysis
   sri <- data.table(date = ts_adjusted$date, sims)
   sri_long <- melt(sri, id.vars = 'date')
@@ -112,6 +123,8 @@ funcMakeResults <- function(){
           , date_first_after_wavesplit = which(conseq_diff_aw==5)[1]
   )
 
+  
+  
   saveRDS(results, file=paste0("raw_output/m",method,"/results_", a+i-1,".RDS"))
   return(results)
 }

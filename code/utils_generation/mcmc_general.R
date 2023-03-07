@@ -81,13 +81,14 @@ mcmcSampler <- function(init.params, ## initial parameter guess
                         nburn = mcmc$burnin){ ## iterations to automatically burn
 
   data <- data[date<=fit_through]
+  
 
   set.seed(seed) #Set seed for when generating random numbers
   if(randInit) #randInit = T means we have to use a randomly generated initial value 
     init.params <- initRand(init.params) #Calls initRand function to generate a random uniformly distributed number
 
   current.params <- init.params
-  
+
   nfitted <- length(current.params) # How maby parameters are we trying to fit? 
 
   vv <- 2 # MCMC iteration at which we are currently at. 
