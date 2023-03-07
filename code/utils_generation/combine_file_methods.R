@@ -83,5 +83,12 @@ get_median_values <- function(method) {
   
   saveRDS(summary_RDS, file=paste0("method_",method,"_analysis/combined_results.RDS"))
 }
+
+#check if results in combined_results file is complete - run the getResultsCurrent() method to get the latest update
+results_complete <- function(method) {
+  script_path <- paste0('method_', method, '_analysis/check_results_complete_m', method, '.R')
+  source(script_path)
+}
   
+save(results_complete, combineBatchFiles, get_median_values, combineResultsCurrent, combineResultsInRaw, file='utils/cleanup_methods.RData' )
   
