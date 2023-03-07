@@ -79,25 +79,17 @@ mcmcSampler <- function(init.params, ## initial parameter guess
                         proposer = default.proposer(sdProps), ## proposal distribution
                         niter = mcmc$n_iter, ## MCMC iterations
                         nburn = mcmc$burnin){ ## iterations to automatically burn
-  write('mcmc function running', 'mcmc_output.txt', append=TRUE)
-  write(paste0('ts_adjusted MCMC exists ', exists("ts_adjusted")), 'mcmc_output.txt', append=TRUE)
-  write(paste0('data MCMC exists ', exists("data")), 'mcmc_output.txt', append=TRUE)
-  
-  #data <- data[date<=fit_through]
-  
-  write(paste0("Fit through", fit_through), 'mcmc_output.txt', append=TRUE)
-  write(paste0("Init parameters",init.params), 'mcmc_output.txt', append=TRUE)
-  
+
+  data <- data[date<=fit_through]
+
   set.seed(seed) #Set seed for when generating random numbers
   if(randInit) #randInit = T means we have to use a randomly generated initial value 
     init.params <- initRand(init.params) #Calls initRand function to generate a random uniformly distributed number
 
-  write(paste0("Randinit ",randInit), 'mcmc_output.txt', append=TRUE)
   current.params <- init.params
   
   nfitted <- length(current.params) # How maby parameters are we trying to fit? 
-  write(paste0("nfirtted ",nfitted), 'mcmc_output.txt', append=TRUE)
-  
+
   vv <- 2 # MCMC iteration at which we are currently at. 
   
   accept <- 0 ## initialize proportion of iterations accepted
@@ -105,8 +97,7 @@ mcmcSampler <- function(init.params, ## initial parameter guess
   ## Calculate log(likelihood X prior) for first value
   curVal <- llikePrior(current.params, ref.params = ref.params, data=data) #Use the ref.params(disease.params) to see if we can accept the initial parameters
   
-  write(paste0("CurVal ",curVal), 'mcmc_output.txt', append=TRUE)
-  
+
   
   ## Initialize matrix to store MCMC chain
   # 1000 iterations
@@ -116,13 +107,14 @@ mcmcSampler <- function(init.params, ## initial parameter guess
   colnames(out) <- c(names(current.params), 'll') ## name columns
   ## Store original covariance matrix
   #Iterates from 2 to 1000 to complete the matrix with the output of each iteration
+  
+  
   while(vv <= niter) {
-    
-    
+
     proposal <- proposer$fxn(logParms(current.params))
     proposal <- unlogParms(proposal)
     propVal <- llikePrior(proposal, ref.params = ref.params, data=data)
-    
+
     lmh <- propVal - curVal ## likelihood ratio = log likelihood difference
     if (is.na(lmh)) { ## if NA, print informative info but don't accept it
       print(list(lmh=lmh, proposal=exp(proposal), vv=vv, seed=seed, ref.params = ref.params, current.params=current.params))
@@ -134,13 +126,20 @@ mcmcSampler <- function(init.params, ## initial parameter guess
         curVal <- propVal
       }
     }
+    
+    
+    
+    
     out[vv, ] <- c(current.params, ll = curVal)
     vv <- vv+1
     aratio <- accept/((vv-nburn))
   }
+
   colnames(out) <- c(names(current.params), 'll')
   #The as.mcmc function is an R function that: Coerces MCMC objects to an mcmc object.
   samp <- as.mcmc(out[1:nrow(out)>(nburn),], start = nburn + 1)
+  
+
   return(list(ref.params=ref.params
               , seed = seed
               , init.params = init.params
@@ -182,14 +181,10 @@ mcmcParams <- list(init.params = c(lambda = NA, kappa = NA)
 
 
 doChains <- function(x, mcmcParams, ts_adjusted) {
-  #write(paste0("ts_adjusted head dochains func", colnames(ts_adjusted)), 'mcmc_output.txt', append=TRUE)
-  #write(paste0("ts_adjusted str dochains func", str(ts_adjusted)), 'mcmc_output.txt', append=TRUE)
   args <- mcmcParams
-  
   args$data <- ts_adjusted
   
-  #write(paste0("MCMC params rand init ", colnames(mcmcParams$randInit)), 'mcmc_output.txt', append=TRUE)
-  
+
   chains <- mclapply(x, function(x) do.call(mcmcSampler, within(args, {seed <- x})))
   aratio <- mean(unlist(lapply(chains, '[[', 'aratio'))) ## average across chains
   chains <- lapply(chains, '[[', 'samp') ## pull out posterior samples only

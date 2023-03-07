@@ -254,7 +254,7 @@ funcMakeResults <- function(){
     ts$reinfections[day] = rbinom(1, underlying$reinfections[day], parameters.r$pobs_2[i])
   }
 
-  write('5',file="m2_output.txt",append=TRUE)
+  
   
   ## 3: Rename column names for MCMC
   names(ts)[2] <- "cases"
@@ -266,7 +266,6 @@ funcMakeResults <- function(){
   #Adjust the ts to have columns needed for analysis
   ts_adjusted <- ts[, c("date", "observed", "ma_tot", "cases" )]
   
-  write('6',file="m2_output.txt",append=TRUE)
   
   #Run MCMC
   output <- do.mcmc(mcmc$n_chains, ts_adjusted)
@@ -291,7 +290,7 @@ funcMakeResults <- function(){
   }
   
   
-  sims <- parSapply(rep(1:mcmc$n_posterior, n_sims_per_param), sim_reinf)
+  sims <- sapply(rep(1:mcmc$n_posterior, n_sims_per_param), sim_reinf)
 
   
   #6: analysis
