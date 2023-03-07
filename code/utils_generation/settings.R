@@ -18,7 +18,6 @@ required_files <- c('utils/observe_prob_functions.RData'
                 , 'utils/mcmc_functions.RData'
                 ,'utils/fit_functions.RData'
                 ,'utils/generate_data.RData'
-                ,'utils/sim_functions.RData'
                 )
 
 save(required_packages, required_files, file='utils/settings.RData')

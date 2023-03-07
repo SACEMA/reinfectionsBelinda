@@ -55,6 +55,14 @@ funcMakeResults <- function(){
   ## Run simulations
   set.seed(seed_batch+2022)
 
+  #define sim-reinf here to avoid parsing big arrays too many times
+  sim_reinf <- function(ii){
+    tmp <- list(lambda = lambda.post[ii], kappa = kappa.post[ii])
+    ex <- expected(data=ts_adjusted, parms = tmp)$expected_infections # Calculate expected reinfections using posterior
+    return(rnbinom(length(ex), size=1/kappa.post[ii], mu =c(0, diff(ex))))
+  }
+  
+  
   sims <- sapply(rep(1:mcmc$n_posterior, n_sims_per_param), sim_reinf)
 
   ## Analysis
