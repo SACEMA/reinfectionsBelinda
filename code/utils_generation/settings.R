@@ -14,22 +14,11 @@ required_packages <-  c("data.table"
                         , "jsonlite"
 )
 
-#loaded functions to send to the cluster
-functions_cl <- c('disease_params'
-  ,'lprior'
-  ,'llikePrior'
-  , 'logParms'
-  , 'unlogParms'
-  ,'initBounds'
-  ,'mcmcSampler'
-  ,'initRand'
-  ,'default.proposer'
-  ,'mcmcParams'
-  ,'doChains'
-  , 'do.mcmc'
-  , 'expected'
-  , 'nllikelihood'
-  , 'generate_data'
-  )
+required_files <- c('utils/observe_prob_functions.RData'
+                , 'utils/mcmc_functions.RData'
+                ,'utils/fit_functions.RData'
+                ,'utils/generate_data.RData'
+                ,'utils/sim_functions.RData'
+                )
 
-save(functions_cl, required_packages, file='utils/settings.RData')
+save(required_packages, required_files, file='utils/settings.RData')

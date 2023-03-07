@@ -8,21 +8,20 @@ splseq = seq(from=min, to=max-spl+1, length.out=(max-min)/spl)
 #define method 
 method <- 2
 
+#load parameter file
+load(file=paste0("method_", method, "_analysis/utils/m",method,"_parameters.RData"))
+
 #define config path and data source 
 data_source <- 'data/inf_for_sbv.RDS'
 configpth <- paste0('method_',method,'_analysis/m',method,'_config_general.json')
 settingspth <- 'utils/settings.RData'
 
-
-load('utils/observe_prob_functions.RData')
-load('utils/mcmc_functions.RData')
-load('utils/fit_functions.RData')
-load('utils/generate_data.RData')
+#load settings to load the rest of the files
 load('utils/settings.RData')
 
-#load required packages
+#load required packages & files
 lapply(required_packages, require, character.only = TRUE)
-
+lapply(required_files, load, envir = .GlobalEnv)
 
 # attach config parameters from json file
 attach(jsonlite::read_json(configpth))
@@ -55,16 +54,9 @@ funcMakeResults <- function(){
   
   ## Run simulations
   set.seed(seed_batch+2022)
-  
-  sim_reinf <- function(ii){
-    tmp <- list(lambda = lambda.post[ii], kappa = kappa.post[ii])
-    ex <- expected(data=ts_adjusted, parms = tmp)$expected_infections # Calculate expected reinfections using posterior
-    return(rnbinom(length(ex), size=1/kappa.post[ii], mu =c(0, diff(ex))))
-  }
-  
+
   sims <- sapply(rep(1:mcmc$n_posterior, n_sims_per_param), sim_reinf)
 
-  
   ## Analysis
   sri <- data.table(date = ts_adjusted$date, sims)
   sri_long <- melt(sri, id.vars = 'date')
@@ -111,22 +103,16 @@ funcMakeResults <- function(){
           , proportion_after_wavesplit = proportion_aw
           , date_first_after_wavesplit = which(conseq_diff_aw==5)[1]
   )
-  
-  
+
   saveRDS(results, file=paste0("raw_output/m",method,"/results_", a+i-1,".RDS"))
   return(results)
 }
 
 
 for (a in splseq){
-  load(file=paste0("method_", method, "_analysis/utils/m",method,"_parameters.RData"))
   parameters.r <- save_params[seq(a,(a-1+spl),1),]
 
   cl <- startMPIcluster()
-  
-  #export_functions <- functions_cl
-  
-  #exportDoMPI(cl, export_functions)
   
   registerDoMPI(cl)
 
@@ -134,7 +120,6 @@ for (a in splseq){
                            .packages = c('deSolve','foreach','Rmpi','iterators',
                                          'doMPI','doParallel','data.table', 'dplyr', 'coda')) %dopar% {
                                            tempMatrix = funcMakeResults()
-
                                            tempMatrix #Equivalent to finalMatrix = cbind(finalMatrix, tempMatrix)
                                          }
 
@@ -149,6 +134,3 @@ for (a in splseq){
 }
 
 saveRDS(resultList, file="resultList_CHPC.RData")
-
-
-
