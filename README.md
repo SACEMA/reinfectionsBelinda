@@ -1,15 +1,16 @@
 # reinfectionsBelinda
-Repository for Belinda's MSc work on reinfection
+Repository for Belinda's MSc work on reinfection. 
+The purpose of this project is to perform simulation-based validation on a model and consists of two parts:
+* Run the simulations & analysis with a single dataset
+* Perform the simulation-based validation on a Cluster that can run MPI. 
 
-#This readme file is not final at all, but includes some notes on how to run the analysis 
+# Run a single file on a dataset
 
-#For all cases, run the following: 
-1. 'install.R': (REUSING) 
-2. 'prep_ts_data.R': #prep the data by reading in the ts_data.csv into a dataframe.
-3. 'mcmc_general.R'
+# Run the simulation-based validation
+## Requirements: 
+* CHPC cluster or a cluster that you can run PBS jobs on. The cluster should be able to run R scripts and also have the following packages installed and available: 
+** data.table, iterators, Rmpi, doMPI, foreach, doParallel, coda, parallel, dplyr, ggplot2, jsonlite
 
-#For each method, before running the method file, run 
-a) get_infection_data.R
+## Run a method analysis
+### Input
 
-#METHOD 1A
-1. Run method1a.R
