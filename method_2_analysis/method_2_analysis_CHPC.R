@@ -11,39 +11,20 @@ method <- 2
 #define config path and data source 
 data_source <- 'data/inf_for_sbv.RDS'
 configpth <- paste0('method_',method,'_analysis/m',method,'_config_general.json')
+settingspth <- 'utils/settings.RData'
 
-#Parameters defined
-# window_days <- 7
-# reinf_hazard <- 1.38866e-08
-# cutoff <- 90
-# mcmc <- list(rand_init=TRUE, burnin=2000, n_iter=3000, n_posterior=1600, n_chains=4)
-# n_sims_per_param <- 100
-# fit_through <- '2021-02-28'
-# wave_split <- '2021-05-01'
 
-#load required packages
-required_packages <- c("data.table"
-                       , "iterators"
-                       , "Rmpi"
-                       , "doMPI"
-                       , "foreach"
-                       , "doParallel"
-                       , "coda"
-                       , "parallel"
-                       , "dplyr"
-                       , "ggplot2"
-                       , "jsonlite"
-                       )
-
-lapply(required_packages, require, character.only = TRUE)
-
-# load R functions
 load('utils/observe_prob_functions.RData')
 load('utils/mcmc_functions.RData')
 load('utils/fit_functions.RData')
+load('utils/generate_data.RData')
+load('utils/settings.RData')
+
+#load required packages
+lapply(required_packages, require, character.only = TRUE)
+
 
 # attach config parameters from json file
-
 attach(jsonlite::read_json(configpth))
 
 resultList= list()
@@ -53,39 +34,7 @@ funcMakeResults <- function(){
   
   results <- list()
 
-  ##Get the data
-  
-  ts <- readRDS(data_source)
-  set.seed(seed_batch-1)
-  
-  
-  ##Method 2 data creation
-  ts[, infections_ma := frollmean(infections, window_days)]
-  ts[, reinfections := 0]
-  ts[, eligible_for_reinf := shift(cumsum(infections), cutoff-1)]
-
-  underlying <- ts[, c('infections', 'eligible_for_reinf', 'reinfections')]
-
-  #distinction: underlying is the underlying 'true' infections, etc. and ts is the observed (what the data can see)
-  for (day in (cutoff+1):nrow(ts)) { 
-    underlying$eligible_for_reinf[day] = underlying$eligible_for_reinf[day] - sum(underlying$reinfections[1:day-1])
-    ts$eligible_for_reinf[day] = ts$eligible_for_reinf[day] - sum(ts$reinfections[1:day-1])
-    if (ts$date[day]<=wave_split) {
-      underlying$reinfections[day] = round(reinf_hazard * underlying$infections[day] * underlying$eligible_for_reinf[day])
-    } else {
-      underlying$reinfections[day] = round(reinf_hazard * underlying$infections[day] * underlying$eligible_for_reinf[day] * parameters.r$pscale[i])
-    } 
-    ts$reinfections[day] = rbinom(1, underlying$reinfections[day], parameters.r$pobs_2[i])
-  }
-
-
-  ##Rename column names for MCMC
-  names(ts)[2] <- "cases"
-  names(ts)[3] <- "ma_cnt"
-  names(ts)[4] <- "observed"
-  ts[, tot := observed + cases]
-  ts[, ma_tot := frollmean(tot, window_days)]
-  ts[, ma_reinf := frollmean(observed, window_days)]
+  ts <- generate_data(method, data_source, seed_batch)
   
   ##Adjust the ts to have columns needed for analysis
   ts_adjusted <- ts[, c("date", "observed", "ma_tot", "cases" )]
@@ -175,22 +124,9 @@ for (a in splseq){
 
   cl <- startMPIcluster()
   
-  export_functions <- c('disease_params'
-                        ,'lprior'
-                        ,'llikePrior'
-                        , 'logParms'
-                        , 'unlogParms'
-                        ,'initBounds'
-                        ,'mcmcSampler'
-                        ,'initRand'
-                        ,'default.proposer'
-                        ,'mcmcParams'
-                        ,'doChains'
-                        , 'do.mcmc'
-                        , 'expected'
-                        , 'nllikelihood')
+  #export_functions <- functions_cl
   
-  exportDoMPI(cl, export_functions)
+  #exportDoMPI(cl, export_functions)
   
   registerDoMPI(cl)
 
