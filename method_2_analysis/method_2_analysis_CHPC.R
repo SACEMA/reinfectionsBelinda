@@ -132,7 +132,6 @@ for (a in splseq){
                                          }
 
     saveRDS(finalMatrix, file=paste0("resultList_CHPC_m",method,"_", a,".RDS"))
-
 }
 
 resultList <- vector(mode = "list")
