@@ -47,4 +47,5 @@ pscale.txt
 method_*_analysis/output/raw
 method_*_analysis/output/*.RDS
 *.txt
+method_*_analysis/*.RDS
 method_*_analysis/output/batch*
