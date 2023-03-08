@@ -16,6 +16,6 @@ module add chpc/R/3.5.1-gcc7.2.0
 nproc=`cat $PBS_NODEFILE | wc -l`
 
 # make sure we're in the correct working directory.
-cd /mnt/lustre/users/blombard/analysis/
+cd /mnt/lustre/users/blombard/reinfectionsBelinda/
 
 mpirun -np $nproc -machinefile $PBS_NODEFILE  R --slave -f method_5_analysis/method_5_analysis_CHPC.R --args 421 495 15

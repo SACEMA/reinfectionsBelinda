@@ -16,7 +16,7 @@ module add chpc/R/3.5.1-gcc7.2.0
 nproc=`cat $PBS_NODEFILE | wc -l`
 
 # make sure we're in the correct working directory.
-cd /mnt/lustre/users/blombard/analysis/
+cd /mnt/lustre/users/blombard/reinfectionsBelinda/
 
 mkdir oe_files
 
