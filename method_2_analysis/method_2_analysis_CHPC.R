@@ -8,6 +8,8 @@ splseq = seq(from=min, to=max-spl+1, length.out=(max-min)/spl)
 #define method 
 method <- 2
 
+dir.create(paste0('raw_output/m', method), recursive = TRUE)
+
 #load parameter file
 load(file=paste0("method_", method, "_analysis/utils/m",method,"_parameters.RData"))
 

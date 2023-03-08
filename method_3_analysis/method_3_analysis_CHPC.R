@@ -8,6 +8,8 @@ splseq = seq(from=min, to=max-spl+1, length.out=(max-min)/spl)
 #define method 
 method <- 3
 
+dir.create(paste0('raw_output/m', method), recursive = TRUE)
+
 seed_batch <- 1
 
 #load parameter file

@@ -4,6 +4,7 @@ max = as.numeric(argos[2])
 spl = as.numeric(argos[3])
 splseq = seq(from=min, to=max-spl+1, length.out=(max-min)/spl)
 
+dir.create(paste0('raw_output/m', method), recursive = TRUE)
 
 method <- 1
 
