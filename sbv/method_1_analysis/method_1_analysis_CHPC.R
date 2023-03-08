@@ -10,9 +10,8 @@ dir.create(paste0('sbv/raw_output'))
 dir.create(paste0('sbv/raw_output/m', method))
 
 
-
 # load parameter file
-load(file=paste0("sbv/method_", method, "_analysis/utils/m",method,"_parameters.RData"))
+load(file=paste0("sbv/method_", method, "_analysis/parameters.RData"))
 
 # define config path and data source 
 data_source <- 'data/inf_for_sbv.RDS'

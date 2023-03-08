@@ -20,4 +20,4 @@ cd /mnt/lustre/users/blombard/reinfectionsBelinda/
 
 make 
 
-mpirun -np $nproc -machinefile $PBS_NODEFILE  R --slave -f method_5_analysis/method_5_analysis_CHPC.R --args 1 15 15
+mpirun -np $nproc -machinefile $PBS_NODEFILE  R --slave -f sbv/method_5_analysis/method_5_analysis_CHPC.R --args 1 15 15

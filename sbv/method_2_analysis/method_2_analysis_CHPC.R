@@ -8,14 +8,16 @@ splseq = seq(from=min, to=max-spl+1, length.out=(max-min)/spl)
 #define method 
 method <- 2
 
-dir.create(paste0('raw_output/m', method), recursive = TRUE)
+dir.create(paste0('sbv/raw_output'))
+dir.create(paste0('sbv/raw_output/m', method))
+
 
 #load parameter file
-load(file=paste0("method_", method, "_analysis/utils/m",method,"_parameters.RData"))
+load(file=paste0("sbv/method_", method, "_analysis/parameters.RData"))
 
 #define config path and data source 
 data_source <- 'data/inf_for_sbv.RDS'
-configpth <- paste0('method_',method,'_analysis/m',method,'_config_general.json')
+configpth <- paste0('sbv/method_',method,'_analysis/m',method,'_config_general.json')
 settingspth <- 'utils/settings.RData'
 
 #load settings to load the rest of the files
@@ -127,7 +129,7 @@ funcMakeResults <- function(){
 
   
   
-  saveRDS(results, file=paste0("raw_output/m",method,"/results_", a+i-1,".RDS"))
+  saveRDS(results, file=paste0("sbv/raw_output/m",method,"/results_", a+i-1,".RDS"))
   return(results)
 }
 
@@ -146,13 +148,13 @@ for (a in splseq){
                                            tempMatrix #Equivalent to finalMatrix = cbind(finalMatrix, tempMatrix)
                                          }
 
-    saveRDS(finalMatrix, file=paste0("resultList_CHPC_m",method,"_", a,".RDS"))
+    saveRDS(finalMatrix, file=paste0("sbv/resultList_CHPC_m",method,"_", a,".RDS"))
 }
 
 resultList <- vector(mode = "list")
 
 for (a in splseq){
-  resultList = c(resultList,readRDS(file=paste0("resultList_CHPC_m",method,"_", a,".RDS")))
+  resultList = c(resultList,readRDS(file=paste0("sbv/resultList_CHPC_m",method,"_", a,".RDS")))
 }
 
-saveRDS(resultList, file="resultList_CHPC.RData")
+saveRDS(resultList, file="sbv/resultList_CHPC.RData")

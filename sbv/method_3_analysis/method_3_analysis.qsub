@@ -20,4 +20,6 @@ cd /mnt/lustre/users/blombard/reinfectionsBelinda/
 
 mkdir oe_files
 
-mpirun -np $nproc -machinefile $PBS_NODEFILE  R --slave -f method_3_analysis/method_3_analysis_CHPC.R --args 1 10 10
+make 
+
+mpirun -np $nproc -machinefile $PBS_NODEFILE  R --slave -f sbv/method_3_analysis/method_3_analysis_CHPC.R --args 1 10 10
