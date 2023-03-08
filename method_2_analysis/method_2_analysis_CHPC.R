@@ -65,7 +65,7 @@ funcMakeResults <- function(){
   write('MCMC stuff done',file="m2_output.txt",append=TRUE) 
   
   sim_reinf <- function(ii){
-    tmp <- list(lambda = lambda.post[ii], kappa = kappa.post[ii], lambda2 = lambda2.post[ii])
+    tmp <- list(lambda = lambda.post[ii], kappa = kappa.post[ii])
     answer <- expected(parms = tmp, data = ts_adjusted, delta = cutoff)
     ex2 <- Reduce("+", answer)
     ex2 <- c(rep(0,90),ex2)

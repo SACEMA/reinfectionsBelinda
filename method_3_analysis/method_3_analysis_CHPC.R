@@ -8,6 +8,8 @@ splseq = seq(from=min, to=max-spl+1, length.out=(max-min)/spl)
 #define method 
 method <- 3
 
+seed_batch <- 1
+
 #load parameter file
 load(file=paste0("method_", method, "_analysis/utils/m",method,"_parameters.RData"))
 
@@ -33,7 +35,7 @@ funcMakeResults <- function(){
 
   ### 1: Get the data
   ts <- readRDS('data/inf_for_sbv.RDS')
-  set.seed(seed_number-1)
+  set.seed(seed_batch-1)
   
   ts <- generate_data(method, data_source, seed_batch)
 
@@ -56,10 +58,10 @@ funcMakeResults <- function(){
   }
   
   #5: Run simulations
-  set.seed(2020+seed_number)
+  set.seed(2020+seed_batch)
   
   sim_reinf <- function(ii){
-    tmp <- list(lambda = lambda.post[ii], kappa = kappa.post[ii], lambda2 = lambda2.post[ii])
+    tmp <- list(lambda = lambda.post[ii], kappa = kappa.post[ii])
     answer <- expected(parms = tmp, data = ts_adjusted, delta = cutoff)
     ex2 <- Reduce("+", answer)
     ex2 <- c(rep(0,90),ex2)

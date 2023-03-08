@@ -47,8 +47,8 @@ llikePrior <- function(fit.params = NULL,
     for (nm in names(fit.params))
       assign(nm, as.numeric(fit.params[nm]))
     rm(nm)
-  })
-  -nllikelihood(parms, data=data) + lprior(parms)
+    })
+    -nllikelihood(parms, data=data) + lprior(parms)
 }
 
 # Want to be able to easily log and unlog parameters
@@ -82,7 +82,6 @@ mcmcSampler <- function(init.params, ## initial parameter guess
 
   data <- data[date<=fit_through]
   
-
   set.seed(seed) #Set seed for when generating random numbers
   if(randInit) #randInit = T means we have to use a randomly generated initial value 
     init.params <- initRand(init.params) #Calls initRand function to generate a random uniformly distributed number
@@ -94,12 +93,11 @@ mcmcSampler <- function(init.params, ## initial parameter guess
   vv <- 2 # MCMC iteration at which we are currently at. 
   
   accept <- 0 ## initialize proportion of iterations accepted
-  
+
   ## Calculate log(likelihood X prior) for first value
   curVal <- llikePrior(current.params, ref.params = ref.params, data=data) #Use the ref.params(disease.params) to see if we can accept the initial parameters
   
 
-  
   ## Initialize matrix to store MCMC chain
   # 1000 iterations
   out <- matrix(NA, nr = niter, nc=length(current.params)+1)
@@ -108,8 +106,7 @@ mcmcSampler <- function(init.params, ## initial parameter guess
   colnames(out) <- c(names(current.params), 'll') ## name columns
   ## Store original covariance matrix
   #Iterates from 2 to 1000 to complete the matrix with the output of each iteration
-  
-  
+
   while(vv <= niter) {
 
     proposal <- proposer$fxn(logParms(current.params))
@@ -128,8 +125,7 @@ mcmcSampler <- function(init.params, ## initial parameter guess
       }
     }
     
-    
-    
+
     
     out[vv, ] <- c(current.params, ll = curVal)
     vv <- vv+1
@@ -184,17 +180,22 @@ mcmcParams <- list(init.params = c(lambda = NA, kappa = NA)
 doChains <- function(x, mcmcParams, ts_adjusted) {
   args <- mcmcParams
   args$data <- ts_adjusted
-  
-
   chains <- mclapply(x, function(x) do.call(mcmcSampler, within(args, {seed <- x})))
   aratio <- mean(unlist(lapply(chains, '[[', 'aratio'))) ## average across chains
+
   chains <- lapply(chains, '[[', 'samp') ## pull out posterior samples only
+  
+
   chains <- as.mcmc.list(chains) ## make into mcmc.list
+  
   return(list(chains=chains, aratio = aratio))
 }
 
 do.mcmc <- function(n_chains, ts_adjusted) {
+
   mcmc.run <- doChains(1:n_chains, mcmcParams, ts_adjusted)
+  
+
   return (mcmc.run)
 }
 

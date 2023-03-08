@@ -8,8 +8,8 @@ target <- tail(.args, 1)
 
 
 expected <- function(parms = disease_params(), data, delta=cutoff ) with(parms, {
-  hz <- lambda * data[date <= omicron_date]$ma_tot
-  hz <- c(hz, lambda2 * data[date > omicron_date]$ma_tot)
+
+  hz <- lambda * data$ma_tot
   
   return ( lapply(1:(nrow(data)-cutoff)
                   , expected_vec
@@ -28,6 +28,7 @@ expected_vec <- function(day, data, delta=cutoff, hz)  {
 nllikelihood <- function(parms = disease_params(), data) with(parms, {
   tmp <- expected(parms, data)
   tmp <- Reduce("+", tmp)
+
   tmp <- c(rep(0,90),tmp)
   log_p <- dnbinom(data$observed, size=1/kappa, mu=c(0,diff(tmp)), log=TRUE)
   -sum(log_p)
