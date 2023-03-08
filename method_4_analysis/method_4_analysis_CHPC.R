@@ -114,7 +114,7 @@ funcMakeResults <- function(){
                   , proportion_after_wavesplit = proportion_aw
                   , date_first_after_wavesplit = which(conseq_diff_aw==5)[1]
   )
-  saveRDS(results, file=paste0("raw_output/m4/results_", a+i-1,".RDS"))
+  saveRDS(results, file=paste0("raw_output/m",method,"/results_", a+i-1,".RDS"))
   
   return(results)
 }
@@ -143,16 +143,16 @@ for (a in splseq){
                                           )
                                         }
 
-    saveRDS(finalMatrix, file=paste0("resultList_CHPC_m4_", a,".RDS"))
-    
+  saveRDS(finalMatrix, file=paste0("resultList_CHPC_m",method,"_", a,".RDS"))
+  
 }
 
 resultList <- vector(mode = "list")
 for (a in splseq){
-  resultList = c(resultList,readRDS(file=paste0("resultList_CHPC_m4_", a,".RDS")))
+  resultList = c(resultList,readRDS(file=paste0("resultList_CHPC_m",method,"_", a,".RDS")))
 }
 
-saveRDS(resultList, file="resultList_CHPC_m4.RData")
+saveRDS(resultList, file="resultList_CHPC.RData")
 
 
 
