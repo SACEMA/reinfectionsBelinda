@@ -19,6 +19,7 @@
 
 # RStudio files
 .Rproj.user/
+.Rproj
 
 # produced vignettes
 vignettes/*.html
@@ -38,15 +39,19 @@ vignettes/*.pdf
 # R Environment Variables
 .Renviron
 
-#*.RDS
-output.txt
-pscale.txt
+#test files
+*.txt
+
 .RDatatmp*
 .RData
-#method analysis raw results
-utils
+
+#method analysis raw & RDS files results
 method_*_analysis/output/raw
 method_*_analysis/output/*.RDS
-*.txt
 method_*_analysis/*.RDS
 method_*_analysis/output/batch*
+
+#utils
+utils
+
+
