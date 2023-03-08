@@ -11,23 +11,11 @@ traceback()
 .debug <- ''
 
 .args <- if (interactive()) sprintf(c(
-  file.path('data', 'ts_data_for_analysis.RDS'), # input
-  file.path('utils', 'fit_functions.RData'),
-  file.path('config_general.json'), 
   file.path('utils', 'mcmc_functions.RData') # output
 ), .debug[1]) else commandArgs(trailingOnly = TRUE)
 
 
-load(.args[2]) #Load the fitting functions
-
-#ts <- readRDS(.args[1]) #Original observed cases
-
-configpth <- .args[3]
-
 target <- tail(.args, 1)
-
-#attach(jsonlite::read_json(configpth))
-
 
 disease_params <- function(lambda = .000000015 ## hazard coefficient 0.000000015
                            , kappa = 0.1 ## dispersion (inverse)

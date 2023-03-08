@@ -1,4 +1,13 @@
-target <- 'utils/generate_data.RData'
+#Includes the generic mcmc functions that can be used in any cases (first reinfection, second reinfections, third reinfections)
+
+
+.debug <- ''
+
+.args <- if (interactive()) sprintf(c(
+  file.path('utils', 'generate_data.RData') # output
+), .debug[1]) else commandArgs(trailingOnly = TRUE)
+
+target <- tail(.args, 1)
 
 generate_data <- function(method, data_source, seed) {
   
