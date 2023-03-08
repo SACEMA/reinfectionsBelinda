@@ -43,7 +43,7 @@ funcMakeResults <- function(){
   ts_adjusted <- ts[, c("date", "observed", "ma_tot", "cases" )]
   
   #Run MCMC
-  output <- do.mcmc(mcmc$n_chains)
+  output <- do.mcmc(mcmc$n_chains, ts_adjusted)
   
   #Save posterior
   lambda.post <- kappa.post <- numeric(0)
