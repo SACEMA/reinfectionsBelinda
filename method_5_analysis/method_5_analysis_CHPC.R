@@ -4,7 +4,7 @@ max = as.numeric(argos[2])
 spl = as.numeric(argos[3])
 splseq = seq(from=min, to=max-spl+1, length.out=(max-min)/spl)
 
-method <- 2
+method <- 5
 
 # load parameter file
 load(file=paste0("method_", method, "_analysis/utils/m",method,"_parameters.RData"))
@@ -33,6 +33,8 @@ funcMakeResults <- function(){
   write(paste0("Starting ", i),file="m5_test.txt",append=TRUE)
   
   set.seed(seed_batch)
+  
+  ts <- generate_data(5, data_source, seed_batch)
   
   ts_adjusted <- ts[, c("date", "observed", "ma_tot", "cases" )]
   

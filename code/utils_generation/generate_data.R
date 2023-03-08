@@ -20,6 +20,21 @@ generate_data <- function(method, data_source, seed) {
   ts[, infections_ma := frollmean(infections, window_days)]
   ts[, reinfections := 0]
 
+  if (method==1) {
+    ts[, eligible_for_reinf := shift(cumsum(infections), cutoff-1)]
+    ts$infections_ma = frollmean(ts$infections, window_days)
+    
+    for (day in (cutoff+1):nrow(ts)) { 
+      ts$eligible_for_reinf[day] = ts$eligible_for_reinf[day] - sum(ts$reinfections[1:day-1])
+      if (ts$date[day]<=wave_split) {
+        ts$reinfections[day] = round(reinf_hazard * ts$infections[day] * ts$eligible_for_reinf[day])
+      } else {
+        ts$reinfections[day] = round(reinf_hazard * ts$infections[day] * ts$eligible_for_reinf[day] * parameters.r$pscale[i])
+      } 
+    }
+  }
+  
+  
   if (method==2) {
     ts[, eligible_for_reinf := shift(cumsum(infections), cutoff-1)]
     

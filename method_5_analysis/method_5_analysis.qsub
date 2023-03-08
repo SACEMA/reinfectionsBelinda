@@ -3,12 +3,11 @@
 #PBS -P CBBI1106
 #PBS -q test
 #PBS -l walltime=00:08:00
-#PBS -o /mnt/lustre/users/blombard/analysis/oe_files/std_m4.out
-#PBS -e /mnt/lustre/users/blombard/analysis/oe_files/std_m4.err
-#PBS -N m4_analysis
+#PBS -o /mnt/lustre/users/blombard/analysis/oe_files/std_m5.out
+#PBS -e /mnt/lustre/users/blombard/analysis/oe_files/std_m5.err
+#PBS -N m5_analysis
 #PBS -M belindalombard@sun.ac.za
 #PBS -m be
-
 
 
 # Add R module (includes appropriate openMPI and gcc modules)
@@ -20,6 +19,6 @@ nproc=`cat $PBS_NODEFILE | wc -l`
 # make sure we're in the correct working directory.
 cd /mnt/lustre/users/blombard/analysis/
 
-mkdir oe_files
+mdkir oe_files
 
-mpirun -np $nproc -machinefile $PBS_NODEFILE  R --slave -f method_4_analysis/method_4_analysis_CHPC.R --args 901 910 10
+mpirun -np $nproc -machinefile $PBS_NODEFILE  R --slave -f method_5_analysis/method_5_analysis_CHPC.R --args 1 10 10
