@@ -3,7 +3,7 @@ min = as.numeric(argos[1])
 max = as.numeric(argos[2])
 spl = as.numeric(argos[3])
 splseq = seq(from=min, to=max-spl+1, length.out=(max-min)/spl)
-
+seed_batch <- 1
 
 method <- 1
 dir.create(paste0('sbv/raw_output'))
@@ -57,7 +57,7 @@ funcMakeResults <- function(){
   }
   
   #5: Run simulations
-  set.seed(seed_base+2023)
+  set.seed(seed_batch+2023)
   sim_reinf <- function(ii){
     tmp <- list(lambda = lambda.post[ii], kappa = kappa.post[ii])
     ex <- expected(data=ts_adjusted, parms = tmp)$expected_infections # Calculate expected reinfections using posterior
