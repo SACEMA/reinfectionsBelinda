@@ -18,4 +18,6 @@ nproc=`cat $PBS_NODEFILE | wc -l`
 # make sure we're in the correct working directory.
 cd /mnt/lustre/users/blombard/reinfectionsBelinda/
 
-mpirun -np $nproc -machinefile $PBS_NODEFILE  R --slave -f method_5_analysis/method_5_analysis_CHPC.R --args 421 495 15
+make 
+
+mpirun -np $nproc -machinefile $PBS_NODEFILE  R --slave -f method_5_analysis/method_5_analysis_CHPC.R --args 1 15 15

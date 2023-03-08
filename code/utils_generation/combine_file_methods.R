@@ -8,7 +8,7 @@ dir.create('utils')
 
 ## Combine results that we are currently busy with ###
 combineResultsCurrent = function (method) {
-  files <- list.files(path=paste0("method_",method,"_analysis/output"), pattern="*.RDS", full.names=TRUE, recursive=FALSE)
+  files <- list.files(path=paste0("sbv/method_",method,"_analysis/output"), pattern="*.RDS", full.names=TRUE, recursive=FALSE)
   resultList <- vector(mode = "list")
   for (f in files) {
     resultList = c(resultList,readRDS(f))
@@ -18,17 +18,17 @@ combineResultsCurrent = function (method) {
   if (method == 2)
     final_RDS <- final_RDS %>% distinct(pobs_2, pscale, .keep_all = TRUE)
   
-  saveRDS(final_RDS, file=paste0("method_",method,"_analysis/combined_results.RDS"))
+  saveRDS(final_RDS, file=paste0("sbv/method_",method,"_analysis/combined_results.RDS"))
 }
 
 #combine raw results in raw folder (method_analysis/output/raw) and save it in output dir
 combineResultsInRaw = function (method, name_of_file, delete=TRUE) { 
-  files <- list.files(path=paste0("method_",method,"_analysis/output/raw"), pattern="*.RDS", full.names=TRUE, recursive=FALSE)
+  files <- list.files(path=paste0("sbv/method_",method,"_analysis/output/raw"), pattern="*.RDS", full.names=TRUE, recursive=FALSE)
   resultList <- vector(mode = "list")
   for (f in files) {
     resultList = c(resultList,list(readRDS(f)))
   } 
-  saveRDS(resultList, file=paste0("method_",method,"_analysis/output/", name_of_file))
+  saveRDS(resultList, file=paste0("sbv/method_",method,"_analysis/output/", name_of_file))
   #delete files in raw
   if (delete==TRUE) {
     lapply(files, unlink)
@@ -38,7 +38,7 @@ combineResultsInRaw = function (method, name_of_file, delete=TRUE) {
 
 #### combine files of specific batch so that we can remove the batch ####
 combineBatchFiles = function (method, batch_number, delete=TRUE) {
-  files <- list.files(path=paste0("method_",method,"_analysis/output/batch",batch_number), pattern="*.RDS", full.names=TRUE, recursive=FALSE)
+  files <- list.files(path=paste0("sbv/method_",method,"_analysis/output/batch",batch_number), pattern="*.RDS", full.names=TRUE, recursive=FALSE)
   resultList <- vector(mode = "list")
   for (f in files) {
     resultList = c(resultList,readRDS(f))
@@ -58,7 +58,7 @@ combineBatchFiles = function (method, batch_number, delete=TRUE) {
   
   saveRDS(final_RDS, file=paste0("method_",method,"_analysis/output/final_output_data/batch_", batch_number,"_results.RDS"))
   if (delete=TRUE)
-    unlink(x = '"method_",method,"_analysis/output/batch"', recursive = TRUE)
+    unlink(x = '"sbv/method_",method,"_analysis/output/batch"', recursive = TRUE)
 }
 
 get_median_values <- function(method) {
@@ -93,12 +93,12 @@ get_median_values <- function(method) {
   rm(rds_1)
   summary_RDS <- calculate_values %>% as.data.frame()
   
-  saveRDS(summary_RDS, file=paste0("method_",method,"_analysis/combined_results.RDS"))
+  saveRDS(summary_RDS, file=paste0("sbv/method_",method,"_analysis/combined_results.RDS"))
 }
 
 #check if results in combined_results file is complete - run the getResultsCurrent() method to get the latest update
 results_complete <- function(method) {
-  script_path <- paste0('method_', method, '_analysis/check_results_complete_m', method, '.R')
+  script_path <- paste0('sbv/method_', method, '_analysis/check_results_complete_m', method, '.R')
   source(script_path)
 }
   
