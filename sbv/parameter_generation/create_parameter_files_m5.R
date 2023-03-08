@@ -1,3 +1,11 @@
+.debug <- 'utils'
+.args <- if (interactive()) sprintf(c(
+  file.path('sbv', 'method_5_analysis', 'parameters.RData') # output
+), .debug[1]) else commandArgs(trailingOnly = TRUE)
+
+target <- tail(.args,1)
+
+
 #Create parameter files for method 5 sensitivity analysis
 method <- 5
 
@@ -37,5 +45,5 @@ for (i in 1:nrow(final)) {
     save_params <- rbind(save_params, row)
 }
 
-save(save_params, file = paste0('method_', method, '_analysis/utils/m', method, '_parameters.RData'))
+save(save_params, file = target)
 

@@ -3,13 +3,19 @@
 R = Rscript $^ $@
 UTILS_SCRIPTS = code/utils_generation
 INFECTIONS = 2
+SBV = TRUE
 
 #create utils 
 
 create_utils: utils/settings.RData utils/plotting_fxns.RData \
 	utils/observe_prob_functions.RData utils/mcmc_functions.RData \
 	utils/generate_data.RData utils/fit_functions.RData \
-	
+	ifeq($(SBV), TRUE) \
+		for number in 1 2 3 4 5; do \
+    	sbv/method_$$number_analysis/parameters.RData \
+		done \
+	endif
+		
 
 utils/settings.RData: $(UTILS_SCRIPTS)/settings.R
 	${R}
@@ -31,3 +37,5 @@ utils/fit_functions.RData: $(UTILS_SCRIPTS)/fit_functions.R
 
 utils/cleanup_methods.RData: $(UTILS_SCRIPT)/combine_file_methods.R
 	${R}
+
+sbv/method_%_analysis/parameters.RData: sbv/parameter_generation/create_parameter_files_m%.R
