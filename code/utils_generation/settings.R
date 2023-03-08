@@ -6,6 +6,8 @@
   file.path('%s', 'settings.RData') # output
 ), .debug[1]) else commandArgs(trailingOnly = TRUE)
 
+dir.create('utils')
+
 target <- tail(.args, 1)
 
 required_packages <-  c("data.table"

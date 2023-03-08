@@ -1,10 +1,10 @@
-library('dplyr')
 
 .args <- if (interactive()) sprintf(c(
   file.path('utils', 'cleanup_methods.RData') # output
 ), .debug[1]) else commandArgs(trailingOnly = TRUE)
 
 target <- tail(.args, 1)
+dir.create('utils')
 
 ## Combine results that we are currently busy with ###
 combineResultsCurrent = function (method) {

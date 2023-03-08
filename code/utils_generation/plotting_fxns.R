@@ -15,14 +15,12 @@
 # The functions in this file are modified from code written by Carl A.B. Pearson
 # (https://github.com/pearsonca) and shared with his permission.
 
-suppressPackageStartupMessages({
-  library(ggplot2)
-})
-
 .debug <- 'utils'
 .args <- if (interactive()) sprintf(c(
   file.path('%s', 'plotting_fxns.RData') # output
 ), .debug[1]) else commandArgs(trailingOnly = TRUE)
+
+dir.create('utils')
 
 target <- tail(.args, 1)
 
