@@ -4,6 +4,8 @@
   file.path('utils', 'fit_functions.RData') # output
 ), .debug[1]) else commandArgs(trailingOnly = TRUE)
 
+
+dir.create('utils')
 target <- tail(.args, 1)
 
 

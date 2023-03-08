@@ -14,7 +14,7 @@ traceback()
   file.path('utils', 'mcmc_functions.RData') # output
 ), .debug[1]) else commandArgs(trailingOnly = TRUE)
 
-
+dir.create('utils')
 target <- tail(.args, 1)
 
 disease_params <- function(lambda = .000000015 ## hazard coefficient 0.000000015
