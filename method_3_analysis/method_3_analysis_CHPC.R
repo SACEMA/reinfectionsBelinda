@@ -34,7 +34,6 @@ funcMakeResults <- function(){
   write("Running",file="m3_output.txt",append=TRUE)
 
   ### 1: Get the data
-  ts <- readRDS('data/inf_for_sbv.RDS')
   set.seed(seed_batch-1)
   
   ts <- generate_data(method, data_source, seed_batch)

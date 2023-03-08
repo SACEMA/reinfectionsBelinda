@@ -64,6 +64,27 @@ generate_data <- function(method, data_source, seed) {
     }
   }
   
+  
+  if (method==4) {
+    for (day in 1:nrow(ts)) {
+      ts$infections[day] = rbinom(1, ts$infections[day], parameters.r$pobs_1[i])
+    }
+    ts[, eligible_for_reinf := shift(cumsum(infections), cutoff-1)]
+    ts$infections_ma = frollmean(ts$infections, window_days)
+  
+    for (day in 1:nrow(ts))
+      ts$deaths[day] = rbinom(1, ts$infections[day], parameters.r$dprob[i])
+  
+    for (day in (cutoff+1):nrow(ts)) { 
+      ts$eligible_for_reinf[day] =max(ts$eligible_for_reinf[day] - sum(ts$reinfections[1:day-1]) - sum(ts$deaths[1:day-1]),0)
+      if (ts$date[day]<=wave_split) {
+        ts$reinfections[day] = round(reinf_hazard * ts$infections[day] * ts$eligible_for_reinf[day])
+      } else {
+        ts$reinfections[day] = round(reinf_hazard * ts$infections[day] * ts$eligible_for_reinf[day] * parameters.r$pscale[i])
+      } 
+      ts$reinfections[day] = rbinom(1, ts$reinfections[day], parameters.r$pobs_2[i])
+    }
+  }
   ##Rename column names for MCMC
   names(ts)[2] <- "cases"
   names(ts)[3] <- "ma_cnt"
