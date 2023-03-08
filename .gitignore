@@ -44,6 +44,7 @@ pscale.txt
 .RDatatmp*
 .RData
 #method analysis raw results
+utils
 method_*_analysis/output/raw
 method_*_analysis/output/*.RDS
 *.txt
