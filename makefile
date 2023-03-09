@@ -11,7 +11,7 @@ SBV = TRUE
 all: install utils_run
 
 #run does the normal run
-run: install utils_run generate_data data
+run: install utils_run generate_data data mcmc sim plots
 
 #sbv setup for simulation-based-validation
 sbv: utils_sbv create_params_sbv
@@ -33,7 +33,7 @@ create_params_sbv: sbv/method_1_analysis/parameters.RData \
 
 
 #Install packages
-install: code/install.R
+install: $(UTILS_SCRIPTS)/install.R
 	${R}
 
 #Create utils
@@ -49,6 +49,9 @@ utils/observe_prob_functions.RData: $(UTILS_SCRIPTS)/observe_prob_functions.R
 utils/mcmc_functions.RData: $(UTILS_SCRIPTS)/mcmc_general.R
 	${R}
 	
+utils/mcmc_functions_l2.RData: $(UTILS_SCRIPTS)/mcmc_general_l2.R
+	${R}
+
 utils/generate_data.RData: $(UTILS_SCRIPTS)/generate_data.R
 	${R}
 	
@@ -64,7 +67,7 @@ sbv/method_%_analysis/parameters.RData: sbv/parameter_generation/create_paramete
 	${R}
 
 #Generate data if data is not provided / does not exist
-data/ts_data.csv: generate_data/generate_data.R generate_data/inf_for_sbv.RDS
+data/ts_data.csv: data/generate_data/generate_data.R data/generate_data/simulated_data.RDS
 	${R} 
 
 generate_data: data/ts_data.csv
@@ -73,30 +76,30 @@ generate_data: data/ts_data.csv
 $(eval $(infections):;@:)
 
 #Create data for analysis
-data/ts_data_for_analysis.RDS: code/prep_ts_data.R data/ts_data.csv config_general.json $(infections)
+data/ts_data_for_analysis.RDS: code/run/prep_ts_data.R data/ts_data.csv config_general.json $(infections)
 	${R} 
 	
 data: data/ts_data_for_analysis.RDS
 
 # Run MCMC
-output/posterior_90_null.RData: code/run_mcmc.R data/ts_data_for_analysis.RDS utils/mcmc_functions.RData utils/fit_functions.RData config_general.json $(infections)
+output/posterior_90_null.RData: code/run/run_mcmc.R data/ts_data_for_analysis.RDS utils/mcmc_functions_l2.RData utils/fit_functions.RData config_general.json $(infections)
 	${R}
 
 mcmc: output/posterior_90_null.RData
 
 # Run Simulations
-output/sim_90_null.RDS: code/sim_null.R output/posterior_90_null.RData \
+output/sim_90_null.RDS: code/run/sim_null.R output/posterior_90_null.RData \
 data/ts_data_for_analysis.RDS utils/fit_functions.RData config_general.json $(infections)
 	${R}
 
 sim: output/sim_90_null.RDS
 
 # Generate plots
-output/sim_plot_90_null.png: code/sim_plot.R output/sim_90_null.RDS \
+output/sim_plot_90_null.png: code/run/sim_plot.R output/sim_90_null.RDS \
 data/ts_data_for_analysis.RDS config_general.json utils/plotting_fxns.RData $(infections)
 	${R}
 
-output/convergence_plot.png: code/convergence_plot.R \
+output/convergence_plot.png: code/run/convergence_plot.R \
 output/posterior_90_null.RData utils/fit_functions.RData config_general.json $(infections)
 	${R}
 
