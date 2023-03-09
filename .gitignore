@@ -52,7 +52,12 @@ method_*_analysis/*.RDS
 method_*_analysis/output/batch*
 sbv/method_*_analysis/parameters.RData
 
-
+#output files
+output/*.RDS
+output/*.png
+output/*.RData
+data/*.RDS
+ 
 #utils
 utils
 oe_files
