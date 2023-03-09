@@ -1,3 +1,6 @@
+write("start",file="arrayjob_m1",append=TRUE)
+
+
 args = commandArgs(trailingOnly=TRUE)
 
 results <- list()
@@ -6,7 +9,7 @@ results <- list()
 i<-strtoi(args)
 
 method <- 1
-write(paste0("set number", i),file="arrayjob_m2",append=TRUE)
+write(paste0("set number", i),file="arrayjob_m1",append=TRUE)
 
 dir.create(paste0('sbv/raw_output'))
 dir.create(paste0('sbv/raw_output/m', method))
@@ -19,7 +22,15 @@ settingspth <- 'utils/settings.RData'
 load('utils/settings.RData')
 
 # load required packages & files
-lapply(required_packages, require, character.only = TRUE)
+library(data.table)
+library(iterators)
+library(foreach)
+library(doParallel)
+library(coda)
+library(parallel)
+library(dplyr)
+library(ggplot2)
+
 lapply(required_files, load, envir = .GlobalEnv)
 
 parameters.r <- save_params
@@ -28,7 +39,7 @@ attach(jsonlite::read_json(configpth))
 
 results <- list()
 
-write('running',file="m1_output.txt",append=TRUE) #comment to confirm that theres not a zombie node
+write('running',file="array_job_m1",append=TRUE) #comment to confirm that theres not a zombie node
 
 
 ts <- generate_data(1, data_source, seed = seed_batch)
