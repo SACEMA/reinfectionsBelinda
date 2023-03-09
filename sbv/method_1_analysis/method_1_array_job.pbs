@@ -30,7 +30,7 @@ END=$(( $START+$STEP-1 ))
 for i in $(eval echo "{$START..$END}")
 do
 	echo $i
-	Rscript arrayjob.R $i & 
+	Rscript sbv/method_1_analysis/method_1_arrayjob.R $i & 
 done
 
 sleep 600
