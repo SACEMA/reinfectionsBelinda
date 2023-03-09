@@ -12,10 +12,10 @@
 	"convergence_method": "posterior", //all or posterior
 	"mcmc": {
 	   "rand_init": true,
-	   "n_iter": 2000,
-	   "burnin": 1000,
-	   "n_chains": 2,
-	   "n_posterior": 160
+	   "n_iter": 5000,
+	   "burnin": 2000,
+	   "n_chains": 4,
+	   "n_posterior": 1600
 	},
-	"n_sims_per_param": 10
+	"n_sims_per_param": 100
 }

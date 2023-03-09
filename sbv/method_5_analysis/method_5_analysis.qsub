@@ -2,7 +2,7 @@
 #PBS -l select=3:ncpus=24:mpiprocs=20
 #PBS -P CBBI1106
 #PBS -q normal
-#PBS -l walltime=7:30:00
+#PBS -l walltime=00:30:00
 #PBS -o /mnt/lustre/users/blombard/analysis/std_m5.out
 #PBS -e /mnt/lustre/users/blombard/analysis/std_m5.err
 #PBS -N m5_analysis

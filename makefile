@@ -1,21 +1,42 @@
-
+ifeq ($(infections),)
+	infections := 2
+endif
 
 R = Rscript $^ $@
 UTILS_SCRIPTS = code/utils_generation
 INFECTIONS = 2
 SBV = TRUE
 
-#create utils 
-all: create_utils create_params
+#all will just create the utils & parameter files 
+all: install utils_run
 
-sbv: create_utils create_params
+#run does the normal run
+run: install utils_run generate_data data
 
-create_utils: utils/settings.RData utils/plotting_fxns.RData \
-	utils/observe_prob_functions.RData utils/mcmc_functions.RData \
-	utils/generate_data.RData utils/fit_functions.RData 
+#sbv setup for simulation-based-validation
+sbv: utils_sbv create_params_sbv
 
-scenarios = 1 2 3 4 5
+utils: utils/fit_functions.RData \
 
+utils_sbv: utils utils/settings.RData \
+	utils/observe_prob_functions.RData \
+	utils/generate_data.RData  \
+	utils/mcmc_functions.RData
+
+utils_run: utils utils/plotting_fxns.RData utils/mcmc_functions_l2.RData
+	
+create_params_sbv: sbv/method_1_analysis/parameters.RData \
+	sbv/method_2_analysis/parameters.RData \
+	sbv/method_3_analysis/parameters.RData \
+	sbv/method_4_analysis/parameters.RData \
+	sbv/method_5_analysis/parameters.RData
+
+
+#Install packages
+install: code/install.R
+	${R}
+
+#Create utils
 utils/settings.RData: $(UTILS_SCRIPTS)/settings.R
 	${R}
 	
@@ -37,11 +58,46 @@ utils/fit_functions.RData: $(UTILS_SCRIPTS)/fit_functions.R
 utils/cleanup_methods.RData: $(UTILS_SCRIPT)/combine_file_methods.R
 	${R}
 
+
+#Target for parameter files
 sbv/method_%_analysis/parameters.RData: sbv/parameter_generation/create_parameter_files_m%.R
 	${R}
+
+#Generate data if data is not provided / does not exist
+data/ts_data.csv: generate_data/generate_data.R generate_data/inf_for_sbv.RDS
+	${R} 
+
+generate_data: data/ts_data.csv
+
+#Get infections argument to determine for which infections this is done 
+$(eval $(infections):;@:)
+
+#Create data for analysis
+data/ts_data_for_analysis.RDS: code/prep_ts_data.R data/ts_data.csv config_general.json $(infections)
+	${R} 
 	
-create_params: sbv/method_1_analysis/parameters.RData \
-	sbv/method_2_analysis/parameters.RData \
-	sbv/method_3_analysis/parameters.RData \
-	sbv/method_4_analysis/parameters.RData \
-	sbv/method_5_analysis/parameters.RData
+data: data/ts_data_for_analysis.RDS
+
+# Run MCMC
+output/posterior_90_null.RData: code/run_mcmc.R data/ts_data_for_analysis.RDS utils/mcmc_functions.RData utils/fit_functions.RData config_general.json $(infections)
+	${R}
+
+mcmc: output/posterior_90_null.RData
+
+# Run Simulations
+output/sim_90_null.RDS: code/sim_null.R output/posterior_90_null.RData \
+data/ts_data_for_analysis.RDS utils/fit_functions.RData config_general.json $(infections)
+	${R}
+
+sim: output/sim_90_null.RDS
+
+# Generate plots
+output/sim_plot_90_null.png: code/sim_plot.R output/sim_90_null.RDS \
+data/ts_data_for_analysis.RDS config_general.json utils/plotting_fxns.RData $(infections)
+	${R}
+
+output/convergence_plot.png: code/convergence_plot.R \
+output/posterior_90_null.RData utils/fit_functions.RData config_general.json $(infections)
+	${R}
+
+plots: output/sim_plot_90_null.png output/convergence_plot.png

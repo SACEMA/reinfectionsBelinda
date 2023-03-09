@@ -10,6 +10,7 @@ dir.create('utils')
 
 target <- tail(.args, 1)
 
+#packages required for cluster
 required_packages <-  c("data.table"
                         , "iterators"
                         , "Rmpi"
@@ -23,10 +24,17 @@ required_packages <-  c("data.table"
                         , "jsonlite"
 )
 
+#required files that should be loaded for running this on the cluster
 required_files <- c('utils/observe_prob_functions.RData'
                 , 'utils/mcmc_functions.RData'
                 ,'utils/fit_functions.RData'
                 ,'utils/generate_data.RData'
                 )
+
+#function that splits path
+split_path <- function(path) {
+  if (dirname(path) %in% c(".", path)) return(basename(path))
+  return(c(basename(path), split_path(dirname(path))))
+}
 
 save(required_packages, required_files, file=target)
