@@ -1,4 +1,4 @@
-write("start",file="arrayjob_m1",append=TRUE)
+write("start",file="arrayjob_m1.txt",append=TRUE)
 
 
 args = commandArgs(trailingOnly=TRUE)
@@ -9,7 +9,7 @@ results <- list()
 i<-strtoi(args)
 
 method <- 1
-write(paste0("set number", i),file="arrayjob_m1",append=TRUE)
+write(paste0("set number", i),file="arrayjob_m1.txt",append=TRUE)
 
 dir.create(paste0('sbv/raw_output'))
 dir.create(paste0('sbv/raw_output/m', method))
@@ -36,19 +36,21 @@ lapply(required_files, load, envir = .GlobalEnv)
 parameters.r <- save_params
 
 attach(jsonlite::read_json(configpth))
+print('2')
 
 results <- list()
 
-write('running',file="array_job_m1",append=TRUE) #comment to confirm that theres not a zombie node
+write('running',file="arrayjob_m1.txt",append=TRUE) #comment to confirm that theres not a zombie node
 
 
 ts <- generate_data(1, data_source, seed = seed_batch)
+print('3')
 ts_adjusted <- ts[, c("date", "observed", "ma_tot", "cases" )]
-
+print('4')
 #Run MCMC
 output <- do.mcmc(mcmc$n_chains, ts_adjusted)
 
-
+print('5')
 #Save posterior
 lambda.post <- kappa.post <- numeric(0)
 smpls <- mcmc$n_posterior / mcmc$n_chains #number of samples to take from each chain

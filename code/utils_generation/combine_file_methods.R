@@ -1,4 +1,4 @@
-
+.debug <- 'utils'
 .args <- if (interactive()) sprintf(c(
   file.path('utils', 'cleanup_methods.RData') # output
 ), .debug[1]) else commandArgs(trailingOnly = TRUE)
@@ -57,7 +57,7 @@ combineBatchFiles = function (method, batch_number, delete=TRUE) {
     final_RDS <- final_RDS %>% distinct(pobs_2, pscale, pobs_1, dprob, .keep_all = TRUE)
   
   saveRDS(final_RDS, file=paste0("method_",method,"_analysis/output/final_output_data/batch_", batch_number,"_results.RDS"))
-  if (delete=TRUE)
+  if (delete==TRUE)
     unlink(x = '"sbv/method_",method,"_analysis/output/batch"', recursive = TRUE)
 }
 
