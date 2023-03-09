@@ -36,7 +36,6 @@ lapply(required_files, load, envir = .GlobalEnv)
 parameters.r <- save_params
 
 attach(jsonlite::read_json(configpth))
-print('2')
 
 results <- list()
 
@@ -44,13 +43,11 @@ write('running',file="arrayjob_m1.txt",append=TRUE) #comment to confirm that the
 
 
 ts <- generate_data(1, data_source, seed = seed_batch)
-print('3')
 ts_adjusted <- ts[, c("date", "observed", "ma_tot", "cases" )]
-print('4')
+
 #Run MCMC
 output <- do.mcmc(mcmc$n_chains, ts_adjusted)
 
-print('5')
 #Save posterior
 lambda.post <- kappa.post <- numeric(0)
 smpls <- mcmc$n_posterior / mcmc$n_chains #number of samples to take from each chain
@@ -106,6 +103,10 @@ kappa_convergence <- gd$psrf[2]
 eri_ma <- eri_ma[date > wave_split]
 number_of_days_aw <- nrow(eri_ma)
 days_diff <- ts[date > wave_split]$ma_reinf - eri_ma$upp_reinf
+
+print(paste0("Upper reinfections ", str(eri_ma$upp_reinf)))
+print(paste0("ts reinfections ", str(ts[date > wave_split]$ma_reinf)))
+
 days_diff[days_diff<0] <- 0
 days_diff[days_diff>0] <- 1
 conseq_diff_aw <- frollsum(days_diff, 5, fill =0)
