@@ -70,6 +70,7 @@ sim_reinf <- function(ii){
 
 sims <- sapply(rep(1:mcmc$n_posterior, n_sims_per_param), sim_reinf)
 
+print(paste0("sims exists ", exists('sims')))
 
 #6: analysis
 sri <- data.table(date = ts_adjusted$date, sims)
@@ -79,6 +80,9 @@ sri_long[, ma_val := frollmean(value, 7), variable]
 eri_ma <- sri_long[, .(exp_reinf = median(ma_val, na.rm = TRUE)
                        , low_reinf = quantile(ma_val, 0.025, na.rm = TRUE)
                        , upp_reinf = quantile(ma_val, 0.975, na.rm = TRUE)), keyby = date]
+
+print(paste0("Upper reinfections ", str(eri_ma$upp_reinf)))
+
 eri_ma <- eri_ma[date > fit_through]
 
 
@@ -104,7 +108,6 @@ eri_ma <- eri_ma[date > wave_split]
 number_of_days_aw <- nrow(eri_ma)
 days_diff <- ts[date > wave_split]$ma_reinf - eri_ma$upp_reinf
 
-print(paste0("Upper reinfections ", str(eri_ma$upp_reinf)))
 print(paste0("ts reinfections ", str(ts[date > wave_split]$ma_reinf)))
 
 days_diff[days_diff<0] <- 0
