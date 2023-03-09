@@ -46,10 +46,10 @@ vignettes/*.pdf
 .RData
 
 #method analysis raw & RDS files results
-method_*_analysis/output/raw
-method_*_analysis/output/*.RDS
-method_*_analysis/*.RDS
-method_*_analysis/output/batch*
+sbv/method_*_analysis/output/raw
+sbv/method_*_analysis/output/*.RDS
+sbv/method_*_analysis/*.RDS
+sbv/method_*_analysis/output/batch*
 sbv/method_*_analysis/parameters.RData
 
 #output files
