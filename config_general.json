@@ -2,7 +2,7 @@
 	"cutoff": 90,
 	"window_days": 7,
 	"wave_thresh": 0.15,
-	"infection": "second",
+	"infection": "third",
 	"fit_through": "2022-01-31",
 	"omicron_date": "2021-10-31",
 	"posterior_method": "select", //This can be last or select

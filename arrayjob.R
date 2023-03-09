@@ -6,7 +6,7 @@ args = commandArgs(trailingOnly=TRUE)
 results <- list()
 
 #set i, the index in the parameter set
-i<-strtoi(args)
+i<-strtoi(args[1])
 
 method <- 1
 write(paste0("set number", i),file="arrayjob_m1.txt",append=TRUE)

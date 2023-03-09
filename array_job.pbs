@@ -11,7 +11,7 @@
 #PBS -M belindalombard@sun.ac.za
 #PBS -m be
 
-sleep 60
+sleep 4
 
 #module add chpc/BIOMODULES R/4.1.0
 
@@ -30,5 +30,7 @@ END=$(( $START+$STEP-1 ))
 for i in $(eval echo "{$START..$END}")
 do
 	echo $i
-	Rscript arrayjob.R $i
+	Rscript arrayjob.R $i & 
 done
+
+sleep 600

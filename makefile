@@ -11,7 +11,7 @@ SBV = TRUE
 all: install utils_run
 
 #run does the normal run
-run: install utils_run generate_data data mcmc sim plots
+run: utils_run generate_data data mcmc sim plots
 
 #sbv setup for simulation-based-validation
 sbv: utils_sbv create_params_sbv
