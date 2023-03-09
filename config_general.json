@@ -3,16 +3,16 @@
 	"window_days": 7,
 	"wave_thresh": 0.15,
 	"infection": "second",
-	"fit_through": "2021-02-28",
-	"omicron_date": "2021-05-01",
+	"fit_through": "2022-01-31",
+	"omicron_date": "2021-10-31",
 	"posterior_method": "select", //This can be last or select
 	"convergence_method": "posterior", //all or posterior
 	"mcmc": {
 	   "rand_init": true,
 	   "n_iter": 10000,
-	   "burnin": 2000,
+	   "burnin": 1500,
 	   "n_chains": 4,
-	   "n_posterior": 1600
+	   "n_posterior": 2000
 	},
 	"n_sims_per_param": 100
 }
