@@ -60,13 +60,14 @@ funcMakeResults <- function(){
   
   #5: Run simulations
   set.seed(seed_batch+2021)
+  
   sim_reinf <- function(ii){
     tmp <- list(lambda = lambda.post[ii], kappa = kappa.post[ii])
-    ex <- expected(data=ts_adjusted, parms = tmp)$expected_infections # Calculate expected reinfections using posterior
-    return(rnbinom(length(ex), size=1/kappa.post[ii], mu =c(0, diff(ex))))
+    answer <- expected(parms = tmp, data = ts_adjusted, delta = cutoff)
+    ex2 <- Reduce("+", answer)
+    ex2 <- c(rep(0,90),ex2)
+    return(rnbinom(length(ex2), size=1/kappa.post[ii], mu =c(0, diff(ex2))))
   }
-  
-  sims <- sapply(rep(1:mcmc$n_posterior, n_sims_per_param), sim_reinf)
 
   #6: analysis
   sri <- data.table(date = ts_adjusted$date, sims)

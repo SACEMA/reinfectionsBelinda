@@ -63,8 +63,10 @@ for(ii in 1:mcmc$n_chains){
 set.seed(seed_batch+2023)
 sim_reinf <- function(ii){
   tmp <- list(lambda = lambda.post[ii], kappa = kappa.post[ii])
-  ex <- expected(data=ts_adjusted, parms = tmp)$expected_infections # Calculate expected reinfections using posterior
-  return(rnbinom(length(ex), size=1/kappa.post[ii], mu =c(0, diff(ex))))
+  answer <- expected(parms = tmp, data = ts_adjusted, delta = cutoff)
+  ex2 <- Reduce("+", answer)
+  ex2 <- c(rep(0,90),ex2)
+  return(rnbinom(length(ex2), size=1/kappa.post[ii], mu =c(0, diff(ex2))))
 }
 
 
