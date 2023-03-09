@@ -35,7 +35,7 @@ resultList= list()
 funcMakeResults <- function(){
   results <- list()
   
-  write('running',file="m1_output.txt",append=TRUE) #comment to confirm that theres not a zombie node
+  write(paste0('running', a+i-1),file="m1_output.txt",append=TRUE) #comment to confirm that theres not a zombie node
   
 
   ts <- generate_data(1, data_source, seed = seed_batch)

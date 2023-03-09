@@ -8,6 +8,8 @@ SBV = TRUE
 #create utils 
 all: create_utils create_params
 
+sbv: create_utils create_params
+
 create_utils: utils/settings.RData utils/plotting_fxns.RData \
 	utils/observe_prob_functions.RData utils/mcmc_functions.RData \
 	utils/generate_data.RData utils/fit_functions.RData 
