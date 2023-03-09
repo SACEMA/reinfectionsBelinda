@@ -162,7 +162,7 @@ doChains <- function(x, mcmcParams) {
   return(list(chains=chains, aratio = aratio))
 }
 
-do.mcmc <- function(n_chains) {
+do.mcmc <- function(n_chains, ts_adjusted) {
   mcmc.run <- doChains(1:n_chains, mcmcParams)
   return (mcmc.run)
 }
