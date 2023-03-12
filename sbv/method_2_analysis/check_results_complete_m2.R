@@ -1,8 +1,8 @@
 library('dplyr')
 method <-2 
 
-results_dataframe_file <- paste0('method_', method, '_analysis/combined_results.RDS')
-parameter_set_file <- paste0('method_', method, '_analysis/utils/m', method, '_parameters.RData')
+results_dataframe_file <- paste0('sbv/method_', method, '_analysis/combined_results.RDS')
+parameter_set_file <- paste0('sbv/method_', method, '_analysis/parameters.RData')
 
 final_RDS <- readRDS(results_dataframe_file)
 load(parameter_set_file)
