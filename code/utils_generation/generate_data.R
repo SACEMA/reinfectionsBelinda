@@ -63,6 +63,8 @@ generate_data <- function(method, data_source, seed) {
     ts[, eligible_for_reinf := shift(cumsum(infections), cutoff-1)]
     underlying$eligible_for_reinf= shift(cumsum(ts$infections), cutoff-1)
     
+    ts$infections_ma = frollmean(ts$infections, window_days)
+    
     #adjust infections observed according to observation probability
     
     #distinction: underlying is the underlying 'true' infections, etc. and ts is the observed (what the data can see)
@@ -71,10 +73,13 @@ generate_data <- function(method, data_source, seed) {
       underlying$eligible_for_reinf[day] = underlying$eligible_for_reinf[day] - sum(underlying$reinfections[1:day-1])
       ts$eligible_for_reinf[day] = ts$eligible_for_reinf[day] - sum(ts$reinfections[1:day-1])
       
+      ts$infections_ma = frollmean(ts$infections, window_days)
+      
+      
       if (ts$date[day]<=wave_split) {
-        underlying$reinfections[day] = round(reinf_hazard * underlying$infections[day] * underlying$eligible_for_reinf[day])
+        underlying$reinfections[day] = round(reinf_hazard * ts$infections[day] * underlying$eligible_for_reinf[day])
       } else {
-        underlying$reinfections[day] = round(reinf_hazard * underlying$infections[day] * underlying$eligible_for_reinf[day] * parameters.r$pscale[i])
+        underlying$reinfections[day] = round(reinf_hazard * ts$infections[day] * underlying$eligible_for_reinf[day] * parameters.r$pscale[i])
       } 
       
       ts$reinfections[day] = rbinom(1, underlying$reinfections[day], parameters.r$pobs_2[i])
@@ -83,23 +88,35 @@ generate_data <- function(method, data_source, seed) {
   
   
   if (method==4) {
+    #save the number of underlying infections and reinfections (which is currently 0)
+    underlying <- ts[, c('infections', 'reinfections')]
+    
+    #calculate the number of reported primary infections
     for (day in 1:nrow(ts)) {
       ts$infections[day] = rbinom(1, ts$infections[day], parameters.r$pobs_1[i])
     }
+    
+    #eligible for reinf in both cases starts with the sum of observed primary infections
     ts[, eligible_for_reinf := shift(cumsum(infections), cutoff-1)]
+    underlying$eligible_for_reinf= shift(cumsum(ts$infections), cutoff-1)
+    
+    #calculate the moving average of the infections
     ts$infections_ma = frollmean(ts$infections, window_days)
   
+    #calulcate the number of deaths from the REPORTED primary infections
     for (day in 1:nrow(ts))
       ts$deaths[day] = rbinom(1, ts$infections[day], parameters.r$dprob[i])
   
     for (day in (cutoff+1):nrow(ts)) { 
-      ts$eligible_for_reinf[day] =max(ts$eligible_for_reinf[day] - sum(ts$reinfections[1:day-1]) - sum(ts$deaths[1:day-1]),0)
+      underlying$eligible_for_reinf[day] = underlying$eligible_for_reinf[day] - sum(underlying$reinfections[1:day-1]) - sum(ts$deaths[1:day-1])
+      ts$eligible_for_reinf[day] = ts$eligible_for_reinf[day] - sum(ts$reinfections[1:day-1]) - sum(ts$deaths[1:day-1])
+      
       if (ts$date[day]<=wave_split) {
-        ts$reinfections[day] = round(reinf_hazard * ts$infections[day] * ts$eligible_for_reinf[day])
+        underlying$reinfections[day] = round(reinf_hazard * ts$infections[day] * underlying$eligible_for_reinf[day])
       } else {
-        ts$reinfections[day] = round(reinf_hazard * ts$infections[day] * ts$eligible_for_reinf[day] * parameters.r$pscale[i])
+        underlying$reinfections[day] = round(reinf_hazard * ts$infections[day] * underlying$eligible_for_reinf[day] * parameters.r$pscale[i])
       } 
-      ts$reinfections[day] = rbinom(1, ts$reinfections[day], parameters.r$pobs_2[i])
+      ts$reinfections[day] = rbinom(1, underlying$reinfections[day], parameters.r$pobs_2[i])
     }
   }
   

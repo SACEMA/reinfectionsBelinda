@@ -1,4 +1,4 @@
-write("start",file="arrayjob_m3.txt",append=TRUE)
+write("start",file="arrayjob_m4.txt",append=TRUE)
 
 
 args = commandArgs(trailingOnly=TRUE)
@@ -8,8 +8,8 @@ results <- list()
 #set i, the index in the parameter set
 i<-strtoi(args[1])
 
-method <- 3
-write(paste0("set number", i),file="arrayjob_m3.txt",append=TRUE)
+method <- 4
+write(paste0("set number", i),file="arrayjob_m4.txt",append=TRUE)
 
 dir.create(paste0('sbv/raw_output'))
 dir.create(paste0('sbv/raw_output/m', method))
@@ -39,17 +39,17 @@ attach(jsonlite::read_json(configpth))
 
 results <- list()
 
-write('running',file="arrayjob_m3.txt",append=TRUE) #comment to confirm that theres not a zombie node
+write('running',file="arrayjob_m4.txt",append=TRUE) #comment to confirm that theres not a zombie node
 
 
-ts <- generate_data(method, data_source, seed = seed_batch)
+ts <- generate_data(4, data_source, seed = seed_batch)
 ts_adjusted <- ts[, c("date", "observed", "ma_tot", "cases" )]
 
 #Run MCMC
 output <- do.mcmc(mcmc$n_chains, ts_adjusted)
 
 
-write('done mcmc',file="arrayjob_m3.txt",append=TRUE) #comment to confirm that theres not a zombie node
+write('done mcmc',file="arrayjob_m4.txt",append=TRUE) #comment to confirm that theres not a zombie node
 
 #Save posterior
 lambda.post <- kappa.post <- numeric(0)
@@ -72,11 +72,11 @@ sim_reinf <- function(ii){
   return(rnbinom(length(ex2), size=1/kappa.post[ii], mu =c(0, diff(ex2))))
 }
 
-write('start sims',file="arrayjob_m3.txt",append=TRUE) #comment to confirm that theres not a zombie node
+write('start sims',file="arrayjob_m4.txt",append=TRUE) #comment to confirm that theres not a zombie node
 
 sims <- sapply(rep(1:mcmc$n_posterior, n_sims_per_param), sim_reinf)
 
-write('end sims',file="arrayjob_m3.txt",append=TRUE) #comment to confirm that theres not a zombie node
+write('end sims',file="arrayjob_m4.txt",append=TRUE) #comment to confirm that theres not a zombie node
 
 #6: analysis
 sri <- data.table(date = ts_adjusted$date, sims)
@@ -125,6 +125,7 @@ date_first_aw <- which(conseq_diff_aw==5)[1]
 results <- list(pscale=parameters.r$pscale[i]
                 , pobs_1=parameters.r$pobs_1[i]
                 , pobs_2=parameters.r$pobs_2[i]
+                , dprob=parameters.r$dprob[i]
                 , lambda_con = lambda_convergence
                 , kappa_con = kappa_convergence
                 , proportion = proportion
