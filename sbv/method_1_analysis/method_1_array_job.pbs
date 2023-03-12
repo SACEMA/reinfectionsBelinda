@@ -5,8 +5,8 @@
 #PBS -l select=1:ncpus=24
 #PBS -o /mnt/lustre/users/blombard/reinfectionsBelinda/oe_files/array_job_m1.out
 #PBS -e /mnt/lustre/users/blombard/reinfectionsBelinda/oe_files/array_job_m1.err
-#PBS -l walltime=00:08:00
-#PBS -J 1-20:10
+#PBS -l walltime=1:00:00
+#PBS -J 1-105:15
 #PBS -q smp
 #PBS -M belindalombard@sun.ac.za
 #PBS -m be
@@ -23,14 +23,16 @@ cd /mnt/lustre/users/blombard/reinfectionsBelinda/
 
 make sbv
 
-STEP=10
+STEP=15
 START=$PBS_ARRAY_INDEX
 END=$(( $START+$STEP-1 ))
 
 for i in $(eval echo "{$START..$END}")
 do
-	echo $i
-	Rscript sbv/method_1_analysis/method_1_arrayjob.R $i & 
+	(echo "process $i started" && Rscript sbv/method_1_analysis/method_1_arrayjob.R $i && echo "process $i finished")& 
 done
 
-sleep 600
+sleep 0.1 # For sequential output
+echo "Waiting for processes to finish" 
+wait $(jobs -p)
+echo "All processes finished"
