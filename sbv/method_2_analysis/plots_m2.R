@@ -2,7 +2,7 @@ library(ggplot2)
 library(ggtext)
 method <- 2
 
-final_RDS <- readRDS(paste0('method_',method,'_analysis/combined_results.RDS'))
+final_RDS <- readRDS(paste0('sbv/method_',method,'_analysis/combined_results.RDS'))
 
 #plots useless as different pscale don't affect convergence
 lambda_con_plot <- (ggplot(final_RDS)
