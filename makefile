@@ -14,7 +14,7 @@ all: install utils_run
 run: utils_run generate_data data mcmc sim plots
 
 #sbv setup for simulation-based-validation
-sbv: utils_sbv create_params_sbv
+sbv: utils_sbv create_params_sbv cleanup_methods
 
 utils: utils/fit_functions.RData \
 
