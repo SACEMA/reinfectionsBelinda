@@ -37,7 +37,7 @@ combineResultsInRaw = function (method, name_of_file, delete=TRUE) {
 
 #combine raw results in raw folder (method_analysis/output/raw) and save it in output dir
 combineResultsInRawCl = function (method, name_of_file, delete=TRUE) { 
-  files <- list.files(path=paste0("sbv/raw_output/m_",method), pattern="*.RDS", full.names=TRUE, recursive=FALSE)
+  files <- list.files(path=paste0("sbv/raw_output/m",method), pattern="*.RDS", full.names=TRUE, recursive=FALSE)
   resultList <- vector(mode = "list")
   for (f in files) {
     resultList = c(resultList,list(readRDS(f)))
