@@ -59,7 +59,7 @@ utils/generate_data.RData: $(UTILS_SCRIPTS)/generate_data.R
 utils/fit_functions.RData: $(UTILS_SCRIPTS)/fit_functions.R
 	${R}
 
-utils/cleanup_methods.RData: $(UTILS_SCRIPT)/combine_file_methods.R
+utils/cleanup_methods.RData: $(UTILS_SCRIPTS)/combine_file_methods.R
 	${R}
 
 
