@@ -1,4 +1,4 @@
-libray('tidyverse')
+library('tidyverse')
 
 args = commandArgs(trailingOnly=TRUE)
 
