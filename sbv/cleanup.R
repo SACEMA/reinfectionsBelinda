@@ -1,4 +1,4 @@
-library('tidyverse')
+
 
 args = commandArgs(trailingOnly=TRUE)
 
@@ -11,4 +11,3 @@ end <- strtoi(args[3])
 load('utils/cleanup_methods.RData')
 
 combineResultsInRawCl(method, paste0('m', method, '_results_', start, '_', end, '.RDS'))
-combineResultsCurrent(method)
