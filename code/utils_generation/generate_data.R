@@ -108,8 +108,8 @@ generate_data <- function(method, data_source, seed) {
       ts$deaths[day] = rbinom(1, ts$infections[day], parameters.r$dprob[i])
   
     for (day in (cutoff+1):nrow(ts)) { 
-      underlying$eligible_for_reinf[day] = underlying$eligible_for_reinf[day] - sum(underlying$reinfections[1:day-1]) - sum(ts$deaths[1:day-1])
-      ts$eligible_for_reinf[day] = ts$eligible_for_reinf[day] - sum(ts$reinfections[1:day-1]) - sum(ts$deaths[1:day-1])
+      underlying$eligible_for_reinf[day] = max(underlying$eligible_for_reinf[day] - sum(underlying$reinfections[1:day-1]) - sum(ts$deaths[1:day-1]),0)
+      ts$eligible_for_reinf[day] = max(ts$eligible_for_reinf[day] - sum(ts$reinfections[1:day-1]) - sum(ts$deaths[1:day-1]),0)
       
       if (ts$date[day]<=wave_split) {
         underlying$reinfections[day] = round(reinf_hazard * ts$infections[day] * underlying$eligible_for_reinf[day])
