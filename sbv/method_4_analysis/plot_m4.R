@@ -2,7 +2,7 @@ library(ggplot2)
 library(ggtext)
 method <- 4
 
-final_RDS <- readRDS(paste0('method_',method,'_analysis/combined_results.RDS'))
+final_RDS <- readRDS(paste0('sbv/method_',method,'_analysis/combined_results.RDS'))
 
 
 lambda_con_plot <- (ggplot(final_RDS)
@@ -12,7 +12,7 @@ lambda_con_plot <- (ggplot(final_RDS)
            + ggtitle('Lambda Convergence Sensitivity Analysis')
            + scale_fill_gradientn(colours = rev(colorspace::terrain_hcl(100)))
 )
-ggsave(lambda_con_plot, filename='method_4_analysis/plots/lambda_density.png', device="png")
+ggsave(lambda_con_plot, filename='sbv/method_4_analysis/plots/lambda_density.png', device="png")
 
 
 kappa_con_plot <- (ggplot(final_RDS)
@@ -22,7 +22,7 @@ kappa_con_plot <- (ggplot(final_RDS)
                     + ggtitle('Kappa Convergence Sensitivity Analysis')
                    + scale_fill_gradientn(colours = rev(colorspace::terrain_hcl(100)))
 )
-ggsave(kappa_con_plot, filename='method_4_analysis/plots/kappa_density.png', device="png")
+ggsave(kappa_con_plot, filename='sbv/method_4_analysis/plots/kappa_density.png', device="png")
 
 pobs1_pobs_2_proportion_0.001 <- (ggplot(final_RDS[final_RDS$dprob==0.001,]) 
                             + aes(x=pobs_1, y=pobs_2, fill=proportion_after_wavesplit) 
@@ -31,7 +31,7 @@ pobs1_pobs_2_proportion_0.001 <- (ggplot(final_RDS[final_RDS$dprob==0.001,])
                             + ggtitle(paste0('Method ', method, ': pobs 1 and pobs 2 vs proportion of points outside prediction interval for dprob 0.001'))
                             + theme(plot.title = element_textbox_simple())
 )
-ggsave(pobs1_pobs_2_proportion_0.001, filename=paste0('method_',method,'_analysis/plots/pobs1_pobs_2_proportion_0.001.png'))
+ggsave(pobs1_pobs_2_proportion_0.001, filename=paste0('sbv/method_',method,'_analysis/plots/pobs1_pobs_2_proportion_0.001.png'))
 
 pobs1_pobs_2_proportion_0.01 <- (ggplot(final_RDS[final_RDS$dprob==0.01,]) 
                                   + aes(x=pobs_1, y=pobs_2, fill=proportion_after_wavesplit) 
@@ -40,7 +40,7 @@ pobs1_pobs_2_proportion_0.01 <- (ggplot(final_RDS[final_RDS$dprob==0.01,])
                                   + ggtitle(paste0('Method ', method, ': pobs 1 and pobs 2 vs proportion of points outside prediction interval for dprob 0.01'))
                                   + theme(plot.title = element_textbox_simple())
 )
-ggsave(pobs1_pobs_2_proportion_0.01, filename=paste0('method_',method,'_analysis/plots/pobs1_pobs_2_proportion_0.01.png'))
+ggsave(pobs1_pobs_2_proportion_0.01, filename=paste0('sbv/method_',method,'_analysis/plots/pobs1_pobs_2_proportion_0.01.png'))
 
 pobs1_pobs_2_proportion_0.05 <- (ggplot(final_RDS[final_RDS$dprob==0.05,]) 
                                  + aes(x=pobs_1, y=pobs_2, fill=proportion_after_wavesplit) 
@@ -49,7 +49,7 @@ pobs1_pobs_2_proportion_0.05 <- (ggplot(final_RDS[final_RDS$dprob==0.05,])
                                  + ggtitle(paste0('Method ', method, ': pobs 1 and pobs 2 vs proportion of points outside prediction interval for dprob 0.05'))
                                  + theme(plot.title = element_textbox_simple())
 )
-ggsave(pobs1_pobs_2_proportion_0.05, filename=paste0('method_',method,'_analysis/plots/pobs1_pobs_2_proportion_0.05.png'))
+ggsave(pobs1_pobs_2_proportion_0.05, filename=paste0('sbv/method_',method,'_analysis/plots/pobs1_pobs_2_proportion_0.05.png'))
 
 
 
@@ -60,7 +60,7 @@ pobs1_pobs_2_date_first_0.001 <- (ggplot(final_RDS[final_RDS$dprob==0.001,])
                                   + ggtitle(paste0('Method ', method, ': pobs 1 and pobs 2 vs date_first of points outside prediction interval for dprob 0.001'))
                                   + theme(plot.title = element_textbox_simple())
 )
-ggsave(pobs1_pobs_2_date_first_0.001, filename=paste0('method_',method,'_analysis/plots/pobs1_pobs_2_date_first_0.001.png'))
+ggsave(pobs1_pobs_2_date_first_0.001, filename=paste0('sbv/method_',method,'_analysis/plots/pobs1_pobs_2_date_first_0.001.png'))
 
 pobs1_pobs_2_date_first_0.01 <- (ggplot(final_RDS[final_RDS$dprob==0.01,]) 
                                  + aes(x=pobs_1, y=pobs_2, fill=date_first_after_wavesplit) 
@@ -69,7 +69,7 @@ pobs1_pobs_2_date_first_0.01 <- (ggplot(final_RDS[final_RDS$dprob==0.01,])
                                  + ggtitle(paste0('Method ', method, ': pobs 1 and pobs 2 vs date_first of points outside prediction interval for dprob 0.01'))
                                  + theme(plot.title = element_textbox_simple())
 )
-ggsave(pobs1_pobs_2_date_first_0.01, filename=paste0('method_',method,'_analysis/plots/pobs1_pobs_2_date_first_0.01.png'))
+ggsave(pobs1_pobs_2_date_first_0.01, filename=paste0('sbv/method_',method,'_analysis/plots/pobs1_pobs_2_date_first_0.01.png'))
 
 pobs1_pobs_2_date_first_0.05 <- (ggplot(final_RDS[final_RDS$dprob==0.05,]) 
                                  + aes(x=pobs_1, y=pobs_2, fill=date_first_after_wavesplit) 
@@ -78,7 +78,7 @@ pobs1_pobs_2_date_first_0.05 <- (ggplot(final_RDS[final_RDS$dprob==0.05,])
                                  + ggtitle(paste0('Method ', method, ': pobs 1 and pobs 2 vs date_first of points outside prediction interval for dprob 0.05'))
                                  + theme(plot.title = element_textbox_simple())
 )
-ggsave(pobs1_pobs_2_date_first_0.05, filename=paste0('method_',method,'_analysis/plots/pobs1_pobs_2_date_first_0.05.png'))
+ggsave(pobs1_pobs_2_date_first_0.05, filename=paste0('sbv/method_',method,'_analysis/plots/pobs1_pobs_2_date_first_0.05.png'))
 
 
 pobs1_pobs_2_proportion_pscale_1 <- (ggplot(final_RDS[final_RDS$pscale==1,]) 
@@ -88,7 +88,7 @@ pobs1_pobs_2_proportion_pscale_1 <- (ggplot(final_RDS[final_RDS$pscale==1,])
                                  + ggtitle(paste0('Method ', method, ': pobs 1 and pobs 2 vs proportion of points outside prediction interval for pscale 1'))
                                  + theme(plot.title = element_textbox_simple())
 )
-ggsave(pobs1_pobs_2_proportion_pscale_1, filename=paste0('method_',method,'_analysis/plots/pobs1_pobs_2_proportion_pscale_1.png'))
+ggsave(pobs1_pobs_2_proportion_pscale_1, filename=paste0('sbv/method_',method,'_analysis/plots/pobs1_pobs_2_proportion_pscale_1.png'))
 
 
 pobs1_pobs_2_proportion_pscale_1.5 <- (ggplot(final_RDS[final_RDS$pscale==1.5,]) 
@@ -98,7 +98,7 @@ pobs1_pobs_2_proportion_pscale_1.5 <- (ggplot(final_RDS[final_RDS$pscale==1.5,])
                                      + ggtitle(paste0('Method ', method, ': pobs 1 and pobs 2 vs proportion of points outside prediction interval for pscale 1.5'))
                                      + theme(plot.title = element_textbox_simple())
 )
-ggsave(pobs1_pobs_2_proportion_pscale_1.5, filename=paste0('method_',method,'_analysis/plots/pobs1_pobs_2_proportion_pscale_1.5.png'))
+ggsave(pobs1_pobs_2_proportion_pscale_1.5, filename=paste0('sbv/method_',method,'_analysis/plots/pobs1_pobs_2_proportion_pscale_1.5.png'))
 
 pobs1_pobs_2_proportion_pscale_2.5 <- (ggplot(final_RDS[final_RDS$pscale==2.5,]) 
                                        + aes(x=pobs_1, y=pobs_2, fill=proportion_after_wavesplit) 
@@ -107,6 +107,6 @@ pobs1_pobs_2_proportion_pscale_2.5 <- (ggplot(final_RDS[final_RDS$pscale==2.5,])
                                        + ggtitle(paste0('Method ', method, ': pobs 1 and pobs 2 vs proportion of points outside prediction interval for pscale 2.5'))
                                        + theme(plot.title = element_textbox_simple())
 )
-ggsave(pobs1_pobs_2_proportion_pscale_2.5, filename=paste0('method_',method,'_analysis/plots/pobs1_pobs_2_proportion_pscale_2.5.png'))
+ggsave(pobs1_pobs_2_proportion_pscale_2.5, filename=paste0('sbv/method_',method,'_analysis/plots/pobs1_pobs_2_proportion_pscale_2.5.png'))
 
 

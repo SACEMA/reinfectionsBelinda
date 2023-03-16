@@ -51,6 +51,8 @@ sbv/method_*_analysis/output/*.RDS
 sbv/method_*_analysis/*.RDS
 sbv/method_*_analysis/output/batch*
 sbv/method_*_analysis/parameters.RData
+sbv/method_*_analysis/plots/
+
 
 #output files
 output/*.RDS
