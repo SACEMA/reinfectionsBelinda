@@ -4,6 +4,7 @@ method <- 4
 
 final_RDS <- readRDS(paste0('sbv/method_',method,'_analysis/combined_results.RDS'))
 
+dir.create(paste0('sbv/method_',method,'_analysis/plots'))
 
 lambda_con_plot <- (ggplot(final_RDS)
            + aes(x = pobs_1, y = pobs_2, fill = lambda_con)

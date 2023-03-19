@@ -4,6 +4,8 @@ method <- 2
 
 final_RDS <- readRDS(paste0('sbv/method_',method,'_analysis/combined_results.RDS'))
 
+dir.create('sbv/method_',method,'_analysis/plots')
+
 #plots useless as different pscale don't affect convergence
 lambda_con_plot <- (ggplot(final_RDS)
                     + aes(x = pobs_2, y = lambda_con)
@@ -85,12 +87,12 @@ pobs_2_proportion_aw <- (ggplot(final_RDS)
 pobs_2_proportion_aw
 
 #Save plots
-ggsave(pobs_2_proportion_aw , filename=paste0('method_',method,'_analysis/plots/pobs_2_proportion_aw.png'))
-ggsave(pobs_2_proportion, filename=paste0('method_',method,'_analysis/plots/pobs_2_proportion.png'))
-ggsave(pscale_proportion_plot_aw, filename=paste0('method_',method,'_analysis/plots/pscale_proportion_aw.png'))
-ggsave(pscale_proportion_plot, filename=paste0('method_',method,'_analysis/plots/pscale_proportion.png'))
-ggsave(lambda_con_plot, filename=paste0('method_',method,'_analysis/plots/lambda_convergence.png'))
-ggsave(kappa_con_plot, filename=paste0('method_',method,'_analysis/plots/kappa_convergence.png'))
-ggsave(cluster_proportion_plot_aw, filename=paste0('method_',method,'_analysis/plots/cluster_proportion_aw.png'))
-ggsave(cluster_proportion_plot, filename=paste0('method_',method,'_analysis/plots/cluster_proportion.png'))
+ggsave(pobs_2_proportion_aw , filename=paste0('sbv/method_',method,'_analysis/plots/pobs_2_proportion_aw.png'))
+ggsave(pobs_2_proportion, filename=paste0('sbv/method_',method,'_analysis/plots/pobs_2_proportion.png'))
+ggsave(pscale_proportion_plot_aw, filename=paste0('sbv/method_',method,'_analysis/plots/pscale_proportion_aw.png'))
+ggsave(pscale_proportion_plot, filename=paste0('sbv/method_',method,'_analysis/plots/pscale_proportion.png'))
+ggsave(lambda_con_plot, filename=paste0('sbv/method_',method,'_analysis/plots/lambda_convergence.png'))
+ggsave(kappa_con_plot, filename=paste0('sbv/method_',method,'_analysis/plots/kappa_convergence.png'))
+ggsave(cluster_proportion_plot_aw, filename=paste0('sbv/method_',method,'_analysis/plots/cluster_proportion_aw.png'))
+ggsave(cluster_proportion_plot, filename=paste0('sbv/method_',method,'_analysis/plots/cluster_proportion.png'))
 

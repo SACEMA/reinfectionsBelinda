@@ -2,6 +2,8 @@ library(ggplot2)
 library(ggtext)
 method <- 3
 
+dir.create('sbv/method_',method,'_analysis/plots')
+
 final_RDS <- readRDS(paste0('sbv/method_',method,'_analysis/combined_results.RDS'))
 
 
