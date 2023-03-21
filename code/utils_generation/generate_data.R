@@ -73,9 +73,6 @@ generate_data <- function(method, data_source, seed) {
       underlying$eligible_for_reinf[day] = underlying$eligible_for_reinf[day] - sum(underlying$reinfections[1:day-1])
       ts$eligible_for_reinf[day] = ts$eligible_for_reinf[day] - sum(ts$reinfections[1:day-1])
       
-      ts$infections_ma = frollmean(ts$infections, window_days)
-      
-      
       if (ts$date[day]<=wave_split) {
         underlying$reinfections[day] = round(reinf_hazard * ts$infections[day] * underlying$eligible_for_reinf[day])
       } else {
@@ -123,8 +120,7 @@ generate_data <- function(method, data_source, seed) {
   
   if (method==5) {
     original_infections <- ts[, c('date', 'infections')]
-    ## 2: Calculate the number of primary infections and reinfections
-    #Method 3 adjustment
+    
     for (day in 1:nrow(ts)) {
       observe_prob_first <-  logistic_func(min=parameters.r$pobs_1_min[i]
                                            , max=parameters.r$pobs_1_max[i]
@@ -136,15 +132,19 @@ generate_data <- function(method, data_source, seed) {
     }
     
     ts[, eligible_for_reinf := shift(cumsum(infections), cutoff-1)]
-    ts$infections_ma = frollmean(ts$infections, window_days)
+    underlying$eligible_for_reinf= shift(cumsum(ts$infections), cutoff-1)
     
+    ts$infections_ma = frollmean(ts$infections, window_days)
+
     
     for (day in (cutoff+1):nrow(ts)) { 
+      underlying$eligible_for_reinf[day] = underlying$eligible_for_reinf[day] - sum(underlying$reinfections[1:day-1])
       ts$eligible_for_reinf[day] = ts$eligible_for_reinf[day] - sum(ts$reinfections[1:day-1])
+      
       if (ts$date[day]<=wave_split) {
-        ts$reinfections[day] = round(reinf_hazard * ts$infections[day] * ts$eligible_for_reinf[day])
+        underlying$reinfections[day] = round(reinf_hazard * ts$infections[day] * underlying$eligible_for_reinf[day])
       } else {
-        ts$reinfections[day] = round(reinf_hazard * ts$infections[day] * ts$eligible_for_reinf[day] * parameters.r$pscale[i])
+        underlying$reinfections[day] = round(reinf_hazard * ts$infections[day] * underlying$eligible_for_reinf[day] * parameters.r$pscale[i])
       } 
       #Method 2 adjustment
       observe_prob_second <- logistic_func(min=parameters.r$pobs_2_min[i]
@@ -153,9 +153,10 @@ generate_data <- function(method, data_source, seed) {
                                            , s =parameters.r$steep[i]
                                            , x_m=parameters.r$xm[i]
       )
-      ts$reinfections[day] = rbinom(1, ts$reinfections[day], observe_prob_second)
+      ts$reinfections[day] = rbinom(1, underlying$reinfections[day], observe_prob_second)
     }
   }
+  
   ##Rename column names for MCMC
   names(ts)[2] <- "cases"
   names(ts)[3] <- "ma_cnt"
