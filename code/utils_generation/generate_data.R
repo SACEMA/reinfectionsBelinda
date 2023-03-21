@@ -119,7 +119,8 @@ generate_data <- function(method, data_source, seed) {
   }
   
   if (method==5) {
-    original_infections <- ts[, c('date', 'infections')]
+
+    underlying <- ts[, c('infections', 'reinfections')]
     
     for (day in 1:nrow(ts)) {
       observe_prob_first <-  logistic_func(min=parameters.r$pobs_1_min[i]
