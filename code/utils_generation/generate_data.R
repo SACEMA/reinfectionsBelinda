@@ -138,7 +138,7 @@ generate_data <- function(method, data_source, seed) {
     ts$infections_ma = frollmean(ts$infections, window_days)
 
     
-    for (day in 1:nrow(ts)) { 
+    for (day in (cutoff+1):nrow(ts)) { 
       underlying$eligible_for_reinf[day] = underlying$eligible_for_reinf[day] - sum(underlying$reinfections[1:day-1])
       ts$eligible_for_reinf[day] = ts$eligible_for_reinf[day] - sum(ts$reinfections[1:day-1])
       
