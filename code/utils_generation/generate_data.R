@@ -125,7 +125,7 @@ generate_data <- function(method, data_source, seed) {
     for (day in 1:nrow(ts)) {
       observe_prob_first <-  logistic_func(min=parameters.r$pobs_1_min[i]
                                            , max=parameters.r$pobs_1_max[i]
-                                           , cases = original_infections$infections[day]
+                                           , cases = underlying$infections[day]
                                            , s =parameters.r$steep[i]
                                            , x_m=parameters.r$xm[i]
       )
@@ -150,7 +150,7 @@ generate_data <- function(method, data_source, seed) {
       #Method 2 adjustment
       observe_prob_second <- logistic_func(min=parameters.r$pobs_2_min[i]
                                            , max=parameters.r$pobs_2_max[i]
-                                           , cases = original_infections$infections[day]
+                                           , cases = underlying$infections[day]
                                            , s =parameters.r$steep[i]
                                            , x_m=parameters.r$xm[i]
       )
