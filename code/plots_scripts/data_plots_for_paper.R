@@ -1,6 +1,7 @@
 # Plot 1 - simulated primary and reinfections
 library('gridExtra')
-data <- readRDS('data/m1_ts_data_for_analysis.RDS')
+load('utils/generate_data.RData')
+
 sim_data <- ggplot(data, aes(x=date)) +
                    geom_line(aes(y = infections)) +
                    xlab('Date') + 
@@ -25,22 +26,48 @@ data_method_1 <- grid.arrange(sim_data, sim_data_reinf, nrow=2)
 
 ###########################
 
-data <- readRDS('data/m2_ts_data_for_analysis.RDS')
+load('sbv/method_2_analysis/parameters.RData')
+paramaters.r <- save_params
+data <- data.frame()
+for (i in 1:nrow(paramaters.r)) {
+  data_add <- generate_data(2, 'data/inf_for_sbv.RDS', 1)
+  data_add$pobs_2 <- parameters.r[i,]$pobs_2
+  data_add$pscale <- parameters.r[i,]$pscale
+  data <- rbind(data, data_add)
+}
 
-m2 <- ggplot(data, aes(x=date)) +
-            geom_line(aes(y = reinfections, group=prob, color= factor(prob))) +
-            xlab('Date') + 
+
+m2 <- ggplot(data[data$pscale==1], aes(x=date)) +
+            geom_line(aes(y = ma_reinf, group=pobs_2, color= factor(pobs_2))) +
             labs(color="Observation Probability") +
-            ylab('Reinfections') + 
-            ggtitle('Observed reinfections') +
-            theme(plot.title = element_text(hjust = 0.5))
+            ylab('Observed Reinfections') + 
+            ggtitle('Observed reinfections for Scenario 2') +
+            theme(plot.title = element_text(hjust = 0.5)) +
+            theme(panel.border = element_rect(colour = "black", fill = NA, size = 0.25)
+            , panel.grid.minor = element_blank()) +
+            theme_minimal() + 
+            scale_colour_brewer(palette = "Set2") +
+            theme(axis.title.x=element_blank())
+  
+
 
 
 ###################### Method 3
-data <- readRDS('data/m3_ts_data_for_analysis.RDS')
+rm(save_params)
+rm(parameters.r)
+load('sbv/method_3_analysis/parameters.RData')
+paramaters.r <- save_params
+data <- data.frame()
+for (i in 1:nrow(paramaters.r)) {
+  data_add <- generate_data(3, 'data/inf_for_sbv.RDS', 1)
+  data_add$pobs_2 <- parameters.r[i,]$pobs_2
+  data_add$pscale <- parameters.r[i,]$pscale
+  data_add$pobs_1 <- paramaters.r[i,]$pobs_1
+  data <- rbind(data, data_add)
+}
 
 m3_primary_infections <- ggplot(data, aes(x=date)) +
-        geom_line(aes(y = infections_ma, group=pobs1, color= factor(pobs1))) +
+        geom_line(aes(y = ma_cnt, group=pobs_1, color= factor(pobs_1))) +
         xlab('Date') + 
         labs(color="Primary Infections Observe Prob") +
         ylab('Infections') + 

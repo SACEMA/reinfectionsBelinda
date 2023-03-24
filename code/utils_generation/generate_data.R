@@ -56,7 +56,7 @@ generate_data <- function(method, data_source, seed) {
     
     underlying <- ts[, c('infections', 'reinfections')]
     
-    for (day in (cutoff+1):nrow(ts)){
+    for (day in 1:nrow(ts)){
       ts$infections[day] = rbinom(1, underlying$infections[day], parameters.r$pobs_1[i])
     }
     
@@ -138,7 +138,7 @@ generate_data <- function(method, data_source, seed) {
     ts$infections_ma = frollmean(ts$infections, window_days)
 
     
-    for (day in (cutoff+1):nrow(ts)) { 
+    for (day in 1:nrow(ts)) { 
       underlying$eligible_for_reinf[day] = underlying$eligible_for_reinf[day] - sum(underlying$reinfections[1:day-1])
       ts$eligible_for_reinf[day] = ts$eligible_for_reinf[day] - sum(ts$reinfections[1:day-1])
       
