@@ -72,17 +72,27 @@ m3_primary_infections <- ggplot(data, aes(x=date)) +
         labs(color="Primary Infections Observe Prob") +
         ylab('Infections') + 
         ggtitle('Observed primary infections') +
-        theme(plot.title = element_text(hjust = 0.5))
+        theme(plot.title = element_text(hjust = 0.5)) +
+        theme(panel.border = element_rect(colour = "black", fill = NA, size = 0.25)
+        , panel.grid.minor = element_blank()) +
+        theme_minimal() + 
+        scale_colour_brewer(palette = "Set2") +
+        theme(axis.title.x=element_blank())
 
 
-m3_reinfections <- ggplot(data, aes(x=date)) +
-            geom_line(aes(y = reinfections_ma, group=pobs1, color= factor(pobs1))) +
-            facet_wrap(~pobs2) +
+m3_reinfections <- ggplot(data[data$pscale==1], aes(x=date)) +
+            geom_line(aes(y = ma_reinf, group=pobs_1, color= factor(pobs_1))) +
+            facet_wrap(~pobs_2) +
             xlab('Date') + 
             #labs(color="Primary infections probability") +
             ylab('Reinfections') + 
             ggtitle('Observed reinfections') +
             theme(plot.title = element_text(hjust = 0.5)) +
+            theme(panel.border = element_rect(colour = "black", fill = NA, size = 0.25)
+            , panel.grid.minor = element_blank()) +
+            theme_minimal() + 
+            scale_colour_brewer(palette = "Set2") +
+            theme(axis.title.x=element_blank()) + 
             theme(legend.position = "none")
 
 data_method_3 <- grid.arrange(m3_primary_infections, m3_reinfections, nrow=2)
