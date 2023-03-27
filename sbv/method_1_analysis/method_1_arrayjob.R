@@ -129,5 +129,6 @@ results <- list(pscale = parameters.r$pscale[i]
                 , date_first = which(conseq_diff==5)[1]
                 , proportion_after_wavesplit = proportion_aw
                 , date_first_after_wavesplit = which(conseq_diff_aw==5)[1]
+                , seed = seed_batch
 )
 saveRDS(results, file=paste0("sbv/raw_output/m",method,"/results_", i,".RDS"))
