@@ -51,51 +51,64 @@ kappa_con_plot <- (ggplot(final_RDS)
 )
 ggsave(kappa_con_plot, filename=paste0(dir,'/kappa_density.png'), device="png")
 
-pobs1_pobs_2_proportion_0.001 <- (ggplot(final_RDS[final_RDS$dprob==0.001,]) 
-                            + aes(x=pobs_1, y=pobs_2, fill=proportion_after_wavesplit) 
-                            + geom_tile()
-                            + facet_wrap(~pscale)
-                            + ggtitle(paste0('Method ', method, ':  Observation probabilities and proportion \noutside projection interval for death probability 0.001'))
-                            + theme(plot.title = element_textbox_simple())
-                            + labs(
-                              y='Observation probability reinfections',
-                              x='Observation probability primary infections',
-                              fill='Proportion'
-                            )
-                            + styling_layers
-                            
-)
-ggsave(pobs1_pobs_2_proportion_0.001, filename=paste0(dir,'/pobs1_pobs_2_proportion_0.001.png'))
 
-pobs1_pobs_2_proportion_0.01 <- (ggplot(final_RDS[final_RDS$dprob==0.01,]) 
-                                  + aes(x=pobs_1, y=pobs_2, fill=proportion_after_wavesplit) 
-                                  + geom_tile()
-                                  + facet_wrap(~pscale)
-                                  + ggtitle(paste0('Method ', method, ': Observation probabilities and proportion \noutside projection interval for death probability 0.01'))
-                                  + theme(plot.title = element_textbox_simple())
-                                  + labs(
-                                   y='Observation probability reinfections',
-                                   x='Observation probability primary infections',
-                                   fill='Proportion'
-                                 )
-                                   + styling_layers
-)
-ggsave(pobs1_pobs_2_proportion_0.01, filename=paste0(dir,'/pobs1_pobs_2_proportion_0.01.png'))
 
-pobs1_pobs_2_proportion_0.05 <- (ggplot(final_RDS[final_RDS$dprob==0.05,]) 
-                                 + aes(x=pobs_1, y=pobs_2, fill=proportion_after_wavesplit) 
-                                 + geom_tile()
-                                 + facet_wrap(~pscale)
-                                 + ggtitle(paste0('Method ', method, ': Observation probabilities and proportion \noutside projection interval for death probability 0.05'))
-                                 + theme(plot.title = element_textbox_simple())
-                                 + labs(
-                                   y='Observation probability reinfections',
-                                   x='Observation probability primary infections',
-                                   fill='Proportion'
-                                 )
-                                 + styling_layers
+kappa_RDS <- final_RDS[, c("kappa_con", "pobs_1", "pobs_2", "dprob") ]
+names(kappa_RDS)[1] <- "convergence"
+lambda_RDS <- final_RDS[, c("lambda_con", "pobs_1", "pobs_2", "dprob") ]
+names(lambda_RDS)[1] <- "convergence"
+
+
+kappa_RDS$convergence_title <- 'Kappa'
+lambda_RDS$convergence_title <- 'Lambda'
+
+adjusted_data <- rbind(kappa_RDS, lambda_RDS)
+
+con_plot_s4 <- (ggplot(adjusted_data)
+                + aes(x=pobs_1, y=pobs_2, fill=convergence)
+                + facet_grid(convergence_title ~ dprob)
+                + geom_tile()
+                + labs(fill="Convergence"
+                       , y='Observation probability\nReinfections'
+                       , x='Observation probability\nPrimary infections'
+                       #, title="Death probability"
+                )
+                + styling_layers
+                + ggtitle('Death probability')
+                + theme(
+                  plot.title = element_text(hjust = 0.5, size = 11)
+                )
 )
-ggsave(pobs1_pobs_2_proportion_0.05, filename=paste0(dir,'/pobs1_pobs_2_proportion_0.05.png'))
+
+
+
+
+ggsave(con_plot_s4, filename=paste0(dir,'/con_plot_s4.png'), device="png")
+
+
+
+proportion_s4 <- (ggplot(final_RDS[final_RDS$pscale %in% c(1,1.5,2,2.5),])
+                + aes(x=pobs_1, y=pobs_2, fill=proportion_after_wavesplit)
+                + facet_grid(dprob ~ pscale)
+                + geom_tile()
+                + labs(fill="Proportion"
+                       , y='Observation probability\nReinfections'
+                       , x='Observation probability\nPrimary infections'
+                )
+                + styling_layers
+                + ggtitle('Scale')
+                + theme(
+                  plot.title = element_text(hjust = 0.5, size = 11)
+                )
+                + scale_y_continuous(breaks=seq(0.1, 0.5, 0.2)
+                                     , sec.axis = sec_axis(~ ., name = "Death probability"
+                                                           , breaks=NULL))
+)
+
+ggsave(proportion_s4, filename=paste0(dir,'/proportion_s4.png'), device="png")
+
+
+
 
 
 
