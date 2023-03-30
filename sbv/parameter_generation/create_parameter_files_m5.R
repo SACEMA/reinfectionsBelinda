@@ -13,7 +13,7 @@ pscale_min = 1
 pscale_max = 3
 pscale_steps = 0.5
 
-steep = c(0.0001, 0.0002, 0.00005)
+steep = c(0.0001, 0.0002, 0.00005, 0.00015)
 
 xm_min = 10000
 xm_max = 50000
@@ -25,11 +25,11 @@ pobs_1_max = c(0.1, 0.2, 0.3)
 
 parameters <- expand.grid(
   pscale = seq(pscale_min, pscale_max, pscale_steps)
-  , steep=steep
   , xm=seq(xm_min, xm_max, xm_steps)
   , pobs_1_min=pobs_1_min
   , pobs_1_max=pobs_1_max
   , multiplier = c(1,2,3)
+  , steep=steep
 )
 
 parameters$pobs_2_min <- parameters$multiplier * parameters$pobs_1_min
