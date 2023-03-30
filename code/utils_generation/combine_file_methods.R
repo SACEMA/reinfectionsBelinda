@@ -99,6 +99,10 @@ get_median_values <- function(method) {
             rds_1 <- final_RDS %>% group_by(pscale, pobs_1, pobs_2, dprob)
     
   }
+  
+  if (method==5){
+            rds_1 <- final_RDS %>% group_by(pscale, pobs_1_min, pobs_1_max, multiplier, xm, steep)
+  }
   calculate_values <- rds_1 %>% 
                             summarise(kappa_con = median(kappa_con)
                             , lambda_con = median(lambda_con)
