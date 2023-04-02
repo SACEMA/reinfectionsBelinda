@@ -59,96 +59,50 @@ con_plot <- (ggplot(final_RDS, aes(x = pobs_2))
                    )
                    + styling_layers
                    + scale_color_manual(values = colors)
-                   + ylim(1, 1.4)
-
+                   + ylim(1, 1.5)
 )
                     
 
 ggsave(con_plot, filename=paste0(dir, '/con_plot.png'))
 
 
-
-pscale_proportion_plot <- (ggplot(final_RDS) 
-            + aes(x=pscale, y=proportion, group=pobs_2, color= factor(pobs_2)) 
-            + geom_line()
-            + labs(color="Pobs 2", y='Proportion')
-            + ggtitle(paste0('Method ', method, ' pscale vs\n proportion of points outside prediction interval'))
-            + ylim(0,1)
-            + styling_layers
+#Pscale vs proportion plot after wavesplit
+proportion_m2 <- (ggplot(final_RDS) 
+                           + aes(x=pscale, y=proportion_after_wavesplit, group=pobs_2, color= factor(pobs_2)) 
+                           + geom_line()
+                           + labs(color="Reinfections\nobservation\nprobability"
+                                  , y='Proportion'
+                                  , x='Scale')
+                           + ylim(0,1)
+                           + styling_layers
+                          # + guides(fill = guide_legend(byrow = TRUE))
+                           + theme(legend.title = element_text( size=8)
+                                   , legend.text=element_text(size=8, )
+                                   , legend.spacing.y = unit(0.1, 'cm')
+                                   , legend.key.height = unit(0.3, "cm")
+                                   , axis.text = element_text(size=9)
+                                    , axis.title=element_text(size=9))
+                    ## important additional element
 )
-ggsave(pscale_proportion_plot, filename=paste0(dir, '/pscale_propotion.png'))
-
-
-
-
-
+ggsave(proportion_m2, filename=paste0(dir, '/pscale_propotion_aw.png'))
 
 
 #Pscale vs proportion plot after wavesplit
-pscale_proportion_plot_aw <- (ggplot(final_RDS) 
-                           + aes(x=pscale, y=proportion_after_wavesplit, group=pobs_2, color= factor(pobs_2)) 
-                           + geom_line()
-                           + labs(color="Reinfections\nobservation\nprobability", y='Proportion', x='Scale')
-                           #+ ggtitle(paste0('Method ', method, ' pscale vs proportion of points outside\nprediction interval AFTER wavesplit'))
-                           + ylim(0,1)
-                           + styling_layers
-)
-ggsave(pscale_proportion_plot_aw, filename=paste0(dir, '/pscale_propotion_aw.png'))
-
-
-cluster_proportion_plot <- (ggplot(final_RDS) 
-                           + aes(x=pscale, y=date_first, group=pobs_2, color= factor(pobs_2)) 
-                           + geom_line()
-                           + labs(color="Pobs 2", y='Proportion')
-                           + ggtitle(paste0('Method ', method, ' pscale vs first cluster of points outside prediction interval'))
-                           + ylim(50,100)
-                           + theme(plot.title = element_textbox_simple())
-                           + theme(panel.border = element_rect(colour = "black", fill = NA, size = 0.25)
-                                   , panel.grid.minor = element_blank()) 
-                           + theme_minimal() 
-                           +  scale_colour_brewer(palette = "Set2") 
-                           +  theme(axis.title.x=element_blank())  
-                           +  theme(legend.position = "none")
-)
-ggsave(cluster_proportion_plot, filename=paste0(dir, '/cluster_proportion.png'))
-
-
-cluster_proportion_plot_aw <- (ggplot(final_RDS) 
+cluster_m2 <- (ggplot(final_RDS) 
                               + aes(x=pscale, y=date_first_after_wavesplit, group=pobs_2, color= factor(pobs_2)) 
                               + geom_line()
-                              + labs(color="Reinfections\nobservation\nprobability", y='First day after split')
-                              + ggtitle(paste0('Method ', method, ' pscale vs first cluster of points\noutside prediction interval AFTER wavesplit'))
-                              + ylim(5,10)
-                              + theme(plot.title = element_textbox_simple())
-                              + theme(panel.border = element_rect(colour = "black", fill = NA, size = 0.25)
-                                      , panel.grid.minor = element_blank()) 
-                              + theme_minimal() 
-                              +  scale_colour_brewer(palette = "Set2") 
-                              #+  theme(axis.title.x=element_blank())  
-                             # +  theme(legend.position = "none")
+                              + labs(color="Reinfections\nobservation\nprobability", y='First day', x='Scale')
+                              #+ ggtitle(paste0('Method ', method, ' pscale vs proportion of points outside\nprediction interval AFTER wavesplit'))
+                              + ylim(0,70)
+                              + styling_layers
+                              +  theme(legend.title = element_text( size=8)
+                                , legend.text=element_text(size=8, )
+                                , legend.spacing.y = unit(0.1, 'cm')
+                                , legend.key.height = unit(0.3, "cm")
+                                , axis.text = element_text(size=9)
+                                , axis.title=element_text(size=9))
+                              
 )
-ggsave(cluster_proportion_plot_aw, filename=paste0(dir, '/cluster_proportion_aw.png'))
+ggsave(cluster_m2, filename=paste0(dir, '/pscale_cluster_m2.png'))
 
 
-pobs_2_proportion <- (ggplot(final_RDS) 
-                         + aes(x=pobs_2, y=proportion, group=pscale, color= factor(pscale)) 
-                         + geom_line()
-                         + labs(color="Pscale", y='Proportion')
-                         + ggtitle(paste0('Method ', method, ' pobs 2 vs proportion of points outside prediction interval'))
-                         + ylim(0,1)
-                         + theme(plot.title = element_textbox_simple())
-                         
-)
-pobs_2_proportion
-
-
-pobs_2_proportion_aw <- (ggplot(final_RDS) 
-                               + aes(x=pobs_2, y=proportion_after_wavesplit, group=pscale, color= factor(pscale)) 
-                               + geom_line()
-                               + labs(color="Pscale", y='Proportion after wavesplit')
-                               + ggtitle(paste0('Method ', method, ' pobs 2 vs proportion of points outside prediction interval AFTER wavesplit'))
-                               + ylim(0,1)
-                               + theme(plot.title = element_textbox_simple())
-                               
-)
-pobs_2_proportion_aw

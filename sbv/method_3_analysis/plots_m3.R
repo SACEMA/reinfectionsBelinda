@@ -1,5 +1,7 @@
 library(ggplot2)
 library(ggtext)
+library(data.table)
+
 method <- 3
 
 dir <- paste0('sbv/method_', method,'_analysis/plots')
@@ -16,37 +18,25 @@ styling_layers <-
           , panel.grid.minor = element_blank()) 
     , theme_minimal() 
     , scale_colour_brewer(palette = "Set2") 
-    , scale_fill_gradientn(colours = rev(colorspace::terrain_hcl(100)))
+    , scale_fill_gradientn(colours = rev(colorspace::terrain_hcl(100, c=200)))
     , scale_x_continuous(breaks=seq(0.1, 0.5, 0.2))
     , scale_y_continuous(breaks=seq(0.1, 0.5, 0.2))
   )
 
+cluster_style <- 
+  list ( 
+    scale_fill_gradientn(colours = rev(colorspace::terrain_hcl(100, c=200)), limits=c(0,50))
+    )
 
-#Lambda convergence plot 
-lambda_con_plot <- (ggplot(final_RDS)
-                    + aes(x = pobs_2, y = pobs_1, fill=lambda_con)
-                    + geom_tile()
-                    + labs(fill="Lambda Convergence"
-                           , y='Observation probability\nPrimary infections'
-                           , x='Observation probability\nReinfections'
-                    )
-                    + ggtitle(paste0('Lambda Convergence Sensitivity Analysis: Method ', method))
-                    + styling_layers
-)
-ggsave(lambda_con_plot, filename=paste0(dir, '/lambda_convergence.png'))
+con_style <- 
+  list ( 
+    scale_fill_gradientn(colours = rev(colorspace::terrain_hcl(100, c=200)), limits=c(1,1.5))
+  )
 
-#Kappa convergence plot
-kappa_con_plot <- (ggplot(final_RDS)
-                    + aes(x = pobs_2, y = pobs_1, fill=kappa_con)
-                    + geom_tile()
-                    + labs(fill="Kappa Convergence"
-                           , y='Observation probability\nPrimary infections'
-                           , x='Observation probability\nReinfections'
-                    )
-                    + ggtitle(paste0('Kappa Convergence Sensitivity Analysis: Method ', method))
-                    + styling_layers
-)
-ggsave(kappa_con_plot, filename=paste0(dir, '/kappa_convergence.png'))
+prop_style <- 
+  list ( 
+    scale_fill_gradientn(colours = rev(colorspace::terrain_hcl(100, c=200)), limits=c(0, 1))
+  )
 
 kappa_RDS <- final_RDS[, c("kappa_con", "pobs_1", "pobs_2") ]
 names(kappa_RDS)[1] <- "convergence"
@@ -68,6 +58,7 @@ con_plot_s3 <- (ggplot(adjusted_data)
                           , x='Observation probability\nPrimary infections'
                     )
                     + styling_layers
+                    + con_style
 )
 
 ggsave(con_plot_s3, filename=paste0(dir, '/con_plot_s3.png'))
@@ -88,32 +79,65 @@ pobs1_pobs_2_proportion <- (ggplot(final_RDS)
 ggsave(pobs1_pobs_2_proportion, filename=paste0(dir, '/pobs1_pobs_2_proportion.png'))
 
 #Proportion outside for each pobs1 and pobs2 for pscale=1, 1.5, 2, 2.5
-pobs1_pobs_2_proportion_select <- (ggplot(final_RDS[final_RDS$pscale %in% c(1, 1.5, 2, 2.5),]) 
+proportion_m3 <- (ggplot(final_RDS[final_RDS$pscale %in% c(1, 1.5, 2, 2.5),]) 
                             + aes(x=pobs_1, y=pobs_2, fill=proportion_after_wavesplit) 
                             + geom_tile()
                             + facet_wrap(~pscale)
                             #+ ggtitle(paste0('Method ', method, ': pobs 1 and pobs 2 vs proportion \nof points outside prediction interval'))
                             + labs(fill='Proportion'
+                                   , y='Observation probability\nReinfections'
+                                   , x='Observation probability\nPrimary infections'
+                            )
+                            
+                            + styling_layers
+                            + prop_style
+                            + theme(plot.title = element_textbox_simple()
+                             , axis.title=element_text(size=9)
+                             , legend.title = element_text( size=9)
+                             , legend.text = element_text( size=7)
+                             , legend.spacing.y = unit(0.3, 'cm')
+                             , axis.text = element_text(size=9)
+                            )
+)
+ggsave(proportion_m3, filename=paste0(dir, '/pobs1_pobs_2_proportion_select.png'))
+
+
+#Proportion outside for each pobs1 and pobs2
+pobs1_pobs_2_first_day <- (ggplot(final_RDS) 
+                            + aes(x=pobs_1, y=pobs_2, fill=date_first_after_wavesplit) 
+                            + geom_tile()
+                            + facet_wrap(~pscale)
+                            #+ ggtitle(paste0('Method ', method, ': pobs 1 and pobs 2 vs proportion \nof points outside prediction interval'))
+                            + labs(fill='First day'
                                    , y='Reinfections observation probability'
                                    , x='Primary infections observation probability'
                             )
                             + theme(plot.title = element_textbox_simple())
                             + styling_layers
-)
-ggsave(pobs1_pobs_2_proportion_select, filename=paste0(dir, '/pobs1_pobs_2_proportion_select.png'))
+                            + cluster_style
+                           + prop_style
+                          )
+ggsave(pobs1_pobs_2_first_day, filename=paste0(dir, '/pobs1_pobs_2_first_day.png'))
 
+#date_first outside for each pobs1 and pobs2 for pscale=1, 1.5, 2, 2.5
+cluster_m3 <- (ggplot(final_RDS[final_RDS$pscale %in% c(1, 1.5, 2, 2.5),]) 
+                                   + aes(x=pobs_1, y=pobs_2, fill=date_first_after_wavesplit) 
+                                   + geom_tile()
+                                   + facet_wrap(~pscale)
+                                   #+ ggtitle(paste0('Method ', method, ': pobs 1 and pobs 2 vs date_first \nof points outside prediction interval'))
+                                   + labs(fill='First day'
+                                          , y='Observation probability\nReinfections'
+                                          , x='Observation probability\nPrimary infections'
+                                   )
+                                  + styling_layers
+                                  + cluster_style
+                                  + theme(plot.title = element_textbox_simple()
+                                    , axis.title=element_text(size=9)
+                                    , legend.title = element_text( size=9)
+                                    , legend.text = element_text( size=7)
+                                    , legend.spacing.y = unit(0.3, 'cm')
+                                    , axis.text = element_text(size=7)
+                                  )
 
-#First cluster outside for each pobs1 and pobs2
-pobs1_pobs2_first_cluster <- (ggplot(final_RDS) 
-  + aes(x=pobs_1, y=pobs_2, fill=date_first_after_wavesplit) 
-  + geom_tile()
-  + facet_wrap(~pscale)
-  + ggtitle(paste0('Method ', method, ': pobs 1 and pobs 2 vs first cluster of points outside prediction interval AFTER wavesplit'))
-  + theme(plot.title = element_textbox_simple())
-  + labs(fill='First day'
-         , y='Reinfections observation probability'
-         , x='Primary infections observation probability'
-  )
-  + styling_layers
 )
-ggsave(pobs1_pobs2_first_cluster, filename=paste0(dir, '/pobs1_pobs2_first_cluster.png'))
+ggsave(cluster_m3, filename=paste0(dir, '/pobs1_pobs_2_date_first_select.png'))
