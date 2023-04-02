@@ -3,6 +3,8 @@ library('gridExtra')
 library('ggplot2')
 plot_dir <- 'output/paper_plots'
 
+configpth <- 'sbv/method_1_analysis/m1_config_general.json'
+attach(jsonlite::read_json(configpth))
 
 #Scenario 1
 dir.create(paste0(plot_dir, '/S1'))
@@ -21,28 +23,33 @@ for (i in 1:nrow(paramaters.r)) {
 sim_data <- ggplot(data, aes(x=date)) +
                    geom_line(aes(y = ma_cnt)) +
                    xlab('Date') + 
-                   ylab('Infections 7 Day Moving Average') + 
+                   ylab('Infections') + 
                    theme(plot.title = element_text(hjust = 0.5)) +
                    theme(panel.border = element_rect(colour = "black", fill = NA, size = 0.25)
                   , panel.grid.minor = element_blank()) +
                   theme_minimal() + 
                   scale_colour_brewer(palette = "Set2") +
-                  theme(axis.title.x=element_blank())
-
+                  theme(axis.title.x=element_blank()) +
+                  geom_vline(xintercept=as.numeric(as.Date(fit_through)),linetype=2, color="orange") + 
+                  geom_vline(xintercept=as.numeric(as.Date(omicron_date)),linetype=2, color="red") +
+                  scale_x_date(date_breaks = '4 months', expand = c(0, 0) )
 ggsave(sim_data, filename = paste0(dir,'/simulated_data.png'))
 
 #scenario 1 reinfections for different pscales
 sim_data_reinf <- ggplot(data[data$pscale %in% c(1, 1.5, 2, 2.5),], aes(x=date)) +
                   geom_line(aes(y = ma_reinf, group=pscale, color= factor(pscale))) +
                   xlab('Date') + 
-                  ylab('Reinfections 7-day Moving Average') + 
+                  ylab('Reinfections') + 
                   labs(color="Scale") +
                   theme(plot.title = element_text(hjust = 0.5)) +
                   theme(panel.border = element_rect(colour = "black", fill = NA, size = 0.25)
                 , panel.grid.minor = element_blank()) +
                   theme_minimal() + 
                   scale_colour_brewer(palette = "Set2") +
-                  theme(axis.title.x=element_blank())
+                  theme(axis.title.x=element_blank()) +
+                  geom_vline(xintercept=as.numeric(as.Date(fit_through)),linetype=2, color="orange") + 
+                  geom_vline(xintercept=as.numeric(as.Date(omicron_date)),linetype=2, color="red") +
+                  scale_x_date(date_breaks = '4 months', expand = c(0, 0) )
 
 ggsave(sim_data_reinf, filename = paste0(dir,'/calculated_reinfections.png'))
 
@@ -78,7 +85,10 @@ m2 <- ggplot(data[data$pscale==1], aes(x=date)) +
             , panel.grid.minor = element_blank()) +
             theme_minimal() + 
             scale_colour_brewer(palette = "Set2") +
-            theme(axis.title.x=element_blank())
+            theme(axis.title.x=element_blank()) +
+            geom_vline(xintercept=as.numeric(as.Date(fit_through)),linetype=2, color="orange") + 
+            geom_vline(xintercept=as.numeric(as.Date(omicron_date)),linetype=2, color="red") +
+            scale_x_date(date_breaks = '4 months', expand = c(0, 0) )
   
 ggsave(m2, filename = paste0(dir,'/calculated_reinfections.png'))
 
@@ -114,7 +124,11 @@ m3_primary_infections <- ggplot(data, aes(x=date)) +
         , panel.grid.minor = element_blank()) +
         theme_minimal() + 
         scale_colour_brewer(palette = "Set2") +
-        theme(axis.title.x=element_blank())
+        theme(axis.title.x=element_blank()) + 
+        geom_vline(xintercept=as.numeric(as.Date(fit_through)),linetype=2, color="orange") + 
+        geom_vline(xintercept=as.numeric(as.Date(omicron_date)),linetype=2, color="red") +
+        scale_x_date(date_breaks = '4 months', expand = c(0, 0) )
+
 ggsave(m3_primary_infections, filename = paste0(dir,'/primary_infections_obs.png'))
 
 m3_reinfections <- ggplot(data[data$pscale==1], aes(x=date)) +
@@ -130,7 +144,11 @@ m3_reinfections <- ggplot(data[data$pscale==1], aes(x=date)) +
             theme_minimal() + 
             scale_colour_brewer(palette = "Set2") +
             theme(axis.title.x=element_blank()) + 
-            theme(legend.position = "none")
+            theme(legend.position = "none") +
+            geom_vline(xintercept=as.numeric(as.Date(fit_through)),linetype=2, color="orange") + 
+            geom_vline(xintercept=as.numeric(as.Date(omicron_date)),linetype=2, color="red") +
+            scale_x_date(date_breaks = '4 months', expand = c(0, 0) )
+
 ggsave(m3_reinfections, filename = paste0(dir,'/reinfections_observed.png'))
 
 data_method_3 <- grid.arrange(m3_primary_infections, m3_reinfections, nrow=2)

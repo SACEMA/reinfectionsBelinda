@@ -56,6 +56,7 @@ combineBatchFiles = function (method, batch_number, delete=TRUE) {
   for (f in files) {
     resultList = c(resultList,readRDS(f))
   }
+  print(method)
   final_RDS <- do.call(rbind.data.frame, resultList)
   if (method == 1)
     final_RDS <- final_RDS %>% distinct(pscale, .keep_all = TRUE)
@@ -68,6 +69,11 @@ combineBatchFiles = function (method, batch_number, delete=TRUE) {
   
   if (method == 4)
     final_RDS <- final_RDS %>% distinct(pobs_2, pscale, pobs_1, dprob, .keep_all = TRUE)
+  
+  if (method == 5)
+    final_RDS <- final_RDS %>% distinct(pobs_1_min, pobs_2_max, pscale, xm, steep, .keep_all = TRUE)
+  
+  
   
   saveRDS(final_RDS, file=paste0("sbv/method_",method,"_analysis/output/final_output_data/batch_", batch_number,"_results.RDS"))
   if (delete==TRUE)
@@ -97,12 +103,12 @@ get_median_values <- function(method) {
   
   if (method==4){
             rds_1 <- final_RDS %>% group_by(pscale, pobs_1, pobs_2, dprob)
-    
   }
   
   if (method==5){
             rds_1 <- final_RDS %>% group_by(pscale, pobs_1_min, pobs_1_max, multiplier, xm, steep)
   }
+  
   calculate_values <- rds_1 %>% 
                             summarise(kappa_con = median(kappa_con)
                             , lambda_con = median(lambda_con)
