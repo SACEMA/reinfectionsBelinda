@@ -16,7 +16,7 @@ suppressPackageStartupMessages({
   file.path('data', 'ts_data_for_analysis.RDS'), # input
   file.path('utils', 'fit_functions.RData'),
   file.path('config_general.json'), # NOTE: change this to do full run!
-  2, 
+  3, 
   file.path('output', 'sim_90_null.RDS') # output
 ), .debug[1]) else commandArgs(trailingOnly = TRUE)
 
@@ -43,6 +43,11 @@ target <- file.path(rev(target_path[2:length(target_path)]), paste0(infections, 
 load_path <- split_path(.args[1])
 load(file.path(rev(load_path[2:length(load_path)]), paste0(infections, '_', load_path[1])))
 
+if (infections > 3){
+  select <- c("date", ordinal(i), "ma_tot", ordinal(i-1))
+  ts_adjusted <- ts[, ..select]
+  names(ts_adjusted) <- c("date", "observed", "ma_tot", "cases")
+} 
 
 if (infections==2){
   ts_adjusted <- ts[, c("date", "reinf", "ma_tot", "cnt" )]
@@ -68,7 +73,7 @@ sim_reinf <- function(ii){
 
 
 
-  sims <- sapply(rep(1:mcmc$n_posterior, n_sims_per_param), sim_reinf)
+sims <- sapply(rep(1:mcmc$n_posterior, n_sims_per_param), sim_reinf)
   
   
 saveRDS(sims, file = target)

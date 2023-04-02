@@ -10,6 +10,7 @@
 suppressPackageStartupMessages({
   library(data.table)
   library(ggplot2)
+  library(english)
   library(gridExtra)
 })
 
@@ -19,7 +20,7 @@ suppressPackageStartupMessages({
   "data/ts_data_for_analysis.RDS",
   "config_general.json",
   "utils/plotting_fxns.RData",
-  2, 
+  3, 
   "output/simplot_90_null.png" # output
 ), .debug[1]) else commandArgs(trailingOnly = TRUE)
 
@@ -49,6 +50,15 @@ sri <- data.table(date = ts$date, sims)
 sri_long <- melt(sri, id.vars = 'date')
 sri_long[, ma_val := frollmean(value, 7), variable]
 
+infection <- .args[5]
+
+if (infection == 2) {
+  plot_column <- 'reinf'
+} else {  
+  plot_column <- ordinal(infection)  
+}
+plot_column_ma <- paste0('ma_', plot_column)
+
 eri <- sri_long[, .(exp_reinf = median(value)
                     , low_reinf = quantile(value, 0.025, na.rm = TRUE)
                     , upp_reinf = quantile(value, 0.975, na.rm = TRUE)), keyby = date]
@@ -60,9 +70,9 @@ eri_ma <- sri_long[, .(exp_reinf = median(ma_val, na.rm = TRUE)
 plot_sim <- function(dat, sim, sim_ma) (ggplot(dat) 
                                 + aes(x = date) 
                                 + geom_ribbon(data = sim, aes(x = date, ymin = low_reinf, ymax = upp_reinf), alpha = .3)
-                                + geom_point(aes(y = third), size = .2, color = '1', alpha = .3)
+                                + geom_point(aes(y = !!sym(plot_column)), size = .2, color = '1', alpha = .3)
                                 + geom_ribbon(data = sim_ma, aes(x = date, ymin = low_reinf, ymax = upp_reinf), alpha = .3, fill = '2')
-                                + geom_line(aes(y = ma_third), color = '2')
+                                + geom_line(aes(y = !!sym(plot_column_ma)), color = '2')
                                 + ylab(paste0('Infection number: ', infections))
                                 + xlab('Specimen receipt date')
                                 + geom_vline(aes(xintercept = 1 + as.Date(fit_through)), linetype = 3, color = 'red')

@@ -23,10 +23,10 @@ suppressPackageStartupMessages({
 .debug <- ''
 .args <- if (interactive()) sprintf(c(
   file.path('data', 'ts_data_for_analysis.RDS'), # input
-  file.path('utils', 'mcmc_functions.RData'),
+  file.path('utils', 'mcmc_functions_l2.RData'),
   file.path('utils', 'fit_functions.RData'),
   file.path('config_general.json'), 
-  2, #which infection? 
+  3, #which infection? 
   file.path('output', 'posterior_90_null.RData')
 ), .debug[1]) else commandArgs(trailingOnly = TRUE)
 
@@ -49,13 +49,15 @@ infections <- .args[5]
 target_path <- split_path(tail(.args, 1))
 target <- file.path(rev(target_path[2:length(target_path)]), paste0(infections, '_', target_path[1]))
 
-#Adjust the ts to have columns needed for analysis based on argument
-if (infections == 4){
-  ts_adjusted <- ts[, c("date", "fourth", "ma_tot", "third" )]
+
+if (infections > 3){
+  select <- c("date", ordinal(i), "ma_tot", ordinal(i-1))
+  ts_adjusted <- ts[, ..select]
   names(ts_adjusted) <- c("date", "observed", "ma_tot", "cases")
 } 
 if (infections == 3){
-  ts_adjusted <- ts[, c("date", "third", "ma_tot", "reinf" )]
+  select <- c("date", "third", "ma_tot", "reinf")
+  ts_adjusted <- ts[, ..select]
   names(ts_adjusted) <- c("date", "observed", "ma_tot", "cases")
 } 
 if (infections == 2){
@@ -82,7 +84,7 @@ class(initBounds[,2]) <- class(initBounds[,1]) <- 'numeric'
 
 #Run MCMC
 
-output <- do.mcmc(4, ts_adjusted)
+output <- do.mcmc.l2(mcmc$n_chains, ts_adjusted)
 
 #Save posterior
 lambda.post <- kappa.post <-  lambda2.post <- numeric(0)

@@ -19,7 +19,7 @@ suppressPackageStartupMessages({
 
 .debug <- ''
 .args <- if (interactive()) sprintf(c(
-  file.path('utils', 'mcmc_functions.RData') # output
+  file.path('utils', 'mcmc_functions_l2.RData') # output
 ), .debug[1]) else commandArgs(trailingOnly = TRUE)
 
 utils <- './utils/'
@@ -57,7 +57,7 @@ unlogParms <- function(alist) {
   return(alist)
 }
 
-mcmcSampler <- function(init.params, ## initial parameter guess
+mcmcSampler.l2 <- function(init.params, ## initial parameter guess
                         randInit = mcmc$rand_init, ## if T then randomly sample initial parameters instead of above value
                         seed = 1, ## RNG seed
                         ref.params=disease_params(), ## fixed parameters
@@ -136,7 +136,7 @@ initRand <- function(fit.params) {
 
 ## default proposal function
 #Using the normal distribution, this will calculate the proposed next value randomly.
-default.proposer <- function(sdProps) {
+default.proposer.l2 <- function(sdProps) {
   return(list(sdProps, type = 'default',
               fxn = function(current) {
                 proposal <- current
@@ -146,24 +146,24 @@ default.proposer <- function(sdProps) {
 }
 
 
-mcmcParams <- list(init.params = c(lambda = NA, kappa = NA, lambda2 = NA)
+mcmcParams.l2 <- list(init.params = c(lambda = NA, kappa = NA, lambda2 = NA)
                    , seed = NA
-                   , proposer = default.proposer(sdProps = c(.01, .3, .01))
+                   , proposer = default.proposer.l2(sdProps = c(.01, .3, .01))
                    , randInit = TRUE
                    )
 
 
-doChains <- function(x, mcmcParams) {
+doChains.l2 <- function(x, mcmcParams.l2) {
   ## Below line uses mclapply to parallelize do.call over seeds
-  chains <- mclapply(x, function(x) do.call(mcmcSampler, within(mcmcParams, {seed <- x})))
+  chains <- mclapply(x, function(x) do.call(mcmcSampler.l2, within(mcmcParams.l2, {seed <- x})))
   aratio <- mean(unlist(lapply(chains, '[[', 'aratio'))) ## average across chains
   chains <- lapply(chains, '[[', 'samp') ## pull out posterior samples only
   chains <- as.mcmc.list(chains) ## make into mcmc.list
   return(list(chains=chains, aratio = aratio))
 }
 
-do.mcmc <- function(n_chains, ts_adjusted) {
-  mcmc.run <- doChains(1:n_chains, mcmcParams)
+do.mcmc.l2 <- function(n_chains, ts_adjusted) {
+  mcmc.run <- doChains.l2(1:n_chains, mcmcParams.l2)
   return (mcmc.run)
 }
 
@@ -173,5 +173,5 @@ split_path <- function(path) {
 }
 
 #Save defined functions
-save(split_path, doChains, mcmcParams, default.proposer, initRand, mcmcSampler, logParms, unlogParms, lprior, llikePrior, do.mcmc, file = target)
+save(split_path, doChains.l2, mcmcParams.l2, default.proposer.l2, initRand, mcmcSampler.l2, logParms, unlogParms, lprior, llikePrior, do.mcmc.l2, file = target)
 

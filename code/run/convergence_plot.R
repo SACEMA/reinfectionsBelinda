@@ -21,7 +21,7 @@ suppressPackageStartupMessages({
   file.path('output', 'posterior_90_null.RData'),
   file.path('utils', 'fit_functions.RData'),
   file.path('config_general.json'),
-  2,
+  3,
   file.path('output', 'convergence_plot.png')
 ), .debug[1]) else commandArgs(trailingOnly = TRUE)
 
