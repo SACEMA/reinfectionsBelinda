@@ -55,7 +55,10 @@ infection <- .args[5]
 if (infection == 2) {
   plot_column <- 'reinf'
 } else {  
-  plot_column <- ordinal(infection)  
+  if (infection == 3)
+    plot_column <- 'third'
+  else 
+    plot_column <- ordinal(infection)  
 }
 plot_column_ma <- paste0('ma_', plot_column)
 
