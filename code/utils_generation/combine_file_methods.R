@@ -80,6 +80,14 @@ combineBatchFiles = function (method, batch_number, delete=TRUE) {
     unlink(x = '"sbv/method_",method,"_analysis/output/batch"', recursive = TRUE)
 }
 
+median_cluster <- function (values) { 
+  values[is.na(values)] <- Inf
+  med <- median(values)
+  if (med == Inf)
+    return (NA)
+  return (med)
+}
+
 get_median_values <- function(method) {
   files <- list.files(path=paste0("sbv/method_",method,"_analysis/output/final_output_data"), pattern="*.RDS", full.names=TRUE, recursive=FALSE)
   
@@ -90,6 +98,7 @@ get_median_values <- function(method) {
     final_RDS <- rbind.data.frame(final_RDS, readRDS(file))
   }
   
+  
   if (method==1)
     rds_1 <- final_RDS %>% group_by(pscale) 
   
@@ -98,7 +107,6 @@ get_median_values <- function(method) {
   
   if (method==3) {
             rds_1 <- final_RDS %>% group_by(pscale, pobs_1, pobs_2)
-            print("method 3")
   }
   
   if (method==4){
@@ -113,9 +121,9 @@ get_median_values <- function(method) {
                             summarise(kappa_con = median(kappa_con)
                             , lambda_con = median(lambda_con)
                             , proportion = median(proportion)
-                            , date_first = median(date_first)
+                            , date_first = median_cluster(date_first)
                             , proportion_after_wavesplit = median(proportion_after_wavesplit)
-                            , date_first_after_wavesplit = median(date_first_after_wavesplit)
+                            , date_first_after_wavesplit = median_cluster(date_first_after_wavesplit)
                             , .groups = 'drop')
 
   rm(rds_1)
@@ -130,5 +138,5 @@ results_complete <- function(method) {
   source(script_path)
 }
   
-save(results_complete, combineBatchFiles, get_median_values, combineResultsCurrent, combineResultsInRaw, combineResultsInRawCl, file='utils/cleanup_methods.RData' )
+save(results_complete, median_cluster, combineBatchFiles, get_median_values, combineResultsCurrent, combineResultsInRaw, combineResultsInRawCl, file='utils/cleanup_methods.RData' )
   
