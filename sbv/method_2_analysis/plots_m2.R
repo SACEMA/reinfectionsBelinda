@@ -49,8 +49,8 @@ colors <- c("Kappa" = "green", "Lambda" = "blue")
 con_plot <- (ggplot(final_RDS, aes(x = pobs_2))
                    + geom_line(aes(y = kappa_con, color="Kappa"))
                    + geom_line(aes(y = lambda_con, color="Lambda"))
-                   + geom_hline(yintercept=c(1.2), linetype="dotted")
-
+                   + geom_hline(yintercept=c(1.2), linetype="dotted", color="red")
+                    + geom_hline(yintercept=c(1.1), linetype="dotted", color="grey")
                  #  + ggtitle(paste0('Kappa Convergence Sensitivity Analysis: Method ', + method)) 
                    + labs(
                      x = "Reinfections observation probability"
