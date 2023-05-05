@@ -13,6 +13,11 @@ scientific_10 <- function(x) {
   parse(text=gsub("e", " %*% 10^", scales::scientific_format()(x)))
 }
 
+con_style <- 
+  list ( 
+    scale_fill_gradientn(colours = rev(colorspace::terrain_hcl(100, c=200)), limits=c(1,1.5))
+  )
+
 styling_layers <- 
   list(
     #scale_fill_gradient2(low='green', mid="white", high='yellow', midpoint=0.5)
@@ -133,7 +138,7 @@ con_plot_s5 <- (ggplot(adjusted_data)
                   + scale_y_continuous(sec.axis = sec_axis(~ ., name = "Min observation probability \nfor primary infections"
                                                            , breaks=NULL))
                   + scale_x_continuous(breaks=c(1, 3, 5))
-                  
+                  + con_style
 )
 
 ggsave(con_plot_s5, filename=paste0(dir,'/con_plot_s5.png'), device="png")

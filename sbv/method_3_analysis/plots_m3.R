@@ -115,7 +115,6 @@ pobs1_pobs_2_first_day <- (ggplot(final_RDS)
                             + theme(plot.title = element_textbox_simple())
                             + styling_layers
                             + cluster_style
-                           + prop_style
                           )
 ggsave(pobs1_pobs_2_first_day, filename=paste0(dir, '/pobs1_pobs_2_first_day.png'))
 
