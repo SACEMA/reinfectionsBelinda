@@ -105,7 +105,7 @@ inc_reinf_fit <- (plot_sim(ts[between(date, as.Date('2020-03-20'), as.Date(fit_t
                   + ggtitle('Fitting period')
                   + geom_text(aes(label = year, y = 0), data = ts[between(date, as.Date('2020-03-20'), as.Date(fit_through)), .(year = format(date, '%Y'), date)][, .(date = min(date)), by = year], vjust = -13, hjust = 'left', nudge_x = 14, size = 7*0.35)
 )
-inc_reinf_proj <- (plot_sim(ts[date > as.Date(fit_through)], eri[date > as.Date(fit_through)], eri_ma[date > as.Date(fit_through)])
+inc_reinf_proj <- (plot_sim(ts[date > as.Date(fit_through)  && date < as.Date(omicron_date)], eri[date > as.Date(fit_through) && date < as.Date(omicron_date)], eri_ma[date > as.Date(fit_through) && date < as.Date(omicron_date)])
                    + ggtitle('Projection period')
                    # + geom_text(aes(label = year, y = 0), data = ts[date > '2021-12-31', .(year = format(date, '%Y'), date)][, .(date = min(date)), by = year], vjust = -13, hjust = 'left', nudge_x = 14, size = 7*0.35)
 )

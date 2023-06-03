@@ -23,7 +23,7 @@ styling_layers <-
 
 cluster_style <- 
   list ( 
-    scale_fill_gradientn(colours = rev(colorspace::terrain_hcl(100, c=200)), limits=c(0,50))
+    scale_fill_gradientn(colours = rev(colorspace::terrain_hcl(100, c=200)), limits=c(0,80))
   )
 
 con_style <- 

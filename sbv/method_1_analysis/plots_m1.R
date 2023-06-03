@@ -23,7 +23,7 @@ styling_layers <-
 proportion_m1 <- (ggplot(final_RDS) 
                            + aes(x=pscale, y=proportion_after_wavesplit) 
                            + geom_line()
-                           + labs(x="Reinfections observation probability", y='Proportion')
+                           + labs(x="Scale", y='Proportion')
                            + ylim(0,1)
                            + styling_layers      
                            + theme(plot.title = element_textbox_simple()

@@ -84,7 +84,7 @@ trace_plots <- lambda_trace / logkappa_trace + plot_layout(guides = "collect")
 #trace_plots <- grid.arrange(lambda_trace, logkappa_trace, lambda2_trace, nrow=3, ncol=1)
 
 gd <- gelman.diag(output$chains)
-gd$psrf <- gd$psrf[ -4,]
+gd$psrf <- gd$psrf[ -3,]
 
 convergence_diag_plot <- (ggplot(data.table(cbind(parameter = rownames(gd$psrf), gd$psrf)))
            + aes(x = as.numeric(`Point est.`), y = parameter)
