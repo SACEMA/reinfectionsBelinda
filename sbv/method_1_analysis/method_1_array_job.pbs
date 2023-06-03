@@ -6,7 +6,7 @@
 #PBS -o /mnt/lustre/users/blombard/reinfectionsBelinda/oe_files/array_job_m1.out
 #PBS -e /mnt/lustre/users/blombard/reinfectionsBelinda/oe_files/array_job_m1.err
 #PBS -l walltime=1:00:00
-#PBS -J 1-105:15
+#PBS -J 1-21:21
 #PBS -q smp
 #PBS -M belindalombard@sun.ac.za
 #PBS -m be
@@ -23,7 +23,7 @@ cd /mnt/lustre/users/blombard/reinfectionsBelinda/
 
 make sbv
 
-STEP=15
+STEP=21
 START=$PBS_ARRAY_INDEX
 END=$(( $START+$STEP-1 ))
 
@@ -36,3 +36,6 @@ sleep 0.1 # For sequential output
 echo "Waiting for processes to finish" 
 wait $(jobs -p)
 echo "All processes finished"
+
+
+Rscript sbv/cleanup.R 1 $START $END 

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #PBS -P CBBI1106
-#PBS -N array_job
+#PBS -N 2_array_job
 #PBS -l select=1:ncpus=24
 #PBS -o /mnt/lustre/users/blombard/reinfectionsBelinda/oe_files/array_job_m2.out
 #PBS -e /mnt/lustre/users/blombard/reinfectionsBelinda/oe_files/array_job_m2.err
@@ -36,3 +36,5 @@ sleep 0.1 # For sequential output
 echo "Waiting for processes to finish" 
 wait $(jobs -p)
 echo "All processes finished"
+
+Rscript sbv/cleanup.R 2 $START $END 
