@@ -33,7 +33,7 @@ proportion_m1 <- (ggplot(final_RDS)
 )
 proportion_m1
 
-ggsave(pscale_proportion_plot_aw, filename=paste0(dir,'/pscale_proportion_aw.png'), device="png")
+ggsave(proportion_m1, filename=paste0(dir,'/pscale_proportion_aw.png'), device="png")
 
 
 

@@ -25,7 +25,14 @@ suppressPackageStartupMessages({
 utils <- './utils/'
 dir.create(utils)
 
-
+# Create initial bounds
+initBounds.l2 <- data.frame(rbind( ## for initial conditions
+  c(log(1.2e-09),log(1.75e-07)) ## lambda
+  ,c(log(1/1000), log(1/0.5))## kappa
+  ,c(log(1.2e-09),log(1.75e-07)))) ##lambda2
+colnames(initBounds.l2) <- c('lower', 'upper')
+rownames(initBounds.l2) <- c('loglambda','logkappa','loglambda2')
+class(initBounds.l2[,2]) <- class(initBounds.l2[,1]) <- 'numeric'
 target <- tail(.args, 1)
 
 lprior <- function(parms=disease_params()) with(parms, {
@@ -62,15 +69,20 @@ mcmcSampler.l2 <- function(init.params, ## initial parameter guess
                         seed = 1, ## RNG seed
                         ref.params=disease_params(), ## fixed parameters
                         data = ts_adjusted[date <= fit_through], ## data
-                        proposer = default.proposer(sdProps), ## proposal distribution
+                        proposer = default.proposer.l2(sdProps), ## proposal distribution
                         niter = mcmc$n_iter, ## MCMC iterations
                         nburn = mcmc$burnin){ ## iterations to automatically burn
 
+  
+  print(init.params)
+  
   set.seed(seed) #Set seed for when generating random numbers
   if(randInit) #randInit = T means we have to use a randomly generated initial value 
     init.params <- initRand(init.params) #Calls initRand function to generate a random uniformly distributed number
   
   current.params <- init.params
+  
+  print(current.params)
   
   nfitted <- length(current.params) # How maby parameters are we trying to fit? 
   
@@ -97,7 +109,7 @@ mcmcSampler.l2 <- function(init.params, ## initial parameter guess
     propVal <- llikePrior(proposal, ref.params = ref.params, data=data)
     lmh <- propVal - curVal ## likelihood ratio = log likelihood difference
     if (is.na(lmh)) { ## if NA, print informative info but don't accept it
-      print(list(lmh=lmh, proposal=exp(proposal), vv=vv, seed=seed))
+      #print(list(lmh=lmh, proposal=exp(proposal), vv=vv, seed=seed))
     } else { ## if it's not NA then do acception/rejection algorithm
       ## if MHR >= 1 or a uniform random # in [0,1] is <= MHR, accept otherwise reject
       if ( (lmh >= 0) | (runif(1,0,1) <= exp(lmh)) ) {
@@ -128,8 +140,8 @@ initRand <- function(fit.params) {
   for(nm in tempnm)
     #runif function generates random deviates of the uniform distribution (runif(n, min = 0, max = 1))
     fit.params[nm] <- runif(1,#Generate one deviate
-                            min = initBounds[rownames(initBounds)==nm, 'lower'], #Get the lower bound of the respective parameter 
-                            max =  initBounds[row.names(initBounds)==nm, 'upper']) #Get the upperbound based on the respective parameter)
+                            min = initBounds.l2[rownames(initBounds.l2)==nm, 'lower'], #Get the lower bound of the respective parameter 
+                            max =  initBounds.l2[row.names(initBounds.l2)==nm, 'upper']) #Get the upperbound based on the respective parameter)
   
   return(unlogParms(fit.params))
 }
@@ -173,5 +185,5 @@ split_path <- function(path) {
 }
 
 #Save defined functions
-save(split_path, doChains.l2, mcmcParams.l2, default.proposer.l2, initRand, mcmcSampler.l2, logParms, unlogParms, lprior, llikePrior, do.mcmc.l2, file = target)
+save(split_path, initBounds.l2, doChains.l2, mcmcParams.l2, default.proposer.l2, initRand, mcmcSampler.l2, logParms, unlogParms, lprior, llikePrior, do.mcmc.l2, file = target)
 

@@ -169,4 +169,74 @@ generate_data <- function(method, data_source, seed) {
   return (ts)
 }
 
-save(generate_data, file = target)
+generate_data_third <- function(data_source, seed) {
+  ##Get the data
+  ts <- readRDS(data_source)
+  set.seed(seed-1)
+  
+  ts[, infections_ma := frollmean(infections, window_days)]
+  ts[, reinfections := 0]
+  
+  underlying <- ts[, c('infections', 'reinfections')]
+  
+  for (day in 1:nrow(ts)){
+    ts$infections[day] = rbinom(1, underlying$infections[day], parameters.r$pobs_1[i])
+  }
+  
+  ts[, eligible_for_reinf := shift(cumsum(infections), cutoff-1)]
+  underlying$eligible_for_reinf= shift(cumsum(ts$infections), cutoff-1)
+  
+  ts$infections_ma = frollmean(ts$infections, window_days)
+  
+  #adjust infections observed according to observation probability
+  
+  #distinction: underlying is the underlying 'true' infections, etc. and ts is the observed (what the data can see)
+  for (day in (cutoff+1):nrow(ts)) { 
+    
+    underlying$eligible_for_reinf[day] = underlying$eligible_for_reinf[day] - sum(underlying$reinfections[1:day-1])
+    ts$eligible_for_reinf[day] = ts$eligible_for_reinf[day] - sum(ts$reinfections[1:day-1])
+    
+    if (ts$date[day]<=wave_split) {
+      underlying$reinfections[day] = round(reinf_hazard * ts$infections[day] * underlying$eligible_for_reinf[day])
+    } else {
+      underlying$reinfections[day] = round(reinf_hazard * ts$infections[day] * underlying$eligible_for_reinf[day] * parameters.r$pscale[i])
+    } 
+    
+    ts$reinfections[day] = rbinom(1, underlying$reinfections[day], parameters.r$pobs_2[i])
+  }
+  
+  ts[, reinfections_ma := frollmean(reinfections, window_days)]
+  ts[, third := 0]
+  
+  underlying$third <- ts$third
+  underlying$eligible_for_third= shift(cumsum(underlying$reinfections), cutoff-1)
+  
+  
+  ts[, eligible_for_third := shift(cumsum(reinfections), cutoff-1)]
+  
+  for (day in (cutoff+1):nrow(ts)) { 
+    
+    underlying$eligible_for_third[day] = underlying$eligible_for_third[day] - sum(underlying$third[1:day-1])
+    ts$eligible_for_third[day] = ts$eligible_for_third[day] - sum(ts$third[1:day-1])
+    
+    if (ts$date[day]<=wave_split) {
+      underlying$third[day] = round(reinf_hazard * ts$reinfections[day] * underlying$eligible_for_third[day])
+    } else {
+      underlying$third[day] = round(reinf_hazard * ts$reinfections[day] * underlying$eligible_for_third[day] * parameters.r$pscale[i])
+    } 
+    
+    ts$third[day] = rbinom(1, underlying$third[day], parameters.r$pobs_3[i])
+  }
+  
+  ##Rename column names for MCMC
+  names(ts)[4] <- "cases"
+  names(ts)[6] <- "ma_cnt"
+  names(ts)[7] <- "observed"
+  ts[, tot := observed + cases]
+  ts[, ma_tot := frollmean(tot, window_days)]
+  ts[, ma_reinf := frollmean(observed, window_days)]
+  
+  return (ts)
+  
+}
+save(generate_data, generate_data_third, file = target)

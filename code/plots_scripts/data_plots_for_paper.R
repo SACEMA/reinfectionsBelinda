@@ -1,6 +1,7 @@
 # Plot 1 - simulated primary and reinfections
 library('gridExtra')
 library('ggplot2')
+library('data.table')
 plot_dir <- 'output/paper_plots'
 
 configpth <- 'sbv/method_1_analysis/m1_config_general.json'
@@ -14,12 +15,15 @@ load('sbv/method_1_analysis/parameters.RData')
 paramaters.r <- save_params
 data <- data.frame()
 for (i in 1:nrow(paramaters.r)) {
-  data_add <- generate_data(1, 'data/inf_for_sbv.RDS', 1)
+  data_add <- generate_data(1, 'data/inf_for_sbv_v3.RDS', 1)
   data_add$pscale <- parameters.r[i,]$pscale
   data <- rbind(data, data_add)
 }
 
 #original simulated data
+
+fit_through <- '2021-04-01'
+omicron_date <- '2021-04-01'
 sim_data <- ggplot(data, aes(x=date)) +
                    geom_line(aes(y = ma_cnt)) +
                    xlab('Date') + 
@@ -32,7 +36,7 @@ sim_data <- ggplot(data, aes(x=date)) +
                   theme(axis.title.x=element_blank()) +
                   geom_vline(xintercept=as.numeric(as.Date(fit_through)),linetype=2, color="orange") + 
                   geom_vline(xintercept=as.numeric(as.Date(omicron_date)),linetype=2, color="red") +
-                  scale_x_date(date_breaks = '4 months', expand = c(0, 0) )
+                  scale_x_date(date_breaks = '3 months', expand = c(0, 0) )
 ggsave(sim_data, filename = paste0(dir,'/simulated_data.png'))
 
 #scenario 1 reinfections for different pscales

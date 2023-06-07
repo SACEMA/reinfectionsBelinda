@@ -4,18 +4,18 @@
 	"window_days": 7,
 	"reinf_hazard": 1.38866e-08,
 	"wave_thresh": 0.15,
-	"infection": "second",
-	"fit_through": "2021-02-28",
-	"omicron_date": "2021-05-01",
-	"wave_split": "2021-05-01",
+	"infection": "third",
+	"fit_through": "2021-10-01",
+	"omicron_date": "2021-04-01",
+	"wave_split": "2021-04-01",
 	"posterior_method": "select", //This can be last or select
 	"convergence_method": "posterior", //all or posterior
 	"mcmc": {
 	   "rand_init": true,
-	   "n_iter": 10000,
-	   "burnin": 4000,
-	   "n_chains": 4,
-	   "n_posterior": 1600
+	   "n_iter": 1000,
+	   "burnin": 100,
+	   "n_chains": 2,
+	   "n_posterior": 160
 	},
-	"n_sims_per_param": 100
+	"n_sims_per_param": 10
 }

@@ -31,10 +31,16 @@ required_files <- c('utils/observe_prob_functions.RData'
                 ,'utils/generate_data.RData'
                 )
 
+
+required_files_third_l2 <- c('utils/observe_prob_functions.RData'
+                    , 'utils/mcmc_functions_l2.RData'
+                    ,'utils/fit_functions.RData'
+                    ,'utils/generate_data.RData'
+)
 #function that splits path
 split_path <- function(path) {
   if (dirname(path) %in% c(".", path)) return(basename(path))
   return(c(basename(path), split_path(dirname(path))))
 }
 
-save(required_packages, required_files, file=target)
+save(required_packages, required_files, required_files_l2,  file=target)
