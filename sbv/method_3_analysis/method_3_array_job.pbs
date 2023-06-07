@@ -1,17 +1,21 @@
 #!/bin/bash
 
 #PBS -P CBBI1106
-#PBS -N array_job
+#PBS -N 3_array_job
 #PBS -l select=1:ncpus=24
 #PBS -o /mnt/lustre/users/blombard/reinfectionsBelinda/oe_files/array_job_m3.out
 #PBS -e /mnt/lustre/users/blombard/reinfectionsBelinda/oe_files/array_job_m3.err
 #PBS -l walltime=1:00:00
-#PBS -J 1-240:24
+#PBS -J 1-525:21
 #PBS -q smp
 #PBS -M belindalombard@sun.ac.za
 #PBS -m be
 
 sleep 4
+
+STEP=21
+START=$PBS_ARRAY_INDEX
+END=$(( $START+$STEP-1 ))
 
 #module add chpc/BIOMODULES R/4.1.0
 
@@ -23,9 +27,6 @@ cd /mnt/lustre/users/blombard/reinfectionsBelinda/
 
 make sbv
 
-STEP=24
-START=$PBS_ARRAY_INDEX
-END=$(( $START+$STEP-1 ))
 
 for i in $(eval echo "{$START..$END}")
 do
@@ -39,3 +40,4 @@ echo "All processes finished"
 echo "Cleanup script" 
 
 Rscript sbv/cleanup.R 3 $START $END 
+
