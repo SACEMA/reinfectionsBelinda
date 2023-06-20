@@ -5,7 +5,7 @@ args = commandArgs(trailingOnly=TRUE)
 results <- list()
 
 #set i, the index in the parameter set
-#i<-strtoi(args[1])
+i<-strtoi(args[1])
 
 if (!exists("i") | is.na(i))
   i <- 1

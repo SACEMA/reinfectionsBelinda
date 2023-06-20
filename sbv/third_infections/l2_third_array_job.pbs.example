@@ -34,7 +34,7 @@ done
 
 sleep 0.1 # For sequential output
 echo "Waiting for processes to finish" 
-wait $(jobs -p)
+wait $(jobs -p)0
 echo "All processes finished"
 
 #Rscript sbv/cleanup.R 2 $START $END 
