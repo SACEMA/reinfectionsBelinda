@@ -58,7 +58,8 @@ sbv/plots
 
 sbv/method_*_analysis/*.json
 sbv/method_*_analysis/*.pbs
-
+sbv/third_infections/*.json
+sbv/third_infections/*.pbs
 
 #output files
 output/paper_plots
