@@ -14,7 +14,9 @@ all: install utils_run
 run: utils_run generate_data data mcmc sim plots
 
 #sbv setup for simulation-based-validation
-sbv: utils_sbv create_params_sbv
+sbv: utils_sbv create_params_sbv utils/mcmc_functions_l2.RData
+
+l2_sbv: utils_sbv create_params_sbv
 
 utils: utils/fit_functions.RData \
 
@@ -30,7 +32,8 @@ create_params_sbv: sbv/method_1_analysis/parameters.RData \
 	sbv/method_2_analysis/parameters.RData \
 	sbv/method_3_analysis/parameters.RData \
 	sbv/method_4_analysis/parameters.RData \
-	sbv/method_5_analysis/parameters.RData
+	sbv/method_5_analysis/parameters.RData \
+	sbv/third_infections/parameters.RData
 
 
 #Install packages
@@ -66,7 +69,10 @@ utils/cleanup_methods.RData: $(UTILS_SCRIPTS)/combine_file_methods.R
 #Target for parameter files
 sbv/method_%_analysis/parameters.RData: sbv/parameter_generation/create_parameter_files_m%.R
 	${R}
-
+	
+sbv/third_infections/parameters/RData: sbv/parameter_generation/create_parameter_files_third_infections.R
+	${R}
+	
 #Generate data if data is not provided / does not exist
 data/ts_data.csv: data/generate_data/generate_data.R data/generate_data/simulated_data.RDS
 	${R} 

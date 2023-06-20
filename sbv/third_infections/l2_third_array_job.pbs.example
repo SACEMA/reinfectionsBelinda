@@ -21,7 +21,7 @@ module add chpc/R/3.5.1-gcc7.2.0
 # make sure we're in the correct working directory.
 cd /mnt/lustre/users/blombard/reinfectionsBelinda/
 
-make sbv
+make l2_sbv
 
 STEP=11
 START=$PBS_ARRAY_INDEX
