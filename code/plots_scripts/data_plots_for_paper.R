@@ -217,7 +217,7 @@ ggsave(m4_reinfections, filename = paste0(dir,'/observed_reinf.png'))
 #function
 load('utils/observe_prob_functions.RData')
 x <- seq(1, 100000)
-y <- logistic_func(0.1, 0.5, x, 0.0002, 50000)
+y <- logistic_func(0.05, 0.2, x, x_m = 30000, s = 0.00005)
 options(scipen=999)
 log_plot <- plot(x,y,type='line', xlab='Primary infections', ylab='Observation Probability')
 

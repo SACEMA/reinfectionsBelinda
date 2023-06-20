@@ -220,9 +220,9 @@ generate_data_third <- function(data_source, seed) {
     ts$eligible_for_third[day] = ts$eligible_for_third[day] - sum(ts$third[1:day-1])
     
     if (ts$date[day]<=wave_split) {
-      underlying$third[day] = round(reinf_hazard * ts$reinfections[day] * underlying$eligible_for_third[day])
+      underlying$third[day] = round(reinf_hazard * ts$infections[day] * underlying$eligible_for_third[day])
     } else {
-      underlying$third[day] = round(reinf_hazard * ts$reinfections[day] * underlying$eligible_for_third[day] * parameters.r$pscale[i])
+      underlying$third[day] = round(reinf_hazard * ts$infections[day] * underlying$eligible_for_third[day] * parameters.r$pscale[i])
     } 
     
     ts$third[day] = rbinom(1, underlying$third[day], parameters.r$pobs_3[i])

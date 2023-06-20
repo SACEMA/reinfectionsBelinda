@@ -5,7 +5,10 @@ args = commandArgs(trailingOnly=TRUE)
 results <- list()
 
 #set i, the index in the parameter set
-i<-strtoi(args[1])
+#i<-strtoi(args[1])
+
+if (!exists("i") | is.na(i))
+  i <- 1
 
 method <- 'third'
 
@@ -15,7 +18,7 @@ dir.create(paste0('sbv/raw_output'))
 dir.create(paste0('sbv/raw_output/m', method))
 
 load(file=paste0("sbv/third_infections/parameters.RData"))
-data_source <- 'data/inf_for_sbv_v3.RDS'
+data_source <- 'data/inf_for_sbv_v4.RDS'
 configpth <- paste0('sbv/third_infections/config_third_infections.json')
 settingspth <- 'utils/settings.RData'
 
@@ -116,7 +119,7 @@ date_first <- which(conseq_diff==5)[1]
 
 # Diagnostics 
 gd <- gelman.diag(output$chains)
-gd$psrf <- gd$psrf[ -3,]
+gd$psrf <- gd$psrf[ -4,]
 
 lambda_convergence <- gd$psrf[1]
 kappa_convergence <- gd$psrf[2]
@@ -137,6 +140,7 @@ date_first_aw <- which(conseq_diff_aw==5)[1]
 results <- list(pscale = parameters.r$pscale[i]
                 , lambda_con = lambda_convergence
                 , kappa_con = kappa_convergence
+                , lambda_2_con = lambda2_convergence
                 , proportion = proportion
                 , date_first = which(conseq_diff==5)[1]
                 , proportion_after_wavesplit = proportion_aw

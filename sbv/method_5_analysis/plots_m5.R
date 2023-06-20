@@ -15,7 +15,7 @@ scientific_10 <- function(x) {
 
 con_style <- 
   list ( 
-    scale_fill_gradientn(colours = rev(colorspace::terrain_hcl(100, c=200)), limits=c(1,1.2))
+    scale_fill_gradientn(colours = rev(colorspace::terrain_hcl(100, c=200)), limits=c(1,1.5))
   )
 
 styling_layers <- 
