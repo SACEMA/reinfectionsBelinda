@@ -57,7 +57,7 @@ disease_params <- function(lambda = .000000015 ## hazard coefficient
                            , lambda2 = .000000018
 ) return(as.list(environment()))
 
-write(paste0('ts adjusted str', ts_adjusted),file="third_infections.txt",append=TRUE) #comment to confirm that theres not a zombie node
+#write(paste0('ts adjusted str', ts_adjusted),file="third_infections.txt",append=TRUE) #comment to confirm that theres not a zombie node
 
 
 output <- do.mcmc.l2(mcmc$n_chains, ts_adjusted)
