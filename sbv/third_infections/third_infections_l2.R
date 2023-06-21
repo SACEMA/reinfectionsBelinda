@@ -15,7 +15,7 @@ method <- 'third'
 write(paste0("set number", i),file="third_infections.txt",append=TRUE)
 
 dir.create(paste0('sbv/raw_output'))
-dir.create(paste0('sbv/raw_output/m', method))
+dir.create(paste0('sbv/raw_output/ml2third'))
 
 load(file=paste0("sbv/third_infections/parameters.RData"))
 data_source <- 'data/inf_for_sbv_v4.RDS'
@@ -135,4 +135,4 @@ results <- list(pscale = parameters.r$pscale[i]
                 , date_first = which(conseq_diff==5)[1]
                 , seed = seed_batch
 )
-saveRDS(results, file=paste0("sbv/raw_output/m",method,"/results_", i,".RDS"))
+saveRDS(results, file=paste0("sbv/raw_output/ml2third/results_", i,".RDS"))

@@ -5,7 +5,7 @@
 	"reinf_hazard": 1.38866e-08,
 	"wave_thresh": 0.15,
 	"infection": "third",
-	"fit_through": "2022-01-31",
+	"fit_through": "2022-03-01",
 	"omicron_date": "2021-10-31",
 	"wave_split": "2021-10-31",
 	"posterior_method": "select", //This can be last or select
