@@ -74,7 +74,8 @@ mcmcSampler.l2 <- function(init.params, ## initial parameter guess
                         nburn = mcmc$burnin){ ## iterations to automatically burn
 
   
-  print(init.params)
+  write(init.params,file="third_infections.txt",append=TRUE) 
+  
   
   set.seed(seed) #Set seed for when generating random numbers
   if(randInit) #randInit = T means we have to use a randomly generated initial value 
