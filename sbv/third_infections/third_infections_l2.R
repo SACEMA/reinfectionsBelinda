@@ -57,8 +57,6 @@ disease_params <- function(lambda = .000000015 ## hazard coefficient
                            , lambda2 = .000000018
 ) return(as.list(environment()))
 
-#write(paste0('ts adjusted str', ts_adjusted),file="third_infections.txt",append=TRUE) #comment to confirm that theres not a zombie node
-
 
 output <- do.mcmc.l2(mcmc$n_chains, ts_adjusted)
 
@@ -105,7 +103,6 @@ eri_ma <- sri_long[, .(exp_reinf = median(ma_val, na.rm = TRUE)
                        , low_reinf = quantile(ma_val, 0.025, na.rm = TRUE)
                        , upp_reinf = quantile(ma_val, 0.975, na.rm = TRUE)), keyby = date]
 
-print(paste0("Upper reinfections ", str(eri_ma$upp_reinf)))
 
 eri_ma <- eri_ma[date > fit_through]
 
@@ -127,18 +124,8 @@ gd$psrf <- gd$psrf[ -4,]
 lambda_convergence <- gd$psrf[1]
 kappa_convergence <- gd$psrf[2]
 lambda2_convergence <- gd$psrf[3]
-## calculate diagnostics for after wave split: 
-eri_ma <- eri_ma[date > wave_split]
-number_of_days_aw <- nrow(eri_ma)
-days_diff <- ts[date > wave_split]$ma_reinf - eri_ma$upp_reinf
 
-print(paste0("ts reinfections ", str(ts[date > wave_split]$ma_reinf)))
-
-days_diff[days_diff<0] <- 0
-days_diff[days_diff>0] <- 1
-conseq_diff_aw <- frollsum(days_diff, 5, fill =0)
-proportion_aw <- length(days_diff[days_diff==1])/number_of_days_aw
-date_first_aw <- which(conseq_diff_aw==5)[1]
+# not calculating after wave split because omicron_date/wave_split < fit_through :) 
 
 results <- list(pscale = parameters.r$pscale[i]
                 , lambda_con = lambda_convergence
@@ -146,8 +133,6 @@ results <- list(pscale = parameters.r$pscale[i]
                 , lambda_2_con = lambda2_convergence
                 , proportion = proportion
                 , date_first = which(conseq_diff==5)[1]
-                , proportion_after_wavesplit = proportion_aw
-                , date_first_after_wavesplit = which(conseq_diff_aw==5)[1]
                 , seed = seed_batch
 )
 saveRDS(results, file=paste0("sbv/raw_output/m",method,"/results_", i,".RDS"))
