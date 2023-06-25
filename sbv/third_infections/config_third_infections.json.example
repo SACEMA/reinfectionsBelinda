@@ -3,9 +3,10 @@
 	"seed_batch": 1,
 	"window_days": 7,
 	"reinf_hazard": 1.38866e-08,
+	"reinf_hazard_third":  2.309092e-08,
 	"wave_thresh": 0.15,
 	"infection": "third",
-	"fit_through": "2022-03-01",
+	"fit_through": "2022-01-01",
 	"omicron_date": "2021-10-31",
 	"wave_split": "2021-10-31",
 	"posterior_method": "select", //This can be last or select
@@ -13,9 +14,10 @@
 	"mcmc": {
 	   "rand_init": true,
 	   "n_iter": 10000,
-	   "burnin": 4000,
+	   "burnin": 3000,
 	   "n_chains": 4,
-	   "n_posterior": 1500
+	   "n_posterior": 150
 	},
-	"n_sims_per_param": 100
+	"n_sims_per_param": 10
 }
+
