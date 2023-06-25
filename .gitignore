@@ -60,6 +60,7 @@ sbv/method_*_analysis/*.json
 sbv/method_*_analysis/*.pbs
 sbv/third_infections/*.json
 sbv/third_infections/*.pbs
+sbv/third_infections/*.RData
 
 #output files
 output/paper_plots
