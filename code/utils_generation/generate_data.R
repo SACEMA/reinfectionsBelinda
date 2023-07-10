@@ -173,7 +173,7 @@ generate_data_third <- function(data_source, seed) {
   ##Get the data
   ts <- readRDS(data_source)
   set.seed(seed-1)
-  
+
   ts[, infections_ma := frollmean(infections, window_days)]
   ts[, reinfections := 0]
   
@@ -209,7 +209,7 @@ generate_data_third <- function(data_source, seed) {
   ts[, third := 0]
   
   underlying$third <- ts$third
-  underlying$eligible_for_third= shift(cumsum(underlying$reinfections), cutoff-1)
+  underlying$eligible_for_third= shift(cumsum(ts$reinfections), cutoff-1)
   
   
   ts[, eligible_for_third := shift(cumsum(reinfections), cutoff-1)]
