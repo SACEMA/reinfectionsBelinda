@@ -7,15 +7,18 @@ results <- list()
 #set i, the index in the parameter set
 i<-strtoi(args[1])
 
+if (!exists("i") | is.na(i))
+  i <- 1
+
 method <- 'third'
 
 write(paste0("set number", i),file="third_infections.txt",append=TRUE)
 
 dir.create(paste0('sbv/raw_output'))
-dir.create(paste0('sbv/raw_output/m', method))
+dir.create(paste0('sbv/raw_output/mthird'))
 
 load(file=paste0("sbv/third_infections/parameters.RData"))
-data_source <- 'data/inf_for_sbv_v3.RDS'
+data_source <- 'data/inf_for_sbv_v4.RDS'
 configpth <- paste0('sbv/third_infections/config_third_infections.json')
 settingspth <- 'utils/settings.RData'
 
@@ -32,10 +35,13 @@ library(dplyr)
 library(ggplot2)
 
 lapply(required_files, load, envir = .GlobalEnv)
+load('utils/mcmc_functions.RData')
 
 parameters.r <- save_params
 
 attach(jsonlite::read_json(configpth))
+
+fit_through <- omicron_date #added this line to avoid the number of different config files
 
 results <- list()
 
@@ -87,7 +93,6 @@ eri_ma <- sri_long[, .(exp_reinf = median(ma_val, na.rm = TRUE)
                        , low_reinf = quantile(ma_val, 0.025, na.rm = TRUE)
                        , upp_reinf = quantile(ma_val, 0.975, na.rm = TRUE)), keyby = date]
 
-print(paste0("Upper reinfections ", str(eri_ma$upp_reinf)))
 
 eri_ma <- eri_ma[date > fit_through]
 
@@ -109,26 +114,11 @@ gd$psrf <- gd$psrf[ -3,]
 lambda_convergence <- gd$psrf[1]
 kappa_convergence <- gd$psrf[2]
 
-## calculate diagnostics for after wave split: 
-eri_ma <- eri_ma[date > wave_split]
-number_of_days_aw <- nrow(eri_ma)
-days_diff <- ts[date > wave_split]$ma_reinf - eri_ma$upp_reinf
-
-print(paste0("ts reinfections ", str(ts[date > wave_split]$ma_reinf)))
-
-days_diff[days_diff<0] <- 0
-days_diff[days_diff>0] <- 1
-conseq_diff_aw <- frollsum(days_diff, 5, fill =0)
-proportion_aw <- length(days_diff[days_diff==1])/number_of_days_aw
-date_first_aw <- which(conseq_diff_aw==5)[1]
-
 results <- list(pscale = parameters.r$pscale[i]
                 , lambda_con = lambda_convergence
                 , kappa_con = kappa_convergence
                 , proportion = proportion
                 , date_first = which(conseq_diff==5)[1]
-                , proportion_after_wavesplit = proportion_aw
-                , date_first_after_wavesplit = which(conseq_diff_aw==5)[1]
                 , seed = seed_batch
 )
-saveRDS(results, file=paste0("sbv/raw_output/m",method,"/results_", i,".RDS"))
+saveRDS(results, file=paste0("sbv/raw_output/mthird/results_", i,".RDS"))
