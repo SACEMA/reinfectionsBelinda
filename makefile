@@ -70,7 +70,7 @@ utils/cleanup_methods.RData: $(UTILS_SCRIPTS)/combine_file_methods.R
 sbv/method_%_analysis/parameters.RData: sbv/parameter_generation/create_parameter_files_m%.R
 	${R}
 	
-sbv/third_infections/parameters/RData: sbv/parameter_generation/create_parameter_files_third_infections.R
+sbv/third_infections/parameters.RData: sbv/parameter_generation/create_parameter_files_third_infections.R
 	${R}
 	
 #Generate data if data is not provided / does not exist
