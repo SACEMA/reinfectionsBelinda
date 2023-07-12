@@ -42,6 +42,14 @@ parameters.r <- save_params
 
 attach(jsonlite::read_json(configpth))
 
+seed_arg <-strtoi(args[2])
+if (!exists("seed_arg") | is.na(seed_arg)) {
+  print("Keep seed batch from config -- do nothing")
+} else {
+  print("Change seed batch from args")
+  seed_batch <- seed_arg
+}
+
 results <- list()
 
 write('running',file="third_infections.txt",append=TRUE) #comment to confirm that theres not a zombie node

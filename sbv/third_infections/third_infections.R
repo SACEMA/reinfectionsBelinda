@@ -10,6 +10,7 @@ i<-strtoi(args[1])
 if (!exists("i") | is.na(i))
   i <- 1
 
+
 method <- 'third'
 
 write(paste0("set number", i),file="third_infections.txt",append=TRUE)
@@ -43,10 +44,19 @@ attach(jsonlite::read_json(configpth))
 
 fit_through <- omicron_date #added this line to avoid the number of different config files
 
+#set seed from argument IF it exits
+seed_arg <-strtoi(args[2])
+if (!exists("seed_arg") | is.na(seed_arg)) {
+  print("Keep seed batch from config -- do nothing")
+} else {
+  print("Change seed batch from args")
+  seed_batch <- seed_arg
+}
+  
+
 results <- list()
 
 write('running',file="third_infections.txt",append=TRUE) #comment to confirm that theres not a zombie node
-
 
 ts <- generate_data_third(data_source, seed = seed_batch)
 ts_adjusted <- ts[, c("date", "observed", "ma_tot", "cases" )]
