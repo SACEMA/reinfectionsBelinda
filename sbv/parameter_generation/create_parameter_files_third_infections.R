@@ -9,7 +9,7 @@ target <- tail(.args,1)
 pscale_min = 1
 pscale_max = 3
 pscale_steps = 0.2
-pobs_2 <- 1
+pobs_2 <- 0.5
 pobs_1 <- 0.2
 pobs_3 <- 1
 
