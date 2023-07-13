@@ -43,6 +43,7 @@ parameters.r <- save_params
 attach(jsonlite::read_json(configpth))
 
 fit_through <- omicron_date #added this line to avoid the number of different config files
+wave_split <- omicron_date 
 
 #set seed from argument IF it exits
 seed_arg <-strtoi(args[2])

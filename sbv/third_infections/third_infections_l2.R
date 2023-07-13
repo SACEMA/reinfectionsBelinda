@@ -42,6 +42,8 @@ parameters.r <- save_params
 
 attach(jsonlite::read_json(configpth))
 
+wave_split <- omicron_date 
+
 seed_arg <-strtoi(args[2])
 if (!exists("seed_arg") | is.na(seed_arg)) {
   print("Keep seed batch from config -- do nothing")
