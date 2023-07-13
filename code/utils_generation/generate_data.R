@@ -232,7 +232,7 @@ generate_data_third <- function(data_source, seed) {
   names(ts)[4] <- "cases"
   names(ts)[6] <- "ma_cnt"
   names(ts)[7] <- "observed"
-  ts[, tot := observed + cases]
+  ts[, tot := observed + cases + infections]
   ts[, ma_tot := frollmean(tot, window_days)]
   ts[, ma_reinf := frollmean(observed, window_days)]
   
