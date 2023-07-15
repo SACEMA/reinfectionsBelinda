@@ -55,7 +55,7 @@ if (!exists("seed_arg") | is.na(seed_arg)) {
   
 
 dir.create('sbv/third_infections/output')
-target_mcmc <- paste0('sbv/third_infections/output/posterior_null_ouput_i_', i, '_seed_', seed_batch, '.RData' )
+target_mcmc <- paste0('sbv/third_infections/output/posterior_null_ouput_i_', i, '_seed_', seed_batch, 'without_l2.RData' )
 
 
 results <- list()
