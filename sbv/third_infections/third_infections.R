@@ -55,6 +55,9 @@ if (!exists("seed_arg") | is.na(seed_arg)) {
 }
   
 
+target_mcmc <- paste0('sbv/third_infections/posterior_null_ouput_i_', i, '_seed_', seed_batch, '.RData' )
+
+
 results <- list()
 
 write('running',file="third_infections.txt",append=TRUE) #comment to confirm that theres not a zombie node
@@ -78,6 +81,9 @@ for(ii in 1:mcmc$n_chains){
   lambda.post <- c(lambda.post, output$chains[[ii]][seq(1,mcmc$n_iter-mcmc$burnin,jump),1])
   kappa.post <- c(kappa.post, output$chains[[ii]][seq(1,mcmc$n_iter-mcmc$burnin,jump),2])
 }
+
+#save mcmc results
+save(output, lambda.post, kappa.post, file=target_mcmc)
 
 #5: Run simulations
 set.seed(seed_batch+2023)

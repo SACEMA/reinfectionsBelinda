@@ -17,6 +17,9 @@ write(paste0("set number", i),file="third_infections.txt",append=TRUE)
 dir.create(paste0('sbv/raw_output'))
 dir.create(paste0('sbv/raw_output/ml2third'))
 
+
+
+
 load(file=paste0("sbv/third_infections/parameters.RData"))
 data_source <- 'data/inf_for_sbv_v4.RDS'
 configpth <- paste0('sbv/third_infections/config_third_infections.json')
@@ -87,7 +90,7 @@ for(ii in 1:mcmc$n_chains){
 }
 
 
-
+#save mcmc results
 save(output, lambda.post, kappa.post, lambda2.post, file=target_mcmc)
 
 #5: Run simulations
