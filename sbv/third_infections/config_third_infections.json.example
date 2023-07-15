@@ -3,7 +3,7 @@
 	"seed_batch": 1,
 	"window_days": 7,
 	"reinf_hazard": 1.38866e-08,
-	"reinf_hazard_third":  2.309092e-08,
+	"reinf_hazard_third":  2.400169e-08,
 	"wave_thresh": 0.15,
 	"infection": "third",
 	"fit_through": "2022-01-01",
@@ -13,11 +13,11 @@
 	"convergence_method": "posterior", //all or posterior
 	"mcmc": {
 	   "rand_init": true,
-	   "n_iter": 38500,
-	   "burnin": 30000,
+	   "n_iter": 40000,
+	   "burnin": 10000,
 	   "n_chains": 4,
-	   "n_posterior": 2000
+	   "n_posterior": 200
 	},
-	"n_sims_per_param": 100
+	"n_sims_per_param": 10
 }
 
