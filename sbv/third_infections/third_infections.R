@@ -60,7 +60,6 @@ target_mcmc <- paste0('sbv/third_infections/output/posterior_null_ouput_i_', i, 
 
 results <- list()
 
-write('running',file="third_infections.txt",append=TRUE) #comment to confirm that theres not a zombie node
 
 ts <- generate_data_third(data_source, seed = seed_batch)
 ts_adjusted <- ts[, c("date", "observed", "ma_tot", "cases" )]
