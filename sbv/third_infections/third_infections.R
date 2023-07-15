@@ -13,7 +13,6 @@ if (!exists("i") | is.na(i))
 
 method <- 'third'
 
-write(paste0("set number", i),file="third_infections.txt",append=TRUE)
 
 dir.create(paste0('sbv/raw_output'))
 dir.create(paste0('sbv/raw_output/mthird'))
@@ -55,7 +54,8 @@ if (!exists("seed_arg") | is.na(seed_arg)) {
 }
   
 
-target_mcmc <- paste0('sbv/third_infections/posterior_null_ouput_i_', i, '_seed_', seed_batch, '.RData' )
+dir.create('sbv/third_infections/output')
+target_mcmc <- paste0('sbv/third_infections/output/posterior_null_ouput_i_', i, '_seed_', seed_batch, '.RData' )
 
 
 results <- list()
