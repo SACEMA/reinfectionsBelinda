@@ -55,7 +55,7 @@ sbv/method_*_analysis/plots/
 sbv/method_*_analysis/output/final_output_data
 sbv/plots
 
-
+config_general.json
 sbv/method_*_analysis/*.json
 sbv/method_*_analysis/*.pbs
 sbv/third_infections/*.json
