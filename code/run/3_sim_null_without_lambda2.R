@@ -8,6 +8,7 @@
 
 suppressPackageStartupMessages({
   library(data.table)
+  library(english)
 })
 
 .debug <- ''

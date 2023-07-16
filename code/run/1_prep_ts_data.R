@@ -13,7 +13,7 @@
 
 library('jsonlite')
 library('data.table')
-library(english)
+library('english')
 
 .debug <- 'data'
 .args <- if (interactive()) sprintf(c(

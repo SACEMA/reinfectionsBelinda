@@ -12,6 +12,7 @@ suppressPackageStartupMessages({
   library(coda)
   library(ggplot2)
   library(gridExtra)
+  library(english)
   library(patchwork)
 })
 
