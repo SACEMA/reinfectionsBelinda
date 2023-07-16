@@ -3,7 +3,7 @@
 	"seed_batch": 1,
 	"window_days": 7,
 	"reinf_hazard": 1.38866e-08,
-	"reinf_hazard_third":  2.400169e-08,
+	"reinf_hazard_third":  6.572146e-08,
 	"wave_thresh": 0.15,
 	"infection": "third",
 	"fit_through": "2022-01-01",
