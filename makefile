@@ -83,26 +83,26 @@ generate_data: data/ts_data.csv
 $(eval $(infections):;@:)
 
 #Create data for analysis
-data/ts_data_for_analysis.RDS: code/run/prep_ts_data.R data/ts_data.csv config_general.json $(infections)
+data/ts_data_for_analysis.RDS: code/run/1_prep_ts_data.R data/ts_data.csv config_general.json $(infections)
 	${R} 
 	
 data: data/ts_data_for_analysis.RDS
 
 # Run MCMC
-output/posterior_90_null.RData: code/run/run_mcmc.R data/ts_data_for_analysis.RDS utils/mcmc_functions_l2.RData utils/fit_functions.RData config_general.json $(infections)
+output/posterior_90_null.RData: code/run/2_run_mcmc.R data/ts_data_for_analysis.RDS utils/mcmc_functions_l2.RData utils/fit_functions.RData config_general.json $(infections)
 	${R}
 
 mcmc: output/posterior_90_null.RData
 
 # Run Simulations
-output/sim_90_null.RDS: code/run/sim_null.R output/posterior_90_null.RData \
+output/sim_90_null.RDS: code/run/3_sim_null.R output/posterior_90_null.RData \
 data/ts_data_for_analysis.RDS utils/fit_functions.RData config_general.json $(infections)
 	${R}
 
 sim: output/sim_90_null.RDS
 
 # Generate plots
-output/sim_plot_90_null.png: code/run/sim_plot.R output/sim_90_null.RDS \
+output/sim_plot_90_null.png: code/run/3_sim_plot.R output/sim_90_null.RDS \
 data/ts_data_for_analysis.RDS config_general.json utils/plotting_fxns.RData $(infections)
 	${R}
 
