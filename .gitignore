@@ -62,6 +62,8 @@ sbv/third_infections/*.json
 sbv/third_infections/*.pbs
 sbv/third_infections/*.RData
 sbv/third_infections/output/
+sbv/third_infections/*.RDS
+
 #output files
 output/paper_plots
 output/*.RDS

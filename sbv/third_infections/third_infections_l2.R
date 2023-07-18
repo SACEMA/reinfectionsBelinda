@@ -153,4 +153,4 @@ results <- list(pscale = parameters.r$pscale[i]
                 , date_first = which(conseq_diff==5)[1]
                 , seed = seed_batch
 )
-saveRDS(results, file=paste0("sbv/raw_output/ml2third/results_", i,".RDS"))
+saveRDS(results, file=paste0("sbv/raw_output/ml2third/results_", i,"_seed_", seed_batch, ".RDS"))
