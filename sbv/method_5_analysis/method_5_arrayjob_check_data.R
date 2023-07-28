@@ -1,0 +1,149 @@
+args = commandArgs(trailingOnly=TRUE)
+
+results <- list()
+
+#set i, the index in the parameter set
+i<-strtoi(args[1])
+
+method <- 5
+
+dir.create(paste0('sbv/raw_output'))
+dir.create(paste0('sbv/raw_output/m', method))
+
+load(file=paste0("sbv/method_", method, "_analysis/parameters.RData"))
+data_source <- 'data/inf_for_sbv.RDS'
+configpth <- paste0('sbv/method_',method,'_analysis/m',method,'_config_general.json')
+settingspth <- 'utils/settings.RData'
+
+load('utils/settings.RData')
+
+# load required packages & files
+library(data.table)
+library(iterators)
+library(foreach)
+library(doParallel)
+library(coda)
+library(parallel)
+library(dplyr)
+library(ggplot2)
+
+lapply(required_files, load, envir = .GlobalEnv)
+
+parameters.r <- save_params
+
+attach(jsonlite::read_json(configpth))
+
+results <- list()
+
+
+ts <- generate_data(method, data_source, seed = seed_batch)
+ts_adjusted <- ts[, c("date", "observed", "ma_tot", "cases" )]
+
+ts_adjusted <- ts_adjusted[date<=fit_through,]
+ts <- ts[date<=fit_through,]
+
+
+#Run MCMC
+output <- do.mcmc(mcmc$n_chains, ts_adjusted)
+
+
+#Save posterior
+lambda.post <- kappa.post <- numeric(0)
+smpls <- mcmc$n_posterior / mcmc$n_chains #number of samples to take from each chain
+niter <- mcmc$n_iter - mcmc$burnin  #number of iterations to take into account 
+jump <- round(niter/smpls)
+for(ii in 1:mcmc$n_chains){
+  #need smpls number of samples from each chain out of niter samples
+  lambda.post <- c(lambda.post, output$chains[[ii]][seq(1,mcmc$n_iter-mcmc$burnin,jump),1])
+  kappa.post <- c(kappa.post, output$chains[[ii]][seq(1,mcmc$n_iter-mcmc$burnin,jump),2])
+}
+
+#5: Run simulations
+set.seed(seed_batch+2023)
+sim_reinf <- function(ii){
+  tmp <- list(lambda = lambda.post[ii], kappa = kappa.post[ii])
+  answer <- expected(parms = tmp, data = ts_adjusted, delta = cutoff)
+  ex2 <- Reduce("+", answer)
+  ex2 <- c(rep(0,90),ex2)
+  return(rnbinom(length(ex2), size=1/kappa.post[ii], mu =c(0, diff(ex2))))
+}
+
+
+sims <- sapply(rep(1:mcmc$n_posterior, n_sims_per_param), sim_reinf)
+
+
+#6: analysis
+sri <- data.table(date = ts_adjusted$date, sims)
+sri_long <- melt(sri, id.vars = 'date')
+sri_long[, ma_val := frollmean(value, 7), variable]
+
+eri_ma <- sri_long[, .(exp_reinf = median(ma_val, na.rm = TRUE)
+                       , low_reinf = quantile(ma_val, 0.025, na.rm = TRUE)
+                       , upp_reinf = quantile(ma_val, 0.975, na.rm = TRUE)), keyby = date]
+
+
+number_of_days <- nrow(eri_ma)
+
+
+#Date first below
+days_diff <-  ts$ma_reinf - eri_ma$low_reinf
+days_diff[days_diff>=0] <- 0
+days_diff[days_diff<0] <- 1
+
+conseq_diff <- frollsum(days_diff, 10, fill =0)
+
+
+date_first_below_10 <- which(conseq_diff==10)[1]
+date_first_below_5 <- which(conseq_diff==5)[1]
+
+#Date first above
+days_diff_above <-  eri_ma$upp_reinf - ts$ma_reinf
+days_diff_above[days_diff_above>=0] <- 0
+days_diff_above[days_diff_above<0] <- 1
+
+conseq_diff <- frollsum(days_diff_above, 10, fill =0)
+
+
+date_first_above_10 <- which(conseq_diff==10)[1]
+date_first_above_5 <- which(conseq_diff==5)[1]
+
+
+#Proportion outside
+
+proportion <- (length(days_diff[days_diff==1])+length(days_diff_above[days_diff_above==1]))/number_of_days
+
+
+
+# Diagnostics 
+gd <- gelman.diag(output$chains)
+gd$psrf <- gd$psrf[ -3,]
+
+lambda_convergence <- gd$psrf[1]
+kappa_convergence <- gd$psrf[2]
+
+
+results <- list(pobs_1_min=parameters.r$pobs_1_min[i]
+                , pobs_1_max=parameters.r$pobs_1_max[i]
+                , pobs_2_min=parameters.r$pobs_2_min[i]
+                , pobs_2_max=parameters.r$pobs_2_max[i]
+                , steep = parameters.r$steep[i]
+                , xm = parameters.r$xm[i]
+                , multiplier = parameters.r$multiplier[i]
+                , pscale = parameters.r$pscale[i]
+                , lambda_con = lambda_convergence
+                , kappa_con = kappa_convergence
+                , proportion = proportion
+                , date_first_above_10 = date_first_above_10
+                , date_first_above_5 = date_first_above_5
+                , date_first_below_10 = date_first_below_10
+                , date_first_below_5 = date_first_below_5
+)
+
+#Save results
+dir.create(paste0("sbv/raw_output/m",method,"/check_data"))
+saveRDS(results, file=paste0("sbv/raw_output/m",method,"/check_data/results_", i,".RDS"))
+
+#Save eri_ma
+dir.create(paste0("sbv/raw_output/m",method,"/check_data/eri_ma"))
+eri$ma_reinf <- ts$ma_reinf
+saveRDS(eri_ma, file=paste0("sbv/raw_output/m",method,"/check_data/eri_ma/eri_ma_i_", i, ".RDS"))
