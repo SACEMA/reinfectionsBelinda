@@ -1,4 +1,3 @@
-write("start",file="third_infections.txt",append=TRUE)
 
 args = commandArgs(trailingOnly=TRUE)
 
@@ -12,12 +11,8 @@ if (!exists("i") | is.na(i))
 
 method <- 'third'
 
-write(paste0("set number", i),file="third_infections.txt",append=TRUE)
-
 dir.create(paste0('sbv/raw_output'))
 dir.create(paste0('sbv/raw_output/ml2third'))
-
-
 
 
 load(file=paste0("sbv/third_infections/parameters.RData"))
