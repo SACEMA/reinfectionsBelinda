@@ -10,7 +10,7 @@ method <- 5
 dir.create(paste0('sbv/raw_output'))
 dir.create(paste0('sbv/raw_output/m', method))
 
-load(file=paste0("sbv/method_", method, "_analysis/parameters.RData"))
+load(file=paste0("sbv/raw_output/m5/new_parameters.RData"))
 data_source <- 'data/inf_for_sbv.RDS'
 configpth <- paste0('sbv/method_',method,'_analysis/m',method,'_config_general.json')
 settingspth <- 'utils/settings.RData'
@@ -28,6 +28,8 @@ library(dplyr)
 library(ggplot2)
 
 lapply(required_files, load, envir = .GlobalEnv)
+
+load('utils/plotting_fxns.RData')
 
 parameters.r <- save_params
 
@@ -145,5 +147,55 @@ saveRDS(results, file=paste0("sbv/raw_output/m",method,"/check_data/results_", i
 
 #Save eri_ma
 dir.create(paste0("sbv/raw_output/m",method,"/check_data/eri_ma"))
-eri$ma_reinf <- ts$ma_reinf
+eri_ma$ma_reinf <- ts$ma_reinf
 saveRDS(eri_ma, file=paste0("sbv/raw_output/m",method,"/check_data/eri_ma/eri_ma_i_", i, ".RDS"))
+
+
+#Make the plot
+eri <- sri_long[, .(exp_reinf = median(value)
+                    , low_reinf = quantile(value, 0.025, na.rm = TRUE)
+                    , upp_reinf = quantile(value, 0.975, na.rm = TRUE)), keyby = date]
+
+eri_ma <- sri_long[, .(exp_reinf = median(ma_val, na.rm = TRUE)
+                       , low_reinf = quantile(ma_val, 0.025, na.rm = TRUE)
+                       , upp_reinf = quantile(ma_val, 0.975, na.rm = TRUE)), keyby = date]
+
+plot_column <- 'observed'
+plot_column_ma <- 'ma_reinf'
+infections <- 2
+infection <-2 
+
+plot_sim <- function(dat, sim, sim_ma) (ggplot(dat) 
+                                        + aes(x = date) 
+                                        + geom_ribbon(data = sim, aes(x = date, ymin = low_reinf, ymax = upp_reinf), alpha = .3)
+                                        + geom_point(aes(y = !!sym(plot_column)), size = .2, color = '1', alpha = .3)
+                                        + geom_ribbon(data = sim_ma, aes(x = date, ymin = low_reinf, ymax = upp_reinf), alpha = .3, fill = '2')
+                                        + geom_line(aes(y = !!sym(plot_column_ma)), color = '2')
+                                        + ylab(paste0('Infection number: ', infections))
+                                        + xlab('Specimen receipt date')
+                                        + geom_vline(aes(xintercept = 1 + as.Date(fit_through)), linetype = 3, color = 'red')
+                                        + theme_minimal()
+                                        + theme(panel.border = element_rect(colour = "black", fill = NA, size = 0.25)
+                                                , panel.grid.minor = element_blank()
+                                        )
+                                        + scale_x_Ms(name = 'Specimen receipt date', labels = function(bs) {
+                                          gsub("^(.).+$","\\1", month.abb[month(bs)])
+                                        }, minor_breaks = '1 months')
+                                        + theme(panel.grid.major.x = element_blank()
+                                                , axis.ticks = element_blank()
+                                                , panel.grid.minor.x = element_line(color = 'lightgrey', size = .5)
+                                                , panel.grid.major.y = element_line(color = 'lightgrey', size = .5)
+                                                , panel.grid.minor.y = element_blank()
+                                                , panel.border = element_rect(colour = "black", fill = NA, size = 0.25)
+                                        )
+                                        + geom_vline(xintercept = c(as.Date('2021-01-01'), as.Date('2022-01-01'))
+                                                     , linetype = 2, size = .5, color = '#111111')
+                                        + scale_y_sqrt()
+)
+
+inc_reinf <- (plot_sim(ts, eri, eri_ma) 
+              + geom_text(aes(label = year, y = 0), data = ts[, .(year = format(date, '%Y'), date)][, .(date = min(date)), by = year], vjust = -31, hjust = 'left', nudge_x = 14, size = 7*0.35)
+)
+
+dir.create(paste0("sbv/raw_output/m",method,"/check_data/plots"))
+ggsave(inc_reinf, filename = paste0("sbv/raw_output/m",method,"/check_data/plots/sim_plot_",i,".png"), width = 6, height = 3)
