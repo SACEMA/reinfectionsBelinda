@@ -135,9 +135,9 @@ date_first_above_5_aw <- which(conseq_diff==5)[1]
 
 # Propotion
 number_of_days <- nrow(eri_ma[eri_ma$date<wave_split,])
-proportion_above <- (length(days_diff_above_aw[days_diff==1]))/number_of_days
-proportion_below <- (length(days_diff_below_aw[days_diff==1]))/number_of_days
-proportion_outside <- (length(days_diff_above_aw[days_diff==1])+length(days_diff_above_aw[days_diff==1]))/number_of_days
+proportion_above <- (length(days_diff_above_aw[days_diff_above_aw==1]))/number_of_days
+proportion_below <- (length(days_diff_below_aw[days_diff_below_aw==1]))/number_of_days
+proportion_outside <- proportion_above + proportion_below
 
 # CONVERGENCE DIAGNOSTICS 
 gd <- gelman.diag(output$chains)
