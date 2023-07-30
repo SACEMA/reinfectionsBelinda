@@ -41,9 +41,6 @@ results <- list()
 ts <- generate_data(method, data_source, seed = seed_batch)
 ts_adjusted <- ts[, c("date", "observed", "ma_tot", "cases" )]
 
-ts_adjusted <- ts_adjusted[date<=fit_through,]
-ts <- ts[date<=fit_through,]
-
 
 #Run MCMC
 output <- do.mcmc(mcmc$n_chains, ts_adjusted)
@@ -84,11 +81,9 @@ eri_ma <- sri_long[, .(exp_reinf = median(ma_val, na.rm = TRUE)
                        , upp_reinf = quantile(ma_val, 0.975, na.rm = TRUE)), keyby = date]
 
 
-number_of_days <- nrow(eri_ma)
-
-
+#METRICS BEOFRE FIT THROUGH 
 #Date first below
-days_diff <-  ts$ma_reinf - eri_ma$low_reinf
+days_diff <- ts[date > as.Date(fit_through)]$ma_reinf - eri_ma[date > as.Date(fit_through)]$low_reinf
 days_diff[days_diff>=0] <- 0
 days_diff[days_diff<0] <- 1
 
@@ -99,7 +94,7 @@ date_first_below_10 <- which(conseq_diff==10)[1]
 date_first_below_5 <- which(conseq_diff==5)[1]
 
 #Date first above
-days_diff_above <-  eri_ma$upp_reinf - ts$ma_reinf
+days_diff_above <-  eri_ma[eri_ma$date<=fit_through,]$upp_reinf - ts[ts$date<= fit_through,]$ma_reinf
 days_diff_above[days_diff_above>=0] <- 0
 days_diff_above[days_diff_above<0] <- 1
 
@@ -111,12 +106,40 @@ date_first_above_5 <- which(conseq_diff==5)[1]
 
 
 #Proportion outside
+number_of_days <- nrow(eri_ma[eri_ma$date<=fit_through,])
+proportion_before_ft <- (length(days_diff[days_diff==1])+length(days_diff_above[days_diff_above==1]))/number_of_days
 
-proportion <- (length(days_diff[days_diff==1])+length(days_diff_above[days_diff_above==1]))/number_of_days
+# METRICS AFTER WAVE SPLIT
+
+# Below 
+
+days_diff_below_aw <-  ts[ts$date> wave_split,]$ma_reinf - eri_ma[eri_ma$date>wave_split,]$low_reinf
+days_diff_below_aw[days_diff_below_aw>=0] <- 0
+days_diff_below_aw[days_diff_below_aw<0] <- 1
+
+conseq_diff <- frollsum(days_diff_below_aw, 10, fill =0)
+
+date_first_below_10_aw <- which(conseq_diff==10)[1]
+date_first_below_5_aw <- which(conseq_diff==5)[1]
+
+# Above 
+days_diff_above_aw <-  eri_ma[eri_ma$date>=wave_split,]$upp_reinf - ts[ts$date>=wave_split,]$ma_reinf
+days_diff_above_aw[days_diff_above_aw>=0] <- 0
+days_diff_above_aw[days_diff_above_aw<0] <- 1
+
+conseq_diff <- frollsum(days_diff_above_aw, 10, fill =0)
 
 
+date_first_above_10_aw <- which(conseq_diff==10)[1]
+date_first_above_5_aw <- which(conseq_diff==5)[1]
 
-# Diagnostics 
+# Propotion
+number_of_days <- nrow(eri_ma[eri_ma$date<wave_split,])
+proportion_above <- (length(days_diff_above_aw[days_diff==1]))/number_of_days
+proportion_below <- (length(days_diff_below_aw[days_diff==1]))/number_of_days
+proportion_outside <- (length(days_diff_above_aw[days_diff==1])+length(days_diff_above_aw[days_diff==1]))/number_of_days
+
+# CONVERGENCE DIAGNOSTICS 
 gd <- gelman.diag(output$chains)
 gd$psrf <- gd$psrf[ -3,]
 
@@ -134,11 +157,18 @@ results <- list(pobs_1_min=parameters.r$pobs_1_min[i]
                 , pscale = parameters.r$pscale[i]
                 , lambda_con = lambda_convergence
                 , kappa_con = kappa_convergence
-                , proportion = proportion
+                , proportion_before_ft = proportion_before_ft
                 , date_first_above_10 = date_first_above_10
                 , date_first_above_5 = date_first_above_5
                 , date_first_below_10 = date_first_below_10
                 , date_first_below_5 = date_first_below_5
+                , date_first_below_10_aw = date_first_below_10_aw
+                , date_first_below_5_aw = date_first_below_5_aw
+                , date_first_above_5_aw = date_first_above_5_aw
+                , date_first_above_10_aw = date_first_above_10_aw
+                , proportion_above = proportion_above
+                , proportion_below = proportion_below
+                , proportion_outside = proportion_outside
 )
 
 #Save results
@@ -174,6 +204,7 @@ plot_sim <- function(dat, sim, sim_ma) (ggplot(dat)
                                         + ylab(paste0('Infection number: ', infections))
                                         + xlab('Specimen receipt date')
                                         + geom_vline(aes(xintercept = 1 + as.Date(fit_through)), linetype = 3, color = 'red')
+                                        + geom_vline(aes(xintercept = 1 + as.Date(wave_split)), linetype = 3, color = 'blue')
                                         + theme_minimal()
                                         + theme(panel.border = element_rect(colour = "black", fill = NA, size = 0.25)
                                                 , panel.grid.minor = element_blank()
