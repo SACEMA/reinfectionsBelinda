@@ -187,8 +187,16 @@ plot_sim <- function(dat, sim, sim_ma) (ggplot(dat)
                                         + scale_y_sqrt()
 )
 
+list_text <- paste(names(parameters.r[i,]), parameters.r[i,], sep = " = ", collapse = "; ")
+
+
+wrap_title <- function(text, width = 50) {
+  paste(strwrap(text, width = width), collapse = "\n")
+}
+
 inc_reinf <- (plot_sim(ts, eri, eri_ma) 
               + geom_text(aes(label = year, y = 0), data = ts[, .(year = format(date, '%Y'), date)][, .(date = min(date)), by = year], vjust = -31, hjust = 'left', nudge_x = 14, size = 7*0.35)
+              + ggtitle(wrap_title(list_text))
 )
 
 dir.create(paste0("sbv/raw_output/m",method,"/check_data/plots"))
