@@ -10,7 +10,7 @@ method <- 5
 dir.create(paste0('sbv/raw_output'))
 dir.create(paste0('sbv/raw_output/m', method))
 
-load(file=paste0("sbv/raw_output/m5/new_parameters.RData"))
+load(file=paste0("sbv/raw_output/m5/parameters.RData"))
 data_source <- 'data/inf_for_sbv.RDS'
 configpth <- paste0('sbv/method_',method,'_analysis/m',method,'_config_general.json')
 settingspth <- 'utils/settings.RData'
@@ -34,6 +34,15 @@ load('utils/plotting_fxns.RData')
 parameters.r <- save_params
 
 attach(jsonlite::read_json(configpth))
+
+#Set seed
+seed_arg <-strtoi(args[2])
+if (!exists("seed_arg") | is.na(seed_arg)) {
+  print("Keep seed batch from config -- do nothing")
+} else {
+  print("Change seed batch from args")
+  seed_batch <- seed_arg
+}
 
 results <- list()
 
@@ -83,7 +92,7 @@ eri_ma <- sri_long[, .(exp_reinf = median(ma_val, na.rm = TRUE)
 
 #METRICS BEOFRE FIT THROUGH 
 #Date first below
-days_diff <- ts[date > as.Date(fit_through)]$ma_reinf - eri_ma[date > as.Date(fit_through)]$low_reinf
+days_diff <- ts[date <= as.Date(fit_through)]$ma_reinf - eri_ma[date <= as.Date(fit_through)]$low_reinf
 days_diff[days_diff>=0] <- 0
 days_diff[days_diff<0] <- 1
 
@@ -123,7 +132,7 @@ date_first_below_10_aw <- which(conseq_diff==10)[1]
 date_first_below_5_aw <- which(conseq_diff==5)[1]
 
 # Above 
-days_diff_above_aw <-  eri_ma[eri_ma$date>=wave_split,]$upp_reinf - ts[ts$date>=wave_split,]$ma_reinf
+days_diff_above_aw <-  eri_ma[eri_ma$date>wave_split,]$upp_reinf - ts[ts$date>wave_split,]$ma_reinf
 days_diff_above_aw[days_diff_above_aw>=0] <- 0
 days_diff_above_aw[days_diff_above_aw<0] <- 1
 
@@ -173,12 +182,16 @@ results <- list(pobs_1_min=parameters.r$pobs_1_min[i]
 
 #Save results
 dir.create(paste0("sbv/raw_output/m",method,"/check_data"))
-saveRDS(results, file=paste0("sbv/raw_output/m",method,"/check_data/results_", i,".RDS"))
+dir.create(paste0("sbv/raw_output/m",method,"/check_data/", seed_batch))
+
+results_dir <- paste0("sbv/raw_output/m",method,"/check_data/", seed_batch)
+  
+saveRDS(results, file=paste0(results_dir, "/results_", i,".RDS"))
 
 #Save eri_ma
-dir.create(paste0("sbv/raw_output/m",method,"/check_data/eri_ma"))
+dir.create(paste0(results_dir, "/eri_ma"))
 eri_ma$ma_reinf <- ts$ma_reinf
-saveRDS(eri_ma, file=paste0("sbv/raw_output/m",method,"/check_data/eri_ma/eri_ma_i_", i, ".RDS"))
+saveRDS(eri_ma, file=paste0(results_dir, "/eri_ma/eri_ma_i_", i, ".RDS"))
 
 
 #Make the plot
@@ -224,9 +237,18 @@ plot_sim <- function(dat, sim, sim_ma) (ggplot(dat)
                                         + scale_y_sqrt()
 )
 
+list_text <- paste(names(parameters.r[i,]), parameters.r[i,], sep = " = ", collapse = "; ")
+
+
+wrap_title <- function(text, width = 50) {
+  paste(strwrap(text, width = width), collapse = "\n")
+}
+
 inc_reinf <- (plot_sim(ts, eri, eri_ma) 
               + geom_text(aes(label = year, y = 0), data = ts[, .(year = format(date, '%Y'), date)][, .(date = min(date)), by = year], vjust = -31, hjust = 'left', nudge_x = 14, size = 7*0.35)
+              + ggtitle(wrap_title(list_text))
 )
 
-dir.create(paste0("sbv/raw_output/m",method,"/check_data/plots"))
-ggsave(inc_reinf, filename = paste0("sbv/raw_output/m",method,"/check_data/plots/sim_plot_",i,".png"), width = 6, height = 3)
+
+dir.create(paste0(results_dir, "/plots"))
+ggsave(inc_reinf, filename = paste0(results_dir, "/plots/sim_plot_",i,".png"), width = 6, height = 3)
