@@ -89,6 +89,12 @@ eri_ma <- sri_long[, .(exp_reinf = median(ma_val, na.rm = TRUE)
                        , low_reinf = quantile(ma_val, 0.025, na.rm = TRUE)
                        , upp_reinf = quantile(ma_val, 0.975, na.rm = TRUE)), keyby = date]
 
+eri <- sri_long[, .(exp_reinf = median(value)
+                    , low_reinf = quantile(value, 0.025, na.rm = TRUE)
+                    , upp_reinf = quantile(value, 0.975, na.rm = TRUE)), keyby = date]
+
+rm(sri)
+rm(sri_long)
 
 #METRICS BEOFRE FIT THROUGH 
 #Date first below
@@ -188,20 +194,7 @@ results_dir <- paste0("sbv/raw_output/m",method,"/check_data/", seed_batch)
   
 saveRDS(results, file=paste0(results_dir, "/results_", i,".RDS"))
 
-#Save eri_ma
-dir.create(paste0(results_dir, "/eri_ma"))
-eri_ma$ma_reinf <- ts$ma_reinf
-saveRDS(eri_ma, file=paste0(results_dir, "/eri_ma/eri_ma_i_", i, ".RDS"))
-
-
 #Make the plot
-eri <- sri_long[, .(exp_reinf = median(value)
-                    , low_reinf = quantile(value, 0.025, na.rm = TRUE)
-                    , upp_reinf = quantile(value, 0.975, na.rm = TRUE)), keyby = date]
-
-eri_ma <- sri_long[, .(exp_reinf = median(ma_val, na.rm = TRUE)
-                       , low_reinf = quantile(ma_val, 0.025, na.rm = TRUE)
-                       , upp_reinf = quantile(ma_val, 0.975, na.rm = TRUE)), keyby = date]
 
 plot_column <- 'observed'
 plot_column_ma <- 'ma_reinf'
