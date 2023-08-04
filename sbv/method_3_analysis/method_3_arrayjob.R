@@ -1,4 +1,3 @@
-write("start",file="arrayjob_m3.txt",append=TRUE)
 
 
 args = commandArgs(trailingOnly=TRUE)
@@ -133,3 +132,4 @@ results <- list(pscale=parameters.r$pscale[i]
                 , date_first_after_wavesplit = which(conseq_diff_aw==5)[1]
 )
 saveRDS(results, file=paste0("sbv/raw_output/m",method,"/results_", i,".RDS"))
+
