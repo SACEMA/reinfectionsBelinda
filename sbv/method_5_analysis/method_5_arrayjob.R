@@ -10,7 +10,7 @@ method <- 5
 dir.create(paste0('sbv/raw_output'))
 dir.create(paste0('sbv/raw_output/m', method))
 
-load(file=paste0("sbv/raw_output/m5/parameters.RData"))
+load(file=paste0("sbv/method_5_analysis/parameters.RData"))
 data_source <- 'data/inf_for_sbv.RDS'
 configpth <- paste0('sbv/method_',method,'_analysis/m',method,'_config_general.json')
 settingspth <- 'utils/settings.RData'
