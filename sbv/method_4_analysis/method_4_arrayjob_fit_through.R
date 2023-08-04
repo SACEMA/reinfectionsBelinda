@@ -1,5 +1,4 @@
 
-
 args = commandArgs(trailingOnly=TRUE)
 
 results <- list()
@@ -7,7 +6,7 @@ results <- list()
 #set i, the index in the parameter set
 i<-strtoi(args[1])
 
-method <- 3
+method <- 4
 
 dir.create(paste0('sbv/raw_output'))
 dir.create(paste0('sbv/raw_output/m', method))
@@ -37,6 +36,7 @@ parameters.r <- save_params
 
 attach(jsonlite::read_json(configpth))
 
+
 #Set seed
 seed_arg <-strtoi(args[2])
 if (!exists("seed_arg") | is.na(seed_arg)) {
@@ -46,9 +46,7 @@ if (!exists("seed_arg") | is.na(seed_arg)) {
   seed_batch <- seed_arg
 }
 
-
 results <- list()
-
 
 ts <- generate_data(method, data_source, seed = seed_batch)
 ts_adjusted <- ts[, c("date", "observed", "ma_tot", "cases" )]
@@ -83,7 +81,6 @@ sim_reinf <- function(ii){
 
 
 sims <- sapply(rep(1:mcmc$n_posterior, n_sims_per_param), sim_reinf)
-
 
 #6: analysis
 sri <- data.table(date = ts_adjusted$date, sims)
@@ -128,8 +125,10 @@ date_first_above_5 <- which(conseq_diff==5)[1]
 number_of_days <- nrow(eri_ma[eri_ma$date<=fit_through,])
 proportion_before_ft <- (length(days_diff[days_diff==1])+length(days_diff_above[days_diff_above==1]))/number_of_days
 
+
 results <- list(pobs_1=parameters.r$pobs_1[i]
                 , pobs_2=parameters.r$pobs_2[i]
+                , dprob = parameters.r$dprob[i]
                 , pscale = parameters.r$pscale[i]
                 , lambda_con = lambda_convergence
                 , kappa_con = kappa_convergence
@@ -140,10 +139,8 @@ results <- list(pobs_1=parameters.r$pobs_1[i]
                 , date_first_below_5 = date_first_below_5
 )
 
-#Save results
-dir.create(paste0("sbv/raw_output/m",method))
-saveRDS(results, file=paste0("sbv/raw_output/m",method,"/results_", i,".RDS"))
 
+saveRDS(results, file=paste0("sbv/raw_output/m",method,"/results_", i,".RDS"))
 eri <- sri_long[, .(exp_reinf = median(value)
                     , low_reinf = quantile(value, 0.025, na.rm = TRUE)
                     , upp_reinf = quantile(value, 0.975, na.rm = TRUE)), keyby = date]
