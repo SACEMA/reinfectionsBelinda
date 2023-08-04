@@ -1,3 +1,5 @@
+
+
 args = commandArgs(trailingOnly=TRUE)
 
 results <- list()
@@ -5,12 +7,12 @@ results <- list()
 #set i, the index in the parameter set
 i<-strtoi(args[1])
 
-method <- 5
+method <- 1
 
 dir.create(paste0('sbv/raw_output'))
 dir.create(paste0('sbv/raw_output/m', method))
 
-load(file=paste0("sbv/raw_output/m5/parameters.RData"))
+load(file=paste0("sbv/method_", method, "_analysis/parameters.RData"))
 data_source <- 'data/inf_for_sbv.RDS'
 configpth <- paste0('sbv/method_',method,'_analysis/m',method,'_config_general.json')
 settingspth <- 'utils/settings.RData'
@@ -26,31 +28,23 @@ library(coda)
 library(parallel)
 library(dplyr)
 library(ggplot2)
+load('utils/plotting_fxns.RData')
+
 
 lapply(required_files, load, envir = .GlobalEnv)
-
-load('utils/plotting_fxns.RData')
 
 parameters.r <- save_params
 
 attach(jsonlite::read_json(configpth))
 
-#Set seed
-seed_arg <-strtoi(args[2])
-if (!exists("seed_arg") | is.na(seed_arg)) {
-  print("Keep seed batch from config -- do nothing")
-} else {
-  print("Change seed batch from args")
-  seed_batch <- seed_arg
-}
-
 results <- list()
+
 
 ts <- generate_data(method, data_source, seed = seed_batch)
 ts_adjusted <- ts[, c("date", "observed", "ma_tot", "cases" )]
 
-ts <- ts[ts$date <= fit_through,]
-ts_adjusted <- ts_adjusted[ts_adjusted$date <= fit_through,]
+ts <- ts[ts$date <= fit_through, ]
+ts_adjusted <- ts_adjusted[ts_adjusted$date <= fit_through, ]
 
 #Run MCMC
 output <- do.mcmc(mcmc$n_chains, ts_adjusted)
@@ -91,7 +85,14 @@ eri_ma <- sri_long[, .(exp_reinf = median(ma_val, na.rm = TRUE)
                        , upp_reinf = quantile(ma_val, 0.975, na.rm = TRUE)), keyby = date]
 
 
-#METRICS BEOFRE FIT THROUGH 
+# Diagnostics 
+gd <- gelman.diag(output$chains)
+gd$psrf <- gd$psrf[ -3,]
+
+lambda_convergence <- gd$psrf[1]
+kappa_convergence <- gd$psrf[2]
+
+#METRICS 
 #Date first below
 days_diff <- ts[date <= as.Date(fit_through)]$ma_reinf - eri_ma[date <= as.Date(fit_through)]$low_reinf
 days_diff[days_diff>=0] <- 0
@@ -118,22 +119,7 @@ date_first_above_5 <- which(conseq_diff==5)[1]
 number_of_days <- nrow(eri_ma[eri_ma$date<=fit_through,])
 proportion_before_ft <- (length(days_diff[days_diff==1])+length(days_diff_above[days_diff_above==1]))/number_of_days
 
-# CONVERGENCE DIAGNOSTICS 
-gd <- gelman.diag(output$chains)
-gd$psrf <- gd$psrf[ -3,]
-
-lambda_convergence <- gd$psrf[1]
-kappa_convergence <- gd$psrf[2]
-
-
-results <- list(pobs_1_min=parameters.r$pobs_1_min[i]
-                , pobs_1_max=parameters.r$pobs_1_max[i]
-                , pobs_2_min=parameters.r$pobs_2_min[i]
-                , pobs_2_max=parameters.r$pobs_2_max[i]
-                , steep = parameters.r$steep[i]
-                , xm = parameters.r$xm[i]
-                , multiplier = parameters.r$multiplier[i]
-                , pscale = parameters.r$pscale[i]
+results <- list(  pscale = parameters.r$pscale[i]
                 , lambda_con = lambda_convergence
                 , kappa_con = kappa_convergence
                 , proportion_before_ft = proportion_before_ft
@@ -144,23 +130,13 @@ results <- list(pobs_1_min=parameters.r$pobs_1_min[i]
 )
 
 #Save results
-dir.create(paste0("sbv/raw_output/m",method,"/check_data"))
-saveRDS(results, file=paste0("sbv/raw_output/m",method,"/check_data/results_", i,".RDS"))
+dir.create(paste0("sbv/raw_output/m",method))
+saveRDS(results, file=paste0("sbv/raw_output/m",method,"/results_", i,".RDS"))
 
-#Save eri_ma
-dir.create(paste0("sbv/raw_output/m",method,"/check_data/eri_ma"))
-eri_ma$ma_reinf <- ts$ma_reinf
-saveRDS(eri_ma, file=paste0("sbv/raw_output/m",method,"/check_data/eri_ma/eri_ma_i_", i, ".RDS"))
-
-
-#Make the plot
 eri <- sri_long[, .(exp_reinf = median(value)
                     , low_reinf = quantile(value, 0.025, na.rm = TRUE)
                     , upp_reinf = quantile(value, 0.975, na.rm = TRUE)), keyby = date]
 
-eri_ma <- sri_long[, .(exp_reinf = median(ma_val, na.rm = TRUE)
-                       , low_reinf = quantile(ma_val, 0.025, na.rm = TRUE)
-                       , upp_reinf = quantile(ma_val, 0.975, na.rm = TRUE)), keyby = date]
 
 plot_column <- 'observed'
 plot_column_ma <- 'ma_reinf'
@@ -208,5 +184,6 @@ inc_reinf <- (plot_sim(ts, eri, eri_ma)
               + ggtitle(wrap_title(list_text))
 )
 
-dir.create(paste0("sbv/raw_output/m",method,"/check_data/plots"))
-ggsave(inc_reinf, filename = paste0("sbv/raw_output/m",method,"/check_data/plots/sim_plot_",i,".png"), width = 6, height = 3)
+dir.create(paste0("sbv/raw_output/m",method,"/plots"))
+ggsave(inc_reinf, filename = paste0("sbv/raw_output/m",method,"/plots/sim_plot_",i,".png"), width = 6, height = 3)
+
