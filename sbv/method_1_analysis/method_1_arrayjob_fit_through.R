@@ -12,7 +12,7 @@ method <- 1
 dir.create(paste0('sbv/raw_output'))
 dir.create(paste0('sbv/raw_output/m', method))
 
-load(file=paste0("sbv/method_", method, "_analysis/parameters.RData"))
+load(file=paste0("sbv/method_", method, "_analysis/parameters_pscale1.RData"))
 data_source <- 'data/inf_for_sbv.RDS'
 configpth <- paste0('sbv/method_',method,'_analysis/m',method,'_config_general.json')
 settingspth <- 'utils/settings.RData'
@@ -127,6 +127,7 @@ results <- list(  pscale = parameters.r$pscale[i]
                 , date_first_above_5 = date_first_above_5
                 , date_first_below_10 = date_first_below_10
                 , date_first_below_5 = date_first_below_5
+                , index_i = parameters.r$index[i]
 )
 
 #Save results
