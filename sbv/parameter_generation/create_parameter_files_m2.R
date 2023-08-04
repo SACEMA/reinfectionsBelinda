@@ -17,5 +17,9 @@ parameters <- expand.grid(pscale = seq(pscale_min, pscale_max, pscale_steps), po
 
 save_params <- as.data.frame(parameters)
 save(save_params, file = target)
+
+save_params$index <- seq(1, nrow(save_params))
+
 save_params <- save_params[save_params$pscale==1,]
-save(save_params, file = paste('sbv/method_1_analysis/parameters_pscale1.RData'))
+
+save(save_params, file = paste('sbv/method_2_analysis/parameters_pscale1.RData'))
