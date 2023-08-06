@@ -1,4 +1,3 @@
-write("start",file="third_infections.txt",append=TRUE)
 
 args = commandArgs(trailingOnly=TRUE)
 
@@ -67,9 +66,6 @@ ts_adjusted <- ts[, c("date", "observed", "ma_tot", "cases" )]
 #Run MCMC
 output <- do.mcmc(mcmc$n_chains, ts_adjusted)
 
-
-write('done mcmc',file="third_infections.txt",append=TRUE) #comment to confirm that theres not a zombie node
-
 #Save posterior
 lambda.post <- kappa.post <- numeric(0)
 smpls <- mcmc$n_posterior / mcmc$n_chains #number of samples to take from each chain
@@ -94,11 +90,7 @@ sim_reinf <- function(ii){
   return(rnbinom(length(ex2), size=1/kappa.post[ii], mu =c(0, diff(ex2))))
 }
 
-write('start sims',file="third_infections.txt",append=TRUE) #comment to confirm that theres not a zombie node
-
 sims <- sapply(rep(1:mcmc$n_posterior, n_sims_per_param), sim_reinf)
-
-write('end sims',file="third_infections.txt",append=TRUE) #comment to confirm that theres not a zombie node
 
 #6: analysis
 sri <- data.table(date = ts_adjusted$date, sims)
