@@ -132,7 +132,7 @@ results <- list(  pscale = parameters.r$pscale[i]
 
 #Save results
 dir.create(paste0("sbv/raw_output/m",method))
-saveRDS(results, file=paste0("sbv/raw_output/m",method,"/results_", i,".RDS"))
+saveRDS(results, file=paste0("sbv/raw_output/m",method,"/results_", parameters.r$index[i],".RDS"))
 
 eri <- sri_long[, .(exp_reinf = median(value)
                     , low_reinf = quantile(value, 0.025, na.rm = TRUE)
@@ -186,5 +186,5 @@ inc_reinf <- (plot_sim(ts, eri, eri_ma)
 )
 
 dir.create(paste0("sbv/raw_output/m",method,"/plots"))
-ggsave(inc_reinf, filename = paste0("sbv/raw_output/m",method,"/plots/sim_plot_",i,".png"), width = 6, height = 3)
+ggsave(inc_reinf, filename = paste0("sbv/raw_output/m",method,"/plots/sim_plot_",parameters.r$index[i],".png"), width = 6, height = 3)
 
