@@ -6,237 +6,110 @@
 target <- tail(.args, 1)
 dir.create('utils')
 
-## Combine results that we are currently busy with ###
-combineResultsCurrent = function (method) {
-  #set path:
-  if (method == 'third') {
-    path_ <- paste0('sbv/third_infections/')
-    output_file <-  'combined_results.RDS'
-  } else if (method == 'l2third') {
-    path_ <- paste0('sbv/third_infections/')
-    output_file <- 'l2_combined_results.RDS'
+
+#Pad the empty rows/columns with NA so the bind_rows can work out
+pad_with_na <- function(x, max_length) {
+  if (length(x) < max_length) {
+    c(x, rep(NA, max_length - length(x)))
   } else {
-    path_ <- paste0("sbv/method_",method,"_analysis/")
-    output_file <- 'combined_results.RDS'  
+    x
   }
-  
-  files <- list.files(path=paste0(path_, 'output/'), pattern="*.RDS", full.names=TRUE, recursive=FALSE)
-  resultList <- vector(mode = "list")
-  
-  for (f in files) {
-    resultList = c(resultList,readRDS(f))
-  }
-  final_RDS <- do.call(rbind.data.frame, resultList)
-  
-  if (method == 2)
-    final_RDS <- final_RDS %>% distinct(pobs_2, pscale, .keep_all = TRUE)
-  
-  saveRDS(final_RDS, file=paste0(paste0(path_, output_file)))
 }
 
-#combine raw results in raw folder (method_analysis/output/raw) and save it in output dir
-combineResultsInRaw = function (method, name_of_file, delete=TRUE) { 
 
-  files <- list.files(path=paste0("sbv/method_",method,"_analysis/output/raw"), pattern="*.RDS", full.names=TRUE, recursive=FALSE)
+#combine raw results in raw folder (method_analysis/output/raw) and save it in output dir
+combineRawResults = function (method, seed, directory="DEFAULT", output_dir="DEFAULT") { 
+  if (directory=="DEFAULT")
+    dir = paste0("sbv/method_",method,"_analysis/output/raw")
+  else
+    dir = directory
+  
+  files <- list.files(path=dir, pattern="*.RDS", full.names=TRUE, recursive=FALSE)
+  #sort files
+  files <- mixedsort(files)
+  
   resultList <- vector(mode = "list")
+  
   for (f in files) {
     resultList = c(resultList,list(readRDS(f)))
   } 
-  saveRDS(resultList, file=paste0("sbv/method_",method,"_analysis/output/", name_of_file))
-  #delete files in raw
-  if (delete==TRUE) {
-    lapply(files, unlink)
-  }
+  
+  #to know where to pad
+  final_RDS <- bind_rows(resultList)
+  final_RDS <- final_RDS %>% 
+    mutate(converges = ifelse(kappa_con <= 1.1 & lambda_con <= 1.1, TRUE, FALSE)
+           , below_5 = is.na(date_first_below_5)
+           , below_10 = is.na(date_first_below_10)
+           , index_column = 1:nrow(final_RDS)
+    )
+  
+  name_of_file <- paste0('method_', method, '_seed_', seed, '_full.RDS')
+  if (output_dir=="DEFAULT")
+    saveRDS(final_RDS, file=paste0("sbv/method_",method,"_analysis/output/", name_of_file))
+  else 
+    saveRDS(final_RDS, file=paste0(output_dir, '/', name_of_file))
 }
 
 #combine raw results in raw folder (method_analysis/output/raw) and save it in output dir
-combineResultsInRawCl = function (method, name_of_file, delete=TRUE) { 
-  if (method == 'third') {
-    path_ <- paste0('sbv/third_infections/')
-  } else if (method == 'l2third') {
-    path_ <- paste0('sbv/third_infections/')
-  } else {
-    path_ <- paste0("sbv/method_",method,"_analysis/")
-  }
+combineRawResultsOld = function (method, seed, directory="DEFAULT", output_dir="DEFAULT") { 
+  if (directory=="DEFAULT")
+    dir = paste0("sbv/method_",method,"_analysis/output/raw")
+  else
+    dir = directory
   
-  files <- list.files(path=paste0("sbv/raw_output/m",method), pattern="*.RDS", full.names=TRUE, recursive=FALSE)
+  files <- list.files(path=dir, pattern="*.RDS", full.names=TRUE, recursive=FALSE)
+  #sort files
+  files <- mixedsort(files)
+  
   resultList <- vector(mode = "list")
+  
   for (f in files) {
     resultList = c(resultList,list(readRDS(f)))
   } 
-  saveRDS(resultList, file=paste0(paste0(path_, 'output/'), name_of_file))
-  #delete files in raw
-  if (delete==TRUE) {
-    lapply(files, unlink)
-  }
+  
+  #to know where to pad
+  final_RDS <- bind_rows(resultList)
+  
+  name_of_file <- paste0('method_', method, '_seed_', seed, '_full.RDS')
+  if (output_dir=="DEFAULT")
+    saveRDS(final_RDS, file=paste0("sbv/method_",method,"_analysis/output/", name_of_file))
+  else 
+    saveRDS(final_RDS, file=paste0(output_dir, '/', name_of_file))
 }
 
-#### combine files of specific batch so that we can remove the batch ####
-combineBatchFiles = function (method, batch_number, delete=TRUE) {
-  files <- list.files(path=paste0("sbv/method_",method,"_analysis/output/batch",batch_number), pattern="*.RDS", full.names=TRUE, recursive=FALSE)
-  resultList <- vector(mode = "list")
-  for (f in files) {
-    resultList = c(resultList,readRDS(f))
-  }
-  print(method)
-  final_RDS <- do.call(rbind.data.frame, resultList)
-  if (method == 1)
-    final_RDS <- final_RDS %>% distinct(pscale, .keep_all = TRUE)
+getAllResults <- function(method, directory = "DEFAULT") {
+  if (directory=="DEFAULT") {
+    dir = paste0("sbv/method_",method,"_analysis/output/")
+  } else 
+    dir = directory
   
-  if (method == 2)
-    final_RDS <- final_RDS %>% distinct(pobs_2, pscale, .keep_all = TRUE)
-  
-  if (method == 3)
-    final_RDS <- final_RDS %>% distinct(pobs_2, pscale, pobs_1, .keep_all = TRUE)
-  
-  if (method == 4)
-    final_RDS <- final_RDS %>% distinct(pobs_2, pscale, pobs_1, dprob, .keep_all = TRUE)
-  
-  if (method == 5)
-    final_RDS <- final_RDS %>% distinct(pobs_1_min, pobs_2_max, pscale, xm, steep, .keep_all = TRUE)
-  
-  
-  
-  saveRDS(final_RDS, file=paste0("sbv/method_",method,"_analysis/output/final_output_data/batch_", batch_number,"_results.RDS"))
-  if (delete==TRUE)
-    unlink(x = '"sbv/method_",method,"_analysis/output/batch"', recursive = TRUE)
-}
-
-median_cluster <- function (values) { 
-  values[is.na(values)] <- Inf
-  med <- median(values)
-  if (med == Inf)
-    return (NA)
-  return (med)
-}
-
-get_median_values <- function(method) {
-  files <- list.files(path=paste0("sbv/method_",method,"_analysis/output/final_output_data"), pattern="*.RDS", full.names=TRUE, recursive=FALSE)
-  
-  
+  files <- list.files(path=dir, pattern="*.RDS", full.names=TRUE, recursive=FALSE)
+  files <- mixedsort(files)
   final_RDS <- data.frame()
   
   for (file in files) {
     final_RDS <- rbind.data.frame(final_RDS, readRDS(file))
   }
-  
-  
-  if (method==1)
-    rds_1 <- final_RDS %>% group_by(pscale) 
-  
-  if (method==2)
-            rds_1 <- final_RDS %>% group_by(pscale, pobs_2) 
-  
-  if (method==3) {
-            rds_1 <- final_RDS %>% group_by(pscale, pobs_1, pobs_2)
-  }
-  
-  if (method==4){
-            rds_1 <- final_RDS %>% group_by(pscale, pobs_1, pobs_2, dprob)
-  }
-  
-  if (method==5){
-            rds_1 <- final_RDS %>% group_by(pscale, pobs_1_min, pobs_1_max, multiplier, xm, steep)
-  }
-  
-  calculate_values <- rds_1 %>% 
-                            summarise(kappa_con = median(kappa_con)
-                            , lambda_con = median(lambda_con)
-                            , proportion = median(proportion)
-                            , date_first = median_cluster(date_first)
-                            , proportion_after_wavesplit = median(proportion_after_wavesplit)
-                            , date_first_after_wavesplit = median_cluster(date_first_after_wavesplit)
-                            , .groups = 'drop')
-
-  rm(rds_1)
-  summary_RDS <- calculate_values %>% as.data.frame()
-  
-  saveRDS(summary_RDS, file=paste0("sbv/method_",method,"_analysis/combined_results.RDS"))
-}
-
-#check if results in combined_results file is complete - run the getResultsCurrent() method to get the latest update
-results_complete <- function(method) {
-  script_path <- paste0('sbv/method_', method, '_analysis/check_results_complete_m', method, '.R')
-  source(script_path)
+  return (final_RDS)
 }
   
+excludeResults <- function(method, results)  {
 
-#combine raw results in raw folder (method_analysis/output/raw) and save it in output dir
-combineResultsThird = function (batch, l2, delete=TRUE) { 
-  if (l2==TRUE) {
-    files <- list.files(path=paste0("sbv/raw_output/ml2third/",batch), pattern="*.RDS", full.names=TRUE, recursive=FALSE)
-  } else {
-    files <- list.files(path=paste0("sbv/raw_output/mlthird/",batch), pattern="*.RDS", full.names=TRUE, recursive=FALSE)
-  }
   
-  resultList <- vector(mode = "list")
-  for (f in files) {
-    resultList = c(resultList,list(readRDS(f)))
-  } 
   
-  final_RDS <- do.call(rbind.data.frame, resultList)
+  #1. Remove where cluster below 10 before fit through exists
+  results <- results[is.na(results$date_first_below_10),]
+  #2. Remove where cluster above 5 before fit through exists
+  results <- results[is.na(results$date_first_above_5),]
+  #3. Remove non-converging rows
+  results <- results[results$converges == TRUE,]
   
-  name_of_file <- paste0('results_seed_',batch,'.RDS')
-  if (l2==TRUE) {
-    dir.create("sbv/third_infections/output/ml2third")
-    saveRDS(final_RDS, file=paste0("sbv/third_infections/output/ml2third/", name_of_file))
-  } else {
-    dir.create("sbv/third_infections/output/mlthird")
-    saveRDS(final_RDS, file=paste0("sbv/third_infections/output/mlthird", name_of_file))
-  }
-
+  return(results)
 }
 
-
-get_median_values_third <- function(l2) {
-  library()
-  if (l2==TRUE) {
-    files <- list.files(path=paste0("sbv/third_infections/output/ml2third"), pattern="*.RDS", full.names=TRUE, recursive=FALSE)
-  } else {
-    files <- list.files(path=paste0("sbv/third_infections/output/third"), pattern="*.RDS", full.names=TRUE, recursive=FALSE)
-  }
-  
-  
-  final_RDS <- data.frame()
-  
-  for (file in files) {
-    final_RDS <- rbind.data.frame(final_RDS, readRDS(file))
-  }
-  
-  rds_1 <- final_RDS %>% group_by(pscale) 
-  
-  if (l2==TRUE) {
-    calculate_values <- rds_1 %>% 
-      summarise(kappa_con = median(kappa_con)
-                , lambda_con = median(lambda_con)
-                , lambda_2_con = median(lambda_2_con)
-                , proportion = median(proportion)
-                , date_first = median_cluster(date_first)
-                , .groups = 'drop')  
-    } else {
-      calculate_values <- rds_1 %>% 
-        summarise(kappa_con = median(kappa_con)
-                  , lambda_con = median(lambda_con)
-                  , proportion = median(proportion)
-                  , date_first = median_cluster(date_first)
-                  , .groups = 'drop')  
-      
-  }
-  
-  rm(rds_1)
-  
-  summary_RDS <- calculate_values %>% as.data.frame()
-  if (l2==TRUE) {
-    saveRDS(summary_RDS, file=paste0("sbv/third_infections/output/median_results_l2.RDS"))
-  } else {
-    saveRDS(summary_RDS, file=paste0("sbv/third_infections/output/median_results.RDS"))
-  }
-}
-
-#returns TRUE or FALSE depending on convergence
 proportion_converence <- function(data){
   # Count how many values in data are less than 1.1
-  count_less_than_1_1 <- sum(data < 1.1)
+  count_less_than_1_1 <- sum(data <= 1.1)
   
   # Calculate the proportion of values less than 1.1
   proportion <- count_less_than_1_1 / length(data)
@@ -244,9 +117,19 @@ proportion_converence <- function(data){
   return(proportion)
 }
 
-get_median_results_proportion <- function(method){
-  files <- list.files(path=paste0("sbv/method_",method,"_analysis/output/final_output_data"), pattern="*.RDS", full.names=TRUE, recursive=FALSE)
+
+proportion_convergence_both <- function(data1, data2){
+  # Count how many values in data are less than 1.1
+  count_less_than_1_1 <- sum(data1 <= 1.1 & data2 <= 1.1)
   
+  # Calculate the proportion of values less than 1.1
+  proportion <- count_less_than_1_1 / length(data1)
+  
+  return(proportion)
+}
+
+getSummarisedResults <- function(method, directory) {
+  files <- list.files(path=paste0(directory), pattern="*.RDS", full.names=TRUE, recursive=FALSE)
   
   final_RDS <- data.frame()
   
@@ -270,25 +153,63 @@ get_median_results_proportion <- function(method){
   }
   
   if (method==5){
-    rds_1 <- final_RDS %>% group_by(pscale, pobs_1_min, pobs_1_max, multiplier, xm, steep)
+    rds_1 <- final_RDS %>% group_by(pscale, pobs_1_min, pobs_1_max, pobs_2_max, pobs_2_min, xm, steep)
   }
   
+  if (method!=5)
   calculate_values <- rds_1 %>% 
-    summarise(kappa_con = proportion_converence(kappa_con)
+    summarise(
+                convergence = proportion_convergence_both(lambda_con, kappa_con)
+              ,  kappa_con = proportion_converence(kappa_con)
               , lambda_con = proportion_converence(lambda_con)
               , proportion = median(proportion)
               , date_first = median_cluster(date_first)
               , proportion_after_wavesplit = median(proportion_after_wavesplit)
               , date_first_after_wavesplit = median_cluster(date_first_after_wavesplit)
               , .groups = 'drop')
+  else 
+    calculate_values <- rds_1 %>% 
+    summarise(
+      convergence = proportion_convergence_both(lambda_con, kappa_con)
+      ,  kappa_con = proportion_converence(kappa_con)
+      , lambda_con = proportion_converence(lambda_con)
+      , .groups = 'drop')
   
   rm(rds_1)
   summary_RDS <- calculate_values %>% as.data.frame()
   
   saveRDS(summary_RDS, file=paste0("sbv/method_",method,"_analysis/combined_results.RDS"))
+  
+  return (summary_RDS)
 }
 
-
-
-save(results_complete, get_median_values_third, median_cluster, combineBatchFiles, get_median_values, combineResultsCurrent, combineResultsInRaw, combineResultsInRawCl, combineResultsThird, file='utils/cleanup_methods.RData' )
+median_cluster <- function (values) { 
+  values[is.na(values)] <- Inf
+  med <- median(values)
+  if (med == Inf)
+    return (NA)
+  return (med)
+}
+  
+check_rows_number <- function (expected, directory) {
+  files <- list.files(path=directory, pattern="*.RDS", full.names=TRUE, recursive=FALSE)
+  for (file in files) {
+      data <- readRDS(file)
+      if (nrow(data) != expected) {
+        message(paste("File", file, "does not have", expected, "rows"))
+      }
+    
+  }
+}
+  
+save(combineRawResults
+     , combineRawResultsOld
+     , pad_with_na
+     , getAllResults
+     , excludeResults
+      , getSummarisedResults
+     , proportion_converence
+     , proportion_convergence_both
+     , median_cluster
+     ,  file='utils/cleanup_methods.RData' )
   
