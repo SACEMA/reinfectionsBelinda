@@ -45,6 +45,7 @@ if (!exists("seed_arg") | is.na(seed_arg)) {
   print("Change seed batch from args")
   seed_batch <- seed_arg
 }
+dir.create(paste0('sbv/raw_output/m', method, '/', seed_batch))
 
 results <- list()
 
@@ -141,7 +142,7 @@ results <- list(pobs_1=parameters.r$pobs_1[i]
 )
 
 
-saveRDS(results, file=paste0("sbv/raw_output/m",method,"/results_", parameters.r$index[i],".RDS"))
+saveRDS(results, file=paste0("sbv/raw_output/m",method,"/", seed_batch,"/results_", parameters.r$index[i],".RDS"))
 eri <- sri_long[, .(exp_reinf = median(value)
                     , low_reinf = quantile(value, 0.025, na.rm = TRUE)
                     , upp_reinf = quantile(value, 0.975, na.rm = TRUE)), keyby = date]
@@ -193,6 +194,6 @@ inc_reinf <- (plot_sim(ts, eri, eri_ma)
               + ggtitle(wrap_title(list_text))
 )
 
-dir.create(paste0("sbv/raw_output/m",method,"/plots"))
-ggsave(inc_reinf, filename = paste0("sbv/raw_output/m",method,"/plots/sim_plot_",parameters.r$index[i],".png"), width = 6, height = 3)
+dir.create(paste0('sbv/raw_output/m', method, '/', seed_batch,'/plots'))
+ggsave(inc_reinf, filename = paste0("sbv/raw_output/m",method,"/",seed_batch, "/plots/sim_plot_",parameters.r$index[i],".png"), width = 6, height = 3)
 
