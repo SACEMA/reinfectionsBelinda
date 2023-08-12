@@ -108,7 +108,7 @@ days_diff[days_diff<0] <- 1
 conseq_diff <- frollsum(days_diff, 10, fill =0)
 
 date_first_below_10 <- which(conseq_diff==10)[1]
-date_first_below_5 <- which(conseq_diff==5)[1]
+date_first_below_5 <- which(conseq_diff>=5)[1]
 
 #Date first above
 days_diff_above <-  eri_ma[eri_ma$date<=fit_through,]$upp_reinf - ts[ts$date<= fit_through,]$ma_reinf
@@ -119,7 +119,7 @@ conseq_diff <- frollsum(days_diff_above, 10, fill =0)
 
 
 date_first_above_10 <- which(conseq_diff==10)[1]
-date_first_above_5 <- which(conseq_diff==5)[1]
+date_first_above_5 <- which(conseq_diff>=5)[1]
 
 
 #Proportion outside
