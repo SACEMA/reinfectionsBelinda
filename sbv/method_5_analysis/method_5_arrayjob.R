@@ -103,10 +103,11 @@ days_diff[days_diff>=0] <- 0
 days_diff[days_diff<0] <- 1
 
 conseq_diff <- frollsum(days_diff, 10, fill =0)
+conseq_diff_5 <- frollsum(days_diff, 5, fill =0)
 
 
 date_first_below_10 <- which(conseq_diff==10)[1]
-date_first_below_5 <- which(conseq_diff>=5)[1]
+date_first_below_5 <- which(conseq_diff_5==5)[1]
 
 #Date first above
 days_diff_above <-  eri_ma[eri_ma$date<=fit_through,]$upp_reinf - ts[ts$date<= fit_through,]$ma_reinf
@@ -114,10 +115,11 @@ days_diff_above[days_diff_above>=0] <- 0
 days_diff_above[days_diff_above<0] <- 1
 
 conseq_diff <- frollsum(days_diff_above, 10, fill =0)
+conseq_diff_5 <- frollsum(days_diff_above, 5, fill =0)
 
 
 date_first_above_10 <- which(conseq_diff==10)[1]
-date_first_above_5 <- which(conseq_diff>=5)[1]
+date_first_above_5 <- which(conseq_diff_5==5)[1]
 
 
 #Proportion outside
@@ -133,9 +135,10 @@ days_diff_below_aw[days_diff_below_aw>=0] <- 0
 days_diff_below_aw[days_diff_below_aw<0] <- 1
 
 conseq_diff <- frollsum(days_diff_below_aw, 10, fill =0)
+conseq_diff_5 <- frollsum(days_diff_below_aw, 5, fill =0)
 
 date_first_below_10_aw <- which(conseq_diff==10)[1]
-date_first_below_5_aw <- which(conseq_diff>=5)[1]
+date_first_below_5_aw <- which(conseq_diff_5==5)[1]
 
 # Above 
 days_diff_above_aw <-  eri_ma[eri_ma$date>wave_split,]$upp_reinf - ts[ts$date>wave_split,]$ma_reinf
@@ -143,10 +146,11 @@ days_diff_above_aw[days_diff_above_aw>=0] <- 0 #then reinfections are below
 days_diff_above_aw[days_diff_above_aw<0] <- 1 #then reinfections are above
 
 conseq_diff <- frollsum(days_diff_above_aw, 10, fill =0)
+conseq_diff_5 <- frollsum(days_diff_above_aw, 5, fill =0)
 
 
 date_first_above_10_aw <- which(conseq_diff==10)[1]
-date_first_above_5_aw <- which(conseq_diff>=5)[1]
+date_first_above_5_aw <- which(conseq_diff_5==5)[1]
 
 # Propotion
 number_of_days <- nrow(eri_ma[eri_ma$date<wave_split,])
