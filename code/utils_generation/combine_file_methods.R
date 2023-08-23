@@ -18,7 +18,7 @@ pad_with_na <- function(x, max_length) {
 
 
 #combine raw results in raw folder (method_analysis/output/raw) and save it in output dir
-combineRawResults = function (method, seed, directory="DEFAULT", output_dir="DEFAULT") { 
+combineRawResults = function (method, seed, directory="DEFAULT", output_dir="DEFAULT", file_name="DEFAULT") { 
   if (directory=="DEFAULT")
     dir = paste0("sbv/method_",method,"_analysis/output/raw")
   else
@@ -43,7 +43,12 @@ combineRawResults = function (method, seed, directory="DEFAULT", output_dir="DEF
            , index_column = 1:nrow(final_RDS)
     )
   
-  name_of_file <- paste0('method_', method, '_seed_', seed, '_full.RDS')
+  if (file_name=="DEFAULT") {
+    name_of_file <- paste0('method_', method, '_seed_', seed, '_full.RDS')
+  } else {
+    name_of_file <- file_name
+  }
+    
   if (output_dir=="DEFAULT")
     saveRDS(final_RDS, file=paste0("sbv/method_",method,"_analysis/output/", name_of_file))
   else 
@@ -92,11 +97,13 @@ getAllResults <- function(method, directory = "DEFAULT") {
   }
   return (final_RDS)
 }
-  
-excludeResults <- function(method, results)  {
 
-  
-  
+excludeResultsNonConverging <- function(method, results)  {
+  results <- results[results$converges == TRUE,]
+  return(results)
+}  
+
+excludeResultsAll <- function(method, results)  {
   #1. Remove where cluster below 10 before fit through exists
   results <- results[is.na(results$date_first_below_10),]
   #2. Remove where cluster above 5 before fit through exists
@@ -121,6 +128,16 @@ proportion_converence <- function(data){
 proportion_convergence_both <- function(data1, data2){
   # Count how many values in data are less than 1.1
   count_less_than_1_1 <- sum(data1 <= 1.1 & data2 <= 1.1)
+  
+  # Calculate the proportion of values less than 1.1
+  proportion <- count_less_than_1_1 / length(data1)
+  
+  return(proportion)
+}
+
+proportion_convergence_three <- function(data1, data2, data3){
+  # Count how many values in data are less than 1.1
+  count_less_than_1_1 <- sum(data1 <= 1.1 & data2 <= 1.1 & data3 <= 1.1)
   
   # Calculate the proportion of values less than 1.1
   proportion <- count_less_than_1_1 / length(data1)
@@ -191,25 +208,28 @@ median_cluster <- function (values) {
   return (med)
 }
   
-check_rows_number <- function (expected, directory) {
+checkBatchesComplete <- function (expected, directory) {
   files <- list.files(path=directory, pattern="*.RDS", full.names=TRUE, recursive=FALSE)
   for (file in files) {
       data <- readRDS(file)
       if (nrow(data) != expected) {
         message(paste("File", file, "does not have", expected, "rows"))
       }
-    
   }
 }
-  
+
+
 save(combineRawResults
      , combineRawResultsOld
      , pad_with_na
      , getAllResults
-     , excludeResults
+     , excludeResultsAll
+     , excludeResultsNonConverging
       , getSummarisedResults
      , proportion_converence
      , proportion_convergence_both
      , median_cluster
+     , checkBatchesComplete
+     , proportion_convergence_three
      ,  file='utils/cleanup_methods.RData' )
   
