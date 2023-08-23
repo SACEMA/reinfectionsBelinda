@@ -13,7 +13,6 @@ final_RDS <- final_RDS %>% distinct(pobs_1_min
                                     , pobs_2_max
                                     , steep
                                     , xm
-                                    , multiplier
                                     , pscale
                                     , .keep_all = TRUE)
 
@@ -24,7 +23,6 @@ for (i in 1:nrow(final_RDS)) {
   pobs_1_max <- final_RDS[i,]$pobs_1_max
   pobs_2_min <- final_RDS[i,]$pobs_2_min
   pobs_2_max <- final_RDS[i,]$pobs_2_max
-  multiplier <- final_RDS[i,]$multiplier
   steep <- final_RDS[i,]$steep
   xm <- final_RDS[i,]$xm
   pscale <- final_RDS[i,]$pscale
@@ -32,7 +30,6 @@ for (i in 1:nrow(final_RDS)) {
                               ,pobs_1_max,';'
                               ,pobs_2_min,';'
                               ,pobs_2_max,';'
-                              ,multiplier,';'
                               ,steep,';'
                               ,xm,';'
                               ,pscale
@@ -55,7 +52,6 @@ for (i in 1:nrow(save_params)){
                                 ,pobs_1_max,';'
                                 ,pobs_2_min,';'
                                 ,pobs_2_max,';'
-                                ,multiplier,';'
                                 ,steep,';'
                                 ,xm,';'
                                 ,pscale
