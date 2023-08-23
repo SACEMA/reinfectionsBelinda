@@ -1,5 +1,3 @@
-write("start",file="arrayjob_m1.txt",append=TRUE)
-
 
 args = commandArgs(trailingOnly=TRUE)
 
