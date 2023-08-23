@@ -45,26 +45,23 @@ vignettes/*.pdf
 .RDatatmp*
 .RData
 
-#method analysis raw & RDS files results
-sbv/method_*_analysis/output/raw
-sbv/method_*_analysis/output/*.RDS
-sbv/method_*_analysis/*.RDS
-sbv/method_*_analysis/output/batch*
-sbv/method_*_analysis/parameters.RData
-sbv/method_*_analysis/plots/
-sbv/method_*_analysis/output/final_output_data
+#ignore results, plots, RDS, etc
+sbv/*/plots
 sbv/plots
-
-config_general.json
-sbv/method_*_analysis/*.json
-sbv/method_*_analysis/*.pbs
-sbv/third_infections/*.json
-sbv/third_infections/*.pbs
-sbv/third_infections/*.RData
-sbv/third_infections/output/
-sbv/third_infections/*.RDS
-#output files
+sbv/*/output
+sbv/*/*.RDS
+sbv/*/*.RData
 output/paper_plots
+sbv/raw_output
+
+
+#ignore config and pbs file - cp the example files. 
+config_general.json
+sbv/*/*.json
+sbv/*/*.pbs
+
+
+#output files
 output/*.RDS
 output/*.png
 output/*.RData
@@ -73,4 +70,3 @@ data/*.RDS
 #utils
 utils
 oe_files
-sbv/raw_output
