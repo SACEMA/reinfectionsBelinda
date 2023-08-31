@@ -37,6 +37,17 @@ parameters.r <- save_params
 
 attach(jsonlite::read_json(configpth))
 
+#Set seed
+seed_arg <-strtoi(args[2])
+if (!exists("seed_arg") | is.na(seed_arg)) {
+  print("Keep seed batch from config -- do nothing")
+} else {
+  print("Change seed batch from args")
+  seed_batch <- seed_arg
+}
+dir.create(paste0('sbv/raw_output/m', method,'/', seed_batch))
+
+
 results <- list()
 
 
@@ -99,9 +110,10 @@ days_diff[days_diff>=0] <- 0
 days_diff[days_diff<0] <- 1
 
 conseq_diff <- frollsum(days_diff, 10, fill =0)
+conseq_diff_5 <- frollsum(days_diff, 5, fill =0)
 
 date_first_below_10 <- which(conseq_diff==10)[1]
-date_first_below_5 <- which(conseq_diff==5)[1]
+date_first_below_5 <- which(conseq_diff_5==5)[1]
 
 #Date first above
 days_diff_above <-  eri_ma[eri_ma$date<=fit_through,]$upp_reinf - ts[ts$date<= fit_through,]$ma_reinf
@@ -109,10 +121,10 @@ days_diff_above[days_diff_above>=0] <- 0
 days_diff_above[days_diff_above<0] <- 1
 
 conseq_diff <- frollsum(days_diff_above, 10, fill =0)
-
+conseq_diff_5 <- frollsum(days_diff_above, 5, fill =0)
 
 date_first_above_10 <- which(conseq_diff==10)[1]
-date_first_above_5 <- which(conseq_diff==5)[1]
+date_first_above_5 <- which(conseq_diff_5==5)[1]
 
 
 #Proportion outside
@@ -131,8 +143,7 @@ results <- list(  pscale = parameters.r$pscale[i]
 )
 
 #Save results
-dir.create(paste0("sbv/raw_output/m",method))
-saveRDS(results, file=paste0("sbv/raw_output/m",method,"/results_", parameters.r$index[i],".RDS"))
+saveRDS(results, file=paste0("sbv/raw_output/m",method,"/", seed_batch,"/results_", parameters.r$index[i],".RDS"))
 
 eri <- sri_long[, .(exp_reinf = median(value)
                     , low_reinf = quantile(value, 0.025, na.rm = TRUE)
@@ -185,6 +196,7 @@ inc_reinf <- (plot_sim(ts, eri, eri_ma)
               + ggtitle(wrap_title(list_text))
 )
 
-dir.create(paste0("sbv/raw_output/m",method,"/plots"))
-ggsave(inc_reinf, filename = paste0("sbv/raw_output/m",method,"/plots/sim_plot_",parameters.r$index[i],".png"), width = 6, height = 3)
+dir.create(paste0('sbv/raw_output/m', method, '/', seed_batch,'/plots'))
+ggsave(inc_reinf, filename = paste0("sbv/raw_output/m",method,"/",seed_batch, "/plots/sim_plot_",parameters.r$index[i],".png"), width = 6, height = 3)
+
 
