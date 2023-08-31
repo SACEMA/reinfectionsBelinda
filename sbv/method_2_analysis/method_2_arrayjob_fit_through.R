@@ -37,6 +37,17 @@ parameters.r <- save_params
 
 attach(jsonlite::read_json(configpth))
 
+#Set seed
+seed_arg <-strtoi(args[2])
+if (!exists("seed_arg") | is.na(seed_arg)) {
+  print("Keep seed batch from config -- do nothing")
+} else {
+  print("Change seed batch from args")
+  seed_batch <- seed_arg
+}
+dir.create(paste0('sbv/raw_output/m', method,'/', seed_batch))
+
+
 results <- list()
 
 
@@ -133,7 +144,6 @@ results <- list( pobs_2=parameters.r$pobs_2[i]
 )
 
 #Save results
-dir.create(paste0("sbv/raw_output/m",method))
 saveRDS(results, file=paste0("sbv/raw_output/m",method,"/", seed_batch,"/results_", parameters.r$index[i],".RDS"))
 
 eri <- sri_long[, .(exp_reinf = median(value)
