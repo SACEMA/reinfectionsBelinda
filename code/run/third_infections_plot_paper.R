@@ -6,6 +6,8 @@
 # 
 # Repository: <https://github.com/jrcpulliam/reinfections>
 
+# File to create two simplots for third infections and position them below each other
+
 
 suppressPackageStartupMessages({
   library(data.table)
@@ -14,20 +16,28 @@ suppressPackageStartupMessages({
   library(gridExtra)
   library(grid)
   library(png)
+  library(patchwork)
+  library(ggplotify)
 })
 
-output_dir <- './output/'
-dir.create(output_dir)
+data <- 'data/ts_data_for_analysis.RDS' #Infection data with columns date, 'ma_third', 'third'
+configpth <- 'config_general.json'
+file_1 <- 'output/3_sim_90_null_l2_correctdata.RDS' #Simulations file for bottom plot
+file_2 <- 'output/3_sim_90_null_correctdata.RDS' #Simulations file for top plot
 
+output_dir <- './output/'
+output_file <- 'output/sim_plot_fit_through.png'
+
+dir.create(output_dir)
 
 infections <- 'Third'
 
+fit_through_1 <- '31-01-2022'
+fit_through_2 <- '31-10-2021'
 
-ts <- readRDS('data/ts_data_for_analysis.RDS')
+ts <- readRDS(data)
 
-configpth <- 'config_general.json'
 attach(jsonlite::read_json(configpth))
-
 load('utils/plotting_fxns.RData')
 
 plot_sim <- function(dat, sim, sim_ma) (ggplot(dat) 
@@ -65,7 +75,8 @@ plot_column_ma <- 'ma_third'
 plot_column <- 'third'
 
 # load file
-sims <- readRDS('output/sim_90_null_third_l2.RDS')
+sims <- readRDS(file_1)
+fit_through <- fit_through_1
 
 sri <- data.table(date = ts$date, sims)
 sri_long <- melt(sri, id.vars = 'date')
@@ -98,9 +109,9 @@ fig4_l2 <- grid.arrange(inc_reinf_fit , inc_reinf_proj, nrow=1, ncol=2, widths=c
 
 
 # load file
-sims <- readRDS('output/third_infections_fit_31_oct.RDS')
+sims <- readRDS(file_2)
+fit_through <- fit_through_2
 
-fit_through <- '2021-10-31'
 
 sri <- data.table(date = ts$date, sims)
 sri_long <- melt(sri, id.vars = 'date')
@@ -134,5 +145,15 @@ fig4 <- grid.arrange(inc_reinf_fit , inc_reinf_proj, nrow=1, ncol=2, widths=c(1,
 #####
 
 
-combined <- grid.arrange(fig4, fig4_l2)
-ggsave(combined, filename = 'output/sim_plot_fit_througoh.png')
+
+
+
+fig4_gg <- ggplotify::as.ggplot(fig4)
+fig4_l2_gg <- ggplotify::as.ggplot(fig4_l2)
+
+fig4_gg <- fig4_gg + labs(title = "A")
+fig4_l2_gg <- fig4_l2_gg + labs(title = "B")
+
+combined <- grid.arrange(fig4_gg, fig4_l2_gg)
+
+ggsave(combined, filename = output_file)
