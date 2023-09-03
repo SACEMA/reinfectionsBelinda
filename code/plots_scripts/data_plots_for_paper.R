@@ -1,13 +1,20 @@
-# Plot 1 - simulated primary and reinfections
+#load packages
 library('gridExtra')
 library('ggplot2')
 library('data.table')
+library('patchwork')
+
+#output directory
 plot_dir <- 'output/paper_plots'
+dir.create(plot_dir)
+
+load('utils/generate_data.RData')
+
+#### SCENARIO 1 ####
 
 configpth <- 'sbv/method_1_analysis/m1_config_general.json'
 attach(jsonlite::read_json(configpth))
 
-#Scenario 1
 dir.create(paste0(plot_dir, '/S1'))
 dir <- paste0(plot_dir, '/S1')
 
@@ -15,8 +22,9 @@ load('sbv/method_1_analysis/parameters.RData')
 paramaters.r <- save_params
 data <- data.frame()
 for (i in 1:nrow(paramaters.r)) {
-  data_add <- generate_data(1, 'data/inf_for_sbv_v3.RDS', 1)
-  data_add$pscale <- parameters.r[i,]$pscale
+  print(i)
+  data_add <- generate_data(1, 'data/inf_for_sbv.RDS', i)
+  data_add$pscale <- save_params[i,]$pscale
   data <- rbind(data, data_add)
 }
 
@@ -63,18 +71,22 @@ ggsave(data_method_1, filename = paste0(dir,'/combined_S1.png'))
 
 
 
-########################### Scenario 2
+#### SCENARIO 2 ####
 dir.create(paste0(plot_dir, '/S2'))
 dir <- paste0(plot_dir, '/S2')
+
+
+configpth <- 'sbv/method_2_analysis/m2_config_general.json'
+attach(jsonlite::read_json(configpth))
 
 
 load('sbv/method_2_analysis/parameters.RData')
 paramaters.r <- save_params
 data <- data.frame()
 for (i in 1:nrow(paramaters.r)) {
-  data_add <- generate_data(2, 'data/inf_for_sbv.RDS', 1)
-  data_add$pobs_2 <- parameters.r[i,]$pobs_2
-  data_add$pscale <- parameters.r[i,]$pscale
+  data_add <- generate_data(2, 'data/inf_for_sbv.RDS', 1, 'sbv/method_2_analysis/parameters.RData')
+  data_add$pobs_2 <- save_params[i,]$pobs_2
+  data_add$pscale <- save_params[i,]$pscale
   data <- rbind(data, data_add)
 }
 
@@ -98,7 +110,7 @@ ggsave(m2, filename = paste0(dir,'/calculated_reinfections.png'))
 
 
 
-###################### Method 3
+#### SCENARIO 3 ####
 
 dir.create(paste0(plot_dir, '/S3'))
 dir <- paste0(plot_dir, '/S3')
@@ -111,9 +123,9 @@ paramaters.r <- save_params
 data <- data.frame()
 for (i in 1:nrow(paramaters.r)) {
   data_add <- generate_data(3, 'data/inf_for_sbv.RDS', 1)
-  data_add$pobs_2 <- parameters.r[i,]$pobs_2
-  data_add$pscale <- parameters.r[i,]$pscale
-  data_add$pobs_1 <- paramaters.r[i,]$pobs_1
+  data_add$pobs_2 <- save_params[i,]$pobs_2
+  data_add$pscale <- save_params[i,]$pscale
+  data_add$pobs_1 <- save_params[i,]$pobs_1
   data <- rbind(data, data_add)
 }
 
@@ -159,7 +171,7 @@ data_method_3 <- grid.arrange(m3_primary_infections, m3_reinfections, nrow=2)
 ggsave(data_method_3, filename = paste0(dir,'/combined.png'))
 
 
-#### SCENARIO 4 #########
+#### SCENARIO 4 ####
 dir.create(paste0(plot_dir, '/S4'))
 dir <- paste0(plot_dir, '/S4')
 rm(save_params)
@@ -171,11 +183,11 @@ paramaters.r <- save_params
 data <- data.frame()
 for (i in 1:nrow(paramaters.r)) {
   print(i)
-  data_add <- generate_data(3, 'data/inf_for_sbv.RDS', 1)
-  data_add$pobs_2 <- parameters.r[i,]$pobs_2
-  data_add$pscale <- parameters.r[i,]$pscale
-  data_add$pobs_1 <- paramaters.r[i,]$pobs_1
-  data_add$dprob <- parameters.r[i,]$dprob
+  data_add <- generate_data(4, 'data/inf_for_sbv.RDS')
+  data_add$pobs_2 <- save_params[i,]$pobs_2
+  data_add$pscale <- save_params[i,]$pscale
+  data_add$pobs_1 <- save_params[i,]$pobs_1
+  data_add$dprob <- save_params[i,]$dprob
   data <- rbind(data, data_add)
 }
 
@@ -212,24 +224,45 @@ m4_reinfections <- ggplot(data[data$pscale==1 & data$pobs_1==0.5,], aes(x=date))
 ggsave(m4_reinfections, filename = paste0(dir,'/observed_reinf.png'))
 
 
-
-## Method 5
-#function
+#### SCENARIO 5 ####
+data <- readRDS('data/inf_for_sbv.RDS')
 load('utils/observe_prob_functions.RData')
-x <- seq(1, 100000)
-y <- logistic_func(0.05, 0.2, x, x_m = 30000, s = 0.00005)
-options(scipen=999)
-log_plot <- plot(x,y,type='line', xlab='Primary infections', ylab='Observation Probability')
 
-data <- readRDS('data/m5_ts_data_for_analysis.RDS')
-datam1 <- readRDS('data/m1_ts_data_for_analysis.RDS')
+min_infections <- min(data$infections)
+max_infections <- max(data$infections)
+pobs_min <- 0.1
+pobs_max <- 0.5
+data <- data[data$infections<100000,]
+y_values <- logistic_func(min=pobs_min, max=pobs_max, cases = data$infections, s = 0.0005, x_m = 40000)
+data_plot <-  data.frame(x = data$infections, y = y_values)
 
-m5.1 <- ggplot() +
-  geom_line(data=data, aes(x=date, y = infections_ma), color='green') + 
-  geom_line(data=datam1, aes(x=date, y=infections_ma), color='blue') + 
-  xlab('Date') + 
-  ylab('Reinfections') + 
-  ggtitle('Observed reinfections') +
-  theme(plot.title = element_text(hjust = 0.5))
+expand <- expand.grid(steep=c(0.00005, 0.0001), mid=c(30000, 40000, 50000))
+plots_list <- list()
+grid <- plot_layout(ncol = 3, nrow = 2)
+
+for (i in 1:nrow(expand)){
+  tryCatch({
+    steep <- expand$steep[i]
+    xm <- expand$mid[i]
+    y_values <- logistic_func(min=pobs_min, max=pobs_max, cases = data$infections, s = steep, x_m = xm)
+    data_plot <-  data.frame(x = data$infections, y = y_values)
+    
+    
+    plot <- ggplot() +
+      geom_line(data = data_plot, aes(x = x, y = y), color = "black", linetype = "solid", size = 1) +
+      theme_minimal() +
+      theme(legend.position = "top") +
+      scale_color_manual(values = c("black"), guide = FALSE) + 
+      ylim(0, 0.6) + 
+      scale_x_continuous(breaks = seq(50000, 50000, by = 0)) + 
+      xlab('') + 
+      ylab('')
+    
+    plots_list[[i]] <- plot
+
+  }, error = function(d){print(d)})
+}
 
 
+plot <- grid.arrange(grobs = plots_list, ncol = 3) 
+ggsave(plot, file='sbv/plots/log_function.tiff', dpi=1500, compression = "lzw")
