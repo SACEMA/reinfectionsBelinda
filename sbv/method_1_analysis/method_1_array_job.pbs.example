@@ -37,5 +37,3 @@ echo "Waiting for processes to finish"
 wait $(jobs -p)
 echo "All processes finished"
 
-
-Rscript sbv/cleanup.R 1 $START $END 
