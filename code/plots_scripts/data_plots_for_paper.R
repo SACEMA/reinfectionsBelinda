@@ -1,3 +1,5 @@
+# File that can be used to generate plots that represents the data generation process throughout the methods #
+
 #load packages
 library('gridExtra')
 library('ggplot2')
