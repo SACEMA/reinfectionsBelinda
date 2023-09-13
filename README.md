@@ -12,6 +12,13 @@ If you have questions or comments, please contact the repository maintainer, Bel
 -    R Studio (recommended)- a user interface for R
 
 R packages required are indicated seperately in the two sections
+
+## General pipeline files
+The following files are applicable to the entire project and contained in the main directory: 
+-   LICENSE - license information
+-   README.md - this current file.
+-   .gitignore - files and file types that the version control should ignore. 
+
 ## Extended model 
 ### Software requirements (for extended model)
 The following R packages are required to run the extended model (indicated versions were used during manuscript preperation): 
@@ -28,8 +35,10 @@ The following R packages are required to run the extended model (indicated versi
 ### Pipeline files
 These files located are in the main directory: 
 -   `Makefile`: full pipeline via GNU Make (requires use of Unix-like command line); see https://www.gnu.org/software/make/ for more information
--   `config_general.json.example`:  configuration file used for manuscript preparation when fitting third infections and not adding an fitting a reinfection hazard coefficient. _copy this file and rename it as 'config_general.json' to use with the model_
--   `config_general_l2.json.example`: configuration file used for manuscript preparation when fitting third infections and adding an fitting reinfection hazard coefficient. _copy this file and rename it as 'config_general.json' to use with the model_        
+-   `config_general.json.example`:  configuration file used for manuscript preparation when fitting third infections and not adding an fitting a reinfection hazard coefficient. _copy this file and rename it as 'config_general.json' to use with the model._
+-   `config_general_l2.json.example`: configuration file used for manuscript preparation when fitting third infections and adding an fitting reinfection hazard coefficient. _copy this file and rename it as 'config_general.json' to use with the model._
+
+        
 ## Simulation-based validation for reinfections
 Code to run the simulation-based validation presented in *** are provided. 
 
