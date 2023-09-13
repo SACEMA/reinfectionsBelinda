@@ -65,6 +65,7 @@ sbv/*/*.pbs
 output/*.RDS
 output/*.png
 output/*.RData
+output/*.tiff
 data/*.RDS
  
 #utils
