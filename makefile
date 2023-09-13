@@ -5,13 +5,12 @@ endif
 R = Rscript $^ $@
 UTILS_SCRIPTS = code/utils_generation
 INFECTIONS = 2
-SBV = TRUE
-
-#all will just create the utils & parameter files 
-all: install utils_run
 
 #run does the normal run
-run: utils_run generate_data data mcmc sim plots
+run: install utils_run data mcmc sim plots
+
+#run_without_l2 will run the files where l2 is excluded
+run_without_l2: install utils_run_without_l2 data mcmc_without_l2 sim_without_l2 plots_without_l2
 
 #sbv setup for simulation-based-validation
 sbv: utils_sbv create_params_sbv 
@@ -27,17 +26,20 @@ utils_sbv: utils utils/settings.RData \
 	utils/cleanup_methods.RData
 
 utils_run: utils utils/plotting_fxns.RData utils/mcmc_functions_l2.RData
-	
+
+utils_run_without_l2: utils utils/plotting_fxns.RData utils/mcmc_functions.RData
+
 create_params_sbv: sbv/method_1_analysis/parameters.RData \
 	sbv/method_2_analysis/parameters.RData \
 	sbv/method_3_analysis/parameters.RData \
 	sbv/method_4_analysis/parameters.RData \
 	sbv/method_5_analysis/parameters.RData \
 	sbv/third_infections/parameters.RData
+	
 
 
 #Install packages
-install: $(UTILS_SCRIPTS)/install.R
+install: code/helper_files/install.R
 	${R}
 
 #Create utils
@@ -73,11 +75,6 @@ sbv/method_%_analysis/parameters.RData: sbv/parameter_generation/create_paramete
 sbv/third_infections/parameters.RData: sbv/parameter_generation/create_parameter_files_third_infections.R
 	${R}
 	
-#Generate data if data is not provided / does not exist
-data/ts_data.csv: data/generate_data/generate_data.R data/generate_data/simulated_data.RDS
-	${R} 
-
-generate_data: data/ts_data.csv
 
 #Get infections argument to determine for which infections this is done 
 $(eval $(infections):;@:)
@@ -92,14 +89,25 @@ data: data/ts_data_for_analysis.RDS
 output/posterior_90_null.RData: code/run/2_run_mcmc.R data/ts_data_for_analysis.RDS utils/mcmc_functions_l2.RData utils/fit_functions.RData config_general.json $(infections)
 	${R}
 
+output/posterior_90_null_without_l2.RData: code/run/2_run_mcmc_without_lambda2.R data/ts_data_for_analysis.RDS utils/mcmc_functions.RData utils/fit_functions.RData config_general.json $(infections)
+	${R}
+
 mcmc: output/posterior_90_null.RData
+
+mcmc_without_l2: output/posterior_90_null_without_l2.RData
 
 # Run Simulations
 output/sim_90_null.RDS: code/run/3_sim_null.R output/posterior_90_null.RData \
 data/ts_data_for_analysis.RDS utils/fit_functions.RData config_general.json $(infections)
 	${R}
 
+output/sim_90_null_without_l2.RDS: code/run/3_sim_null_without_lambda2.R output/posterior_90_null_without_l2.RData \
+data/ts_data_for_analysis.RDS utils/fit_functions.RData config_general.json $(infections)
+	${R}
+
 sim: output/sim_90_null.RDS
+
+sim_without_l2: output/sim_90_null_without_l2.RDS
 
 # Generate plots
 output/sim_plot_90_null.png: code/run/3_sim_plot.R output/sim_90_null.RDS \
@@ -109,5 +117,15 @@ data/ts_data_for_analysis.RDS config_general.json utils/plotting_fxns.RData $(in
 output/convergence_plot.png: code/run/convergence_plot.R \
 output/posterior_90_null.RData utils/fit_functions.RData config_general.json $(infections)
 	${R}
+	
+output/sim_plot_90_null_without_l2.png: code/run/3_sim_plot.R output/sim_90_null_without_l2.RDS \
+data/ts_data_for_analysis.RDS config_general.json utils/plotting_fxns.RData $(infections)
+	${R}
+
+output/convergence_plot_without_l2.png: code/run/convergence_plot_without_lambda2.R \
+output/posterior_90_null_without_l2.RData utils/fit_functions.RData config_general.json $(infections)
+	${R}
 
 plots: output/sim_plot_90_null.png output/convergence_plot.png
+
+plots_without_l2: output/sim_plot_90_null_without_l2.png output/convergence_plot_without_l2.png
