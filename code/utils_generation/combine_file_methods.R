@@ -99,8 +99,13 @@ getAllResults <- function(method, directory = "DEFAULT") {
 }
 
 excludeResultsNonConverging <- function(method, results)  {
+  #if converges column doesnt exist, create it
+  if (!("converges" %in% colnames(results))){
+    results <- results %>% mutate(converges = ifelse(kappa_con <= 1.1 & lambda_con <= 1.1, TRUE, FALSE))
+  } 
   results <- results[results$converges == TRUE,]
-  return(results)
+  return(results[rowSums(is.na(results)) < ncol(results), ])
+
 }  
 
 excludeResultsAll <- function(method, results)  {
@@ -111,7 +116,7 @@ excludeResultsAll <- function(method, results)  {
   #3. Remove non-converging rows
   results <- results[results$converges == TRUE,]
   
-  return(results)
+  return(results[rowSums(is.na(results)) < ncol(results), ])
 }
 
 proportion_converence <- function(data){
