@@ -5,7 +5,7 @@ The work in this repositoy consists of two parts:
 1.  A pipeline to run the extended model to detect increases in the risk of an n<sup>th</sup> infection. 
 2.  Simluation-based validation on the catalytic model
 
-If you have questions or comments, please contact the repository maintainer, Belinda Lombard, at belindalombard@sun.ac.za.
+If you have questions or comments, please contact the repository maintainer, Belinda Lombard, at belindalombard@gmail.com.
 
 ## Software requirements 
 -    R - a statistical programming language
