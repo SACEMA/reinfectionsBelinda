@@ -1,3 +1,7 @@
+# Prerequisite: scenario results as RDS (dataframes) files in 
+#'sbv/method_3_analysis/output/final_output_data' 
+
+
 library(ggplot2)
 library(ggtext)
 library(dplyr)
@@ -59,20 +63,29 @@ saveRDS(summarised, file = 'sbv/method_3_analysis/output/summarised_results.RDS'
 
 
 #merge the results from method 4 where file1 is the original results, and file2 the results for exclusion
-merge_results_m3 <- function(file1, file2){
-  df1 <- readRDS(file1)
-  df2 <- readRDS(file2)
-  merged <- merge(df1, df2, by = c("pobs_1", "pobs_2"), all.x = TRUE)
-  merged <- subset(merged, select = -c(pscale.y, kappa_con.y, lambda_con.y))
-  
-  merged <- merged %>% 
-    rename(
-      kappa_con = kappa_con.x ,
-      lambda_con = lambda_con.x , 
-      pscale = pscale.x 
-    )
-  saveRDS(merged, file=paste0(file1,'.test.RDS'))  
-}  
+#merge_results_m3 <- function(file1, file2){
+#  df1 <- readRDS(file1)
+#  df2 <- readRDS(file2)
+#  merged <- merge(df1, df2, by = c("pobs_1", "pobs_2"), all.x = TRUE)
+#  merged <- subset(merged, select = -c(pscale.y, kappa_con.y, lambda_con.y))
+#  
+#  merged <- merged %>% 
+#    rename(
+#      kappa_con = kappa_con.x ,
+#      lambda_con = lambda_con.x , 
+#      pscale = pscale.x 
+#    )
+#  saveRDS(merged, file=paste0(file1,'.test.RDS'))  
+#}  
 
-
+#method <- 3
+#results_dir <- paste0('sbv/method_',method,'_analysis/results')
+#dir.create(results_dir)
+#input_dir <- paste0('sbv/method_',method,'_analysis/output/final_output_data/')
+#for (i in 1:20) {
+#  results <- readRDS(paste0(input_dir, 'batch_',i,'_results.RDS.test.RDS'))
+#  write.csv(results
+#            , paste0(results_dir, '/method_',method,'_seed_', i, '_analysis.csv')
+#            , row.names=FALSE)
+#}
 

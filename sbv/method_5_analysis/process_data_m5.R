@@ -1,9 +1,17 @@
+# Prerequisite: scenario results as RDS (dataframes) files in 
+#'sbv/method_5_analysis/output/final_output_data' 
+
+
 library(gtools)
 library(ggplot2)
 library(ggtext)
 library(dplyr)
 
 load('utils/cleanup_methods.RData')
+
+
+
+
 
 #combine raw results of all 20 seeds
 #for (i in 1:20) {
@@ -56,5 +64,15 @@ summarised <- summarised %>%
 
 saveRDS(summarised, file = 'sbv/method_5_analysis/output/summarised_results.RDS')
 
-
+#Saves RDS files as CSV files
+#method <- 5
+#results_dir <- paste0('sbv/method_',method,'_analysis/results')
+#dir.create(results_dir)
+#input_dir <- paste0('sbv/method_',method,'_analysis/output/final_output_data/')
+#for (i in 1:20) {
+#  results <- readRDS(paste0(input_dir, 'method_',method,'_seed_', i, '_full.RDS.'))
+#  write.csv(results
+#            , paste0(results_dir, '/method_',method,'_seed_', i, '_analysis.csv')
+#            , row.names=FALSE)
+#}
 
