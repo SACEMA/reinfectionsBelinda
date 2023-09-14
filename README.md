@@ -1,4 +1,5 @@
-# reinfectionsBelinda
+# A catalytic model for SARS-CoV-2 reinfections: Performing simulation-based validation and extending the model to include nth infections
+
 Repository for Belinda's MSc work on for simulation-based validation on a catalytic model by Pulliam et al. 
 
 The work in this repositoy consists of two parts:
