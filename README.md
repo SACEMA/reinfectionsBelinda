@@ -186,7 +186,7 @@ In this repository, the results obtained in the analysis are saved and provided 
 To create dataframes that can be used for further analysis: 
 - `sbv/method_%_analysis/process_data_m%.R`: This will create dataframes that summarises the results obtained for each scenario. The dataframes are stored in  `sbv/method_%_analysis/output`
 - Examples of outputs provided are:
-   -  
+#
 
 The output from this can be **visualised** by running `sbv/method_%_analysis/plots_m%.R` and the respective plots are saved in `sbv/method_%_analysis/plots`.
 
@@ -198,11 +198,61 @@ The following R files provided in `sbv/final_plot_scripts` were used to generate
 
 The output of this is saved in the `sbv/plots` directory. 
 
-### CHPC Cluster 
-The simulation-based validation for this study was done using an HPC cluster. The job files for each scenario is provided as `sbv/method_%_analysis/method_%_arrayjob.pbs.example`. The job files uses array jobs to run the simulation-based validation for each seed and each value of i (specified in the array job). The authors gratefully
-acknowledge the Centre for High Performance Computing (CHPC), South Africa, for providing computational resources to this research project. 
-
 ## Simulation-based validation for third infections
-(chapter 3) 
+The simulation-based validation done for the third infections in *** is very similar to the simulation based validation for reinfections in the previous section.
+
+### Additional utils
+The following utils are generated in additional to the utils being generated for the overall project: 
+- Parameter generation files: the file to generate the parameter combinations can be found in `sbv/paramameter_generation/create_parameter_files_third_infections.R`
+    - The output of this is saved as
+         - `sbv/third infections/parameters.RData` and 
+         - `sbv/third infections/parameters_increase.RData`.
+- (similar to reinfections) `code/utils_generation/combine_file_methods.R`: This creates methods that are used when combining the raw results after the simulation-based validation.
+    - The output of this is saved in `utils/cleanup_methods.RData`
+- `code/utils_generation/generate_data.R`: This creates the functions used to simulate infections for each scenario using the provided timeseries of primary infections. 
+    - The output of this is saved in `utils/generate_data.RData`
+    - In the third infections, the function `generate_data_third_increase` `and generate_data_third` are used to create the simulated third infection data. 
+- (similar to reinfections) `code/utils_generation/settings.R`: This provides a list of everything that must be loaded for the SBV file to run (which get loaded with the `lapply` function)
+
+### Configuration
+An example configuration file is provided as it was run in the simulation-based validation study (`sbv/third_infections/third_array_job.pbs.example`). To run the analysis, this must be copied and the '.example' must be removed from the filename. 
+
+Important fields specified in this JSON file (in addition to the reinfections simulation-based validation): 
+- `wave_split`: The date on which the first scale value gets introduced in the third infection hazard coefficient (represents the Omicron wave)
+- `wave_split_2`: The date on which an additional scale value gets introduced in the third infection hazard coefficient
+
+### Running pipeline
+After creating the utils and the parameter files (this can be done with `make make l2_sbv` which will make the relevant functions for the additional lambda parameter) and copying the configuration JSON file, the pipeline can be run by running either:  
+- `sbv/third_infections/third_infections_l2.R`: This will run the parameter combinations in parameters.RData which don't have the additional increase in reinfection risk after `wave_split_2`
+-  `sbv/third_infections/third_infections_l2_increase.R`: This will run the parameter combinations in `parameters_increase.RData` which  have the additional increase in reinfection risk after `wave_split_2`
+
+Running this will complete the entire process for the respective seed and parameter combination
+- By default, the first parameter combination in the `parameters.RData`. 
+- The seed is specified in the method's config file (`sbv/third_infections/third_array_job.pbs`)
+- Alternatively, you can the script with arguments
+   `Rscript {R file_name} {i} {seed}` which will override the set seed and i arguments.
+
+The output was saved in: `sbv/raw_output/ml2third/{SEED}` **AND** `sbv/raw_output/ml2third_increase/{SEED}` respecitvely, as RDS files for each value of i. 
+
+**Note**: The raw results were processed with the functions `combineRawResults` & `combineRawResultsOld` and saved as a dataframe for each frame in `sbv/third_infections/output/third_l2`  **AND** `sbv/third_infections/output/third_increase_p2` respectively for further analysis. 
+
+### Processing of results
+In this repository, the results obtained in the analysis are saved and provided as CSV files in `sbv/third_infections/results/` for each scenario. To use the below scripts, the CSV files must be imported as RDS files and stored in `sbv/third_infections/output/third_l2` AND `sbv/third_infections/output/third_increase_p2` respectively. 
+
+To create dataframes that can be used for further analysis: 
+- `sbv/third_infections/process_data_third.R`: This will create dataframes that summarises the results obtained for each scenario. The dataframes are stored in  `sbv/third_infections/output`
+- Examples of outputs provided are:
+#
+
+The output from this can be **visualised** by running `sbv/third_infections/third_infections_plots.R` and the respective plots are saved in `sbv/third_infections/plots`.
+
 
 ## Additional information about repository
+### CHPC Cluster 
+The simulation-based validation for this study was done using an HPC cluster. The job files for each scenario is provided as `sbv/method_%_analysis/method_%_arrayjob.pbs.example` and `sbv/third_infectionss/l2_third_array_job.pbs.example` . The job files uses array jobs to run the simulation-based validation for each seed and each value of i (specified in the array job). 
+
+It is also possible to run the extended method on a cluster using `lambda.pbs.example` in the main directory. 
+
+To ensure the fluent running of the scripts on the cluster, a directory "oe_files" must be created manually (for the output and error files to be saved in) 
+
+**The authors gratefully acknowledge the Centre for High Performance Computing (CHPC), South Africa, for providing computational resources to this research project.**
