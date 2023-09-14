@@ -4,7 +4,14 @@ method <- 2
 
 dir <- paste0('sbv/method_', method,'_analysis/plots')
 
-final_RDS <- readRDS(paste0('sbv/method_',method,'_analysis/combined_results.RDS'))
+
+final_RDS <- readRDS(paste0('sbv/method_',method,'_analysis/output/all_data.RDS'))
+summarised <- readRDS(paste0('sbv/method_',method,'_analysis/output/summarised_results.RDS'))
+excluded_results <- readRDS(paste0('sbv/method_',method,'_analysis/output/all_data_excluded.RDS'))
+summarised_all <- readRDS(paste0('sbv/method_',method,'_analysis/output/summarised_results_all.RDS'))
+result <- readRDS('sbv/method_2_analysis/output/specificity_matrix.RDS')
+final_RDS_con <-  readRDS(paste0('sbv/method_',method,'_analysis/output/summarised_results_med_con.RDS'))
+
 
 dir.create(dir)
 
@@ -19,41 +26,16 @@ styling_layers <-
   )
 
 
-#plots useless as different pscale don't affect convergence
-lambda_con_plot <- (ggplot(final_RDS)
-                    + aes(x = pobs_2, y = lambda_con)
-                    + geom_line()
-                    + ggtitle(paste0('Lambda Convergence Sensitivity Analysis: Method ', + method)) 
-                    + ylab('Convergence diagnostic')
-                    + xlab('Reinfections observation probability')
-                    + styling_layers
-)
-
-ggsave(lambda_con_plot, filename=paste0(dir, '/lambda_con_plot.png'))
-
-
-#plots useless as different pscale don't affect convergence
-kappa_con_plot <- (ggplot(final_RDS)
-                    + aes(x = pobs_2, y = kappa_con)
-                    + geom_line()
-                    + ggtitle(paste0('Kappa Convergence Sensitivity Analysis: Method ', + method)) 
-                    + ylab('Convergence diagnostic')
-                    + xlab('Reinfections observation probability')
-                    + styling_layers
-)
-ggsave(kappa_con_plot, filename=paste0(dir, '/kappa_con_plot.png'))
-
-
 #S2 convergence plto
 colors <- c("Kappa" = "green", "Lambda" = "blue")
 con_plot <- (ggplot(final_RDS, aes(x = pobs_2))
-                   + geom_line(aes(y = kappa_con, color="Kappa"))
-                   + geom_line(aes(y = lambda_con, color="Lambda"))
-                   + geom_hline(yintercept=c(1.2), linetype="dotted", color="red")
-                    + geom_hline(yintercept=c(1.1), linetype="dotted", color="grey")
+                   + geom_point(aes(y = kappa_con, color="Kappa"))
+                   + geom_point(aes(y = lambda_con, color="Lambda"))
+                   + geom_hline(yintercept=c(1.2), linetype="dotted", color="grey")
+                    + geom_hline(yintercept=c(1.1), linetype="dotted", color="red")
                  #  + ggtitle(paste0('Kappa Convergence Sensitivity Analysis: Method ', + method)) 
                    + labs(
-                     x = "Reinfections observation probability"
+                     x = bquote(P[2])
                      , y = "Convergence diagnostic"
                      , color = ""
                    )
@@ -67,12 +49,12 @@ ggsave(con_plot, filename=paste0(dir, '/con_plot.png'))
 
 
 #Pscale vs proportion plot after wavesplit
-proportion_m2 <- (ggplot(final_RDS) 
-                           + aes(x=pscale, y=proportion_after_wavesplit, group=pobs_2, color= factor(pobs_2)) 
+proportion_m2 <- (ggplot(summarised) 
+                           + aes(x=pscale, y=proportion_above, group=pobs_2, color= factor(pobs_2)) 
                            + geom_line()
-                           + labs(color="Reinfections\nobservation\nprobability"
+                           + labs(color=bquote(P[2])
                                   , y='Proportion'
-                                  , x='Scale')
+                                  , x=bquote(sigma))
                            + ylim(0,1)
                            + styling_layers
                           # + guides(fill = guide_legend(byrow = TRUE))
@@ -88,10 +70,10 @@ ggsave(proportion_m2, filename=paste0(dir, '/pscale_propotion_aw.png'))
 
 
 #Pscale vs proportion plot after wavesplit
-cluster_m2 <- (ggplot(final_RDS) 
-                              + aes(x=pscale, y=date_first_after_wavesplit, group=pobs_2, color= factor(pobs_2)) 
+cluster_m2 <- (ggplot(summarised) 
+                              + aes(x=pscale, y=date_first_above, group=pobs_2, color= factor(pobs_2)) 
                               + geom_line()
-                              + labs(color="Reinfections\nobservation\nprobability", y='First day', x='Scale')
+                              + labs(color=bquote(P[2]), y='First day', x=bquote(sigma))
                               #+ ggtitle(paste0('Method ', method, ' pscale vs proportion of points outside\nprediction interval AFTER wavesplit'))
                               + ylim(0,70)
                               + styling_layers
