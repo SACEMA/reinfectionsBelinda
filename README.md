@@ -199,7 +199,8 @@ The following R files provided in `sbv/final_plot_scripts` were used to generate
 The output of this is saved in the `sbv/plots` directory. 
 
 ### CHPC Cluster 
-The simulation-based validation for this study was done using an HPC cluster. The job files for each scenario is provided as `sbv/method_%_analysis/method_%_arrayjob.pbs.example`. The job files uses array jobs to run the simulation-based validation for each seed and each value of i (specified in the array job) 
+The simulation-based validation for this study was done using an HPC cluster. The job files for each scenario is provided as `sbv/method_%_analysis/method_%_arrayjob.pbs.example`. The job files uses array jobs to run the simulation-based validation for each seed and each value of i (specified in the array job). The authors gratefully
+acknowledge the Centre for High Performance Computing (CHPC), South Africa, for providing computational resources to this research project. 
 
 ## Simulation-based validation for third infections
 (chapter 3) 
