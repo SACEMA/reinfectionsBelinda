@@ -32,8 +32,8 @@ dir.create(output_dir)
 
 infections <- 'Third'
 
-fit_through_1 <- '31-01-2022'
-fit_through_2 <- '31-10-2021'
+fit_through_1 <- '2022-01-31'
+fit_through_2 <- '2021-10-31'
 
 ts <- readRDS(data)
 
@@ -56,6 +56,10 @@ plot_sim <- function(dat, sim, sim_ma) (ggplot(dat)
                                         + scale_x_Ms(name = 'Specimen receipt date', labels = function(bs) {
                                           c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")[month(bs)]
                                         }, date_breaks='2 months')
+                                        #+ scale_x_date(
+                                        #  date_breaks = "2 months",
+                                        #  labels = scales::label_date_short()
+                                        #  )
                                         + theme(panel.grid.major.x = element_blank()
                                                 , axis.ticks = element_blank()
                                                 , panel.grid.minor.x = element_line(color = 'lightgrey', size = .5)
@@ -66,6 +70,7 @@ plot_sim <- function(dat, sim, sim_ma) (ggplot(dat)
                                         + geom_vline(xintercept = c(as.Date('2021-01-01'), as.Date('2022-01-01'))
                                                      , linetype = 2, size = .5, color = '#111111')
                                         + scale_y_sqrt()
+                                        
 )
 
 
@@ -95,9 +100,9 @@ inc_reinf <- (plot_sim(ts, eri, eri_ma)
               + geom_text(aes(label = year, y = 0), data = ts[, .(year = format(date, '%Y'), date)][, .(date = min(date)), by = year], vjust = -31, hjust = 'left', nudge_x = 14, size = 7*0.35)
 )
 
-inc_reinf_fit <- (plot_sim(ts[between(date, as.Date('2021-05-01'), as.Date(fit_through))], eri[between(date, as.Date('2021-05-01'), as.Date(fit_through))], eri_ma[between(date, as.Date('2021-05-01'), as.Date(fit_through))])
+inc_reinf_fit <- (plot_sim(ts[between(date, as.Date('2020-11-01'), as.Date(fit_through))], eri[between(date, as.Date('2020-11-01'), as.Date(fit_through))], eri_ma[between(date, as.Date('2020-11-01'), as.Date(fit_through))])
                   + ggtitle('Fitting period')
-                  + geom_text(aes(label = year, y = 0), data = ts[between(date, as.Date('2021-05-01'), as.Date(fit_through)), .(year = format(date, '%Y'), date)][, .(date = min(date)), by = year], vjust = -13, hjust = 'left', nudge_x = 14, size = 7*0.35)
+                  + geom_text(aes(label = year, y = 0), data = ts[between(date, as.Date('2020-11-01'), as.Date(fit_through)), .(year = format(date, '%Y'), date)][, .(date = min(date)), by = year], vjust = -13, hjust = 'left', nudge_x = 14, size = 7*0.35)
 )
 inc_reinf_proj <- (plot_sim(ts[date > as.Date(fit_through)], eri[date > as.Date(fit_through)], eri_ma[date > as.Date(fit_through) ])
                    + ggtitle('Projection period')
@@ -130,13 +135,13 @@ inc_reinf <- (plot_sim(ts, eri, eri_ma)
               + geom_text(aes(label = year, y = 0), data = ts[, .(year = format(date, '%Y'), date)][, .(date = min(date)), by = year], vjust = -31, hjust = 'left', nudge_x = 14, size = 7*0.35)
 )
 
-inc_reinf_fit <- (plot_sim(ts[between(date, as.Date('2021-05-01'), as.Date(fit_through))], eri[between(date, as.Date('2021-05-01'), as.Date(fit_through))], eri_ma[between(date, as.Date('2021-05-01'), as.Date(fit_through))])
+inc_reinf_fit <- (plot_sim(ts[between(date, as.Date('2020-11-01'), as.Date(fit_through))], eri[between(date, as.Date('2020-11-01'), as.Date(fit_through))], eri_ma[between(date, as.Date('2020-11-01'), as.Date(fit_through))])
                   + ggtitle('Fitting period')
-                  + geom_text(aes(label = year, y = 0), data = ts[between(date, as.Date('2021-05-01'), as.Date(fit_through)), .(year = format(date, '%Y'), date)][, .(date = min(date)), by = year], vjust = -13, hjust = 'left', nudge_x = 14, size = 7*0.35)
+                  + geom_text(aes(label = year, y = 0), data = ts[between(date, as.Date('2020-11-01'), as.Date(fit_through)), .(year = format(date, '%Y'), date)][, .(date = min(date)), by = year], vjust = -13, hjust = 'left', nudge_x = 14, size = 7*0.35)
 )
 inc_reinf_proj <- (plot_sim(ts[date > as.Date(fit_through)], eri[date > as.Date(fit_through)], eri_ma[date > as.Date(fit_through) ])
                    + ggtitle('Projection period')
-                   # + geom_text(aes(label = year, y = 0), data = ts[date > '2021-12-31', .(year = format(date, '%Y'), date)][, .(date = min(date)), by = year], vjust = -13, hjust = 'left', nudge_x = 14, size = 7*0.35)
+                   + geom_text(aes(label = year, y = 0), data = ts[date > '2021-12-31', .(year = format(date, '%Y'), date)][, .(date = min(date)), by = year], vjust = -13, hjust = 'left', nudge_x = 14, size = 7*0.35)
 )
 
 fig4 <- grid.arrange(inc_reinf_fit , inc_reinf_proj, nrow=1, ncol=2, widths=c(1, 1.5))
@@ -156,4 +161,4 @@ fig4_l2_gg <- fig4_l2_gg + labs(title = "B")
 
 combined <- grid.arrange(fig4_gg, fig4_l2_gg)
 
-ggsave(combined, filename = output_file)
+ggsave(combined, filename = output_file, width = 10, height = 8)
