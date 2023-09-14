@@ -79,8 +79,8 @@ The following scripts that can be found in `code/run` should be run in the order
 
 Visualisation scripts: 
 1. `convergence_plot.R` OR `convergence_plot_without_lambda2.R`: creates plot of convergence diagnostics using output of the MCMC fitting procedure.
-     - `convergence_plot.R`: file for plot when Kappa and Lambda and Lambda2 were fitted. This was used in the paper to create *** when using the file `output/3_posterior_90_null_correctdata.RData` to create the plots. 
-     - `convergence_plot_without_lambda2.R`: file for plot when Kappa and Lambda were fitted. This was used in the paper to create *** when using the file `output/3_posterior_90_null_correctdata.RData` to create the plots. This was used in the paper to create *** when using the file `output/3_posterior_90_null_l2_correctdata.RData` 
+     - `convergence_plot.R`: file for plot when Kappa and Lambda and Lambda2 were fitted. This was used in the thesis Chapter 3 using the file `output/3_posterior_90_null_correctdata.RData` to create the plots. 
+     - `convergence_plot_without_lambda2.R`: file for plot when Kappa and Lambda were fitted. This was used in the thesis Chapter 3 using the file `output/3_posterior_90_null_correctdata.RData` to create the plots.
 1. `3_sim_plot.R`: creates plot of observed data with model fits and projections.
 1. `ts_plot_third.R`: creates plot to show timeseries of observed first, second and third infections in addition to the number of people eligible for second & third infections.
 1. `third_infections_plot_paper`: creates simulations shown in paper for when lambda2 was not fitted and when lambda2 was fitted in addition to lambda and kappa for third infections. The data here are output from the MCMC fitting: `output/3_sim_90_null_correctdata.RDS` and `3_sim_90_null_l2_correctdata.RDS`. 
@@ -113,7 +113,7 @@ To run the makefile pipeline, the following command can be used:
 The `%n` flag is optional and is the number of infections that should be applied to the model. If it is not provided, it will default to second infections. 
 
 ## Simulation-based validation for reinfections
-Code to run the simulation-based validation presented in *** are provided. 
+Code to run the simulation-based validation presented in Chapter are provided in this section. 
 
 ### Software requirements
 R Packages must be installed (versions indicates the versions used for manuscript preperation):
@@ -200,7 +200,7 @@ The following R files provided in `sbv/final_plot_scripts` were used to generate
 The output of this is saved in the `sbv/plots` directory. 
 
 ## Simulation-based validation for third infections
-The simulation-based validation done for the third infections in *** is very similar to the simulation based validation for reinfections in the previous section.
+The simulation-based validation done for the third infections in Chapter 3 is very similar to the simulation based validation for reinfections in the previous section.
 
 ### Additional utils
 The following utils are generated in additional to the utils being generated for the overall project: 
