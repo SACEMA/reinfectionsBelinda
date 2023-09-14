@@ -192,15 +192,19 @@ To create dataframes that can be used for further analysis:
      - `specificity_matrix.RDS`: This is a specificity matrix with the specificity for each parameter combination (where the scale is 1) 
      - `summarised_results.RDS`: This is the summarised results (median of clusters, etc.) after excluding results with the proportion of runs that converged. 
      - `summarised_results_all.RDS`: This is the summarised results (median of clusters, etc.) before excluding results
-     - `summarised_results_med_con.RDS`: This is the summarised results (median of clusters, etc.) after excluding results with the median of the convergence. 
+     - `summarised_results_med_con.RDS`: This is the summarised results (median of clusters, etc.) after excluding results with the median of the convergence.
+ 
 
 The output from this can be **visualised** by running `sbv/method_%_analysis/plots_m%.R` and the respective plots are saved in `sbv/method_%_analysis/plots`.
 
-### Additional plots scripts
+### Additional plots and data scripts
 The following R files provided in `sbv/final_plot_scripts` were used to generate plots for the paper: 
 - `cluster_plot.R`: creates a plot showing the timing of cluster of 5 points above during the projection interval for the different data-generation scenarios
 - `proportion_plot.R`: creates a plot showing the proportion during the projection interval for the different data-generation scenarios
 - `data_plots_for_paper.R`: creates plots to show simluated data for the different scenarios.
+
+The following data script is available in `sbv/method_%_analysis/`
+- `check_results_complete_m%.R`:  used to confirm that all the parameter combines in the parameter.RData file of the method is present in a given dataframe, and if not, prints the missing runs. 
 
 The output of this is saved in the `sbv/plots` directory. 
 
