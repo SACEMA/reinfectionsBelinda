@@ -187,7 +187,12 @@ In this repository, the results obtained in the analysis are saved and provided 
 To create dataframes that can be used for further analysis: 
 - `sbv/method_%_analysis/process_data_m%.R`: This will create dataframes that summarises the results obtained for each scenario. The dataframes are stored in  `sbv/method_%_analysis/output`
 - Examples of outputs provided are:
-#
+     - `all_data.RDS`: This is a dataframe all the results from each seed combined in one RDS file. 
+     - `all_data_excluded.RDS`: This is a dataframe all the results from each seed combined in one RDS file after excluding results according to the excluding criterion. 
+     - `specificity_matrix.RDS`: This is a specificity matrix with the specificity for each parameter combination (where the scale is 1) 
+     - `summarised_results.RDS`: This is the summarised results (median of clusters, etc.) after excluding results with the proportion of runs that converged. 
+     - `summarised_results_all.RDS`: This is the summarised results (median of clusters, etc.) before excluding results
+     - `summarised_results_med_con.RDS`: This is the summarised results (median of clusters, etc.) after excluding results with the median of the convergence. 
 
 The output from this can be **visualised** by running `sbv/method_%_analysis/plots_m%.R` and the respective plots are saved in `sbv/method_%_analysis/plots`.
 
@@ -243,7 +248,15 @@ In this repository, the results obtained in the analysis are saved and provided 
 To create dataframes that can be used for further analysis: 
 - `sbv/third_infections/process_data_third.R`: This will create dataframes that summarises the results obtained for each scenario. The dataframes are stored in  `sbv/third_infections/output`
 - Examples of outputs provided are:
-#
+     - `all_data.RDS`: This is a dataframe all the results from each seed combined in one RDS file (for the fixed second scale value). 
+     - `all_data_excluded.RDS`: This is a dataframe all the results from each seed combined in one RDS file after excluding results according to the excluding criterion (for the fixed second scale value).  
+     - `specificity_matrix.RDS`: This is a specificity matrix with the specificity for each parameter combination (where the scales are 1). A CSV copy of this is also saved as `specificity_matrix.csv` 
+     - `summarised_results.RDS`: This is the summarised results (median of clusters, etc.) after excluding results with the proportion of runs that converged (for the fixed second scale value). 
+     - `summarised_results_all.RDS`: This is the summarised results (median of clusters, etc.) before excluding results
+     - `all_data_inc.RDS`: This is a dataframe all the results from each seed combined in one RDS file (for the increased second scale value). 
+     - `all_data_excluded_inc.RDS`: This is a dataframe all the results from each seed combined in one RDS file after excluding results according to the excluding criterion (for the fixed second scale value).  
+     - `summarised_results_inc.RDS`: This is the summarised results (median of clusters, etc.) after excluding results with the proportion of runs that converged (for the fixed second scale value). 
+     - `summarised_results_all_inc.RDS`: This is the summarised results (median of clusters, etc.) before excluding results
 
 The output from this can be **visualised** by running `sbv/third_infections/third_infections_plots.R` and the respective plots are saved in `sbv/third_infections/plots`.
 
