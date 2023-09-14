@@ -46,6 +46,9 @@ target <- file.path(rev(target_path[2:length(target_path)]), paste0(infections, 
 load_path <- split_path(.args[1])
 load(file.path(rev(load_path[2:length(load_path)]), paste0(infections, '_', load_path[1])))
 
+#data for plot (uncomment line if want to use the data used in the plot of the paper)
+load('output/3_posterior_90_null_correctdata.RData')
+
 
 tmp <- data.table(rbind(
   cbind(chain = 1, iter = (mcmc$burnin + 1):mcmc$n_iter, output$chains[[1]])
@@ -76,6 +79,7 @@ logkappa_trace <- (ggplot(tmp)
                + theme_minimal()
                + theme(panel.border = element_rect(colour = "black", fill = NA, size = 0.25)
                        , panel.grid.minor = element_blank())
+               + xlab('Iteration')
 )
 
 
@@ -174,17 +178,19 @@ ll_ll.plot <- (ggplot(tmp)
   
 
 figS4_bottom <- 
-  (plot_spacer() /lambda_density.plot / lambda_logkappa_density.plot / lambda_ll.plot) |
-  (plot_spacer() / plot_spacer() / logkappa_density.plot / logkappa_ll.plot) |
-  (plot_spacer() / plot_spacer() / plot_spacer() / ll_ll.plot) 
+  (lambda_density.plot / lambda_logkappa_density.plot / lambda_ll.plot) |
+  (plot_spacer() / logkappa_density.plot / logkappa_ll.plot) |
+  (plot_spacer() / plot_spacer() / ll_ll.plot) 
 
 
 figS4 <- (top_plot / figS4_bottom) 
 
 
+ggsave(figS4, filename = 'output/convergence_plot.tiff', width = 9, height = 7 , dpi=250)
 if(grepl('RDS', target)){
   saveRDS(figS4, file = target)
 }else{
   ggsave(figS4, filename = target, width = 9, height = 9)
 }
+
 
