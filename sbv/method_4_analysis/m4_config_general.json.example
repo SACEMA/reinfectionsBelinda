@@ -12,8 +12,8 @@
 	"convergence_method": "posterior", //all or posterior
 	"mcmc": {
 	   "rand_init": true,
-	   "n_iter": 5000,
-	   "burnin": 2000,
+	   "n_iter": 10000,
+	   "burnin": 4000,
 	   "n_chains": 4,
 	   "n_posterior": 1600
 	},
