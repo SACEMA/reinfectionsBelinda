@@ -59,7 +59,7 @@ sbv/raw_output
 config_general.json
 sbv/*/*.json
 sbv/*/*.pbs
-
+lambda.pbs
 
 #output files
 output/*.RDS
