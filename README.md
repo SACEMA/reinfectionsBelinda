@@ -206,7 +206,7 @@ The following R files provided in `sbv/final_plot_scripts` were used to generate
 The following data script is available in `sbv/method_%_analysis/`
 - `check_results_complete_m%.R`:  used to confirm that all the parameter combines in the parameter.RData file of the method is present in a given dataframe, and if not, prints the missing runs. 
 
-The output of this is saved in the `sbv/plots` directory. 
+The output of this is saved in the `sbv/plots` directory and `output/paper_plots` directory. 
 
 ## Simulation-based validation for third infections
 The simulation-based validation done for the third infections in Chapter 3 is very similar to the simulation based validation for reinfections in the previous section.
