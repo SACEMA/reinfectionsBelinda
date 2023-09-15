@@ -1,4 +1,10 @@
-library(gridExtra)
+# To run this, datafiles must exist as RDS files in each scenario so that the plot generation scripts for each scenario can run. 
+
+library('gridExtra')
+library('ggplot2')
+library('data.table')
+library('patchwork')
+
 
 #run plot scripts in environment
 

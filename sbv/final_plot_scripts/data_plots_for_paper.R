@@ -1,4 +1,5 @@
 # File that can be used to generate plots that represents the data generation process throughout the methods #
+# To run this, parameter.RData files must exist for all the scenraios. 
 
 #load packages
 library('gridExtra')
