@@ -8,6 +8,7 @@ library('data.table')
 library('patchwork')
 
 #output directory
+dir.create('output')
 plot_dir <- 'output/paper_plots'
 dir.create(plot_dir)
 

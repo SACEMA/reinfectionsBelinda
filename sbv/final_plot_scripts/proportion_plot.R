@@ -5,6 +5,7 @@ library('ggplot2')
 library('data.table')
 library('patchwork')
 
+dir.create('sbv/plots')
 
 #run plot scripts in environment
 
