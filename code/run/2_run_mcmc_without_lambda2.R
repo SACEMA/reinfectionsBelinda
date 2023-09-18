@@ -28,6 +28,11 @@ suppressPackageStartupMessages({
 ), .debug[1]) else commandArgs(trailingOnly = TRUE)
 
 
+#function that splits path
+split_path <- function(path) {
+  if (dirname(path) %in% c(".", path)) return(basename(path))
+  return(c(basename(path), split_path(dirname(path))))
+}
 output_dir <- './output/'
 dir.create(output_dir)
 
