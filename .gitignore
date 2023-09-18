@@ -56,7 +56,7 @@ sbv/raw_output
 
 
 #ignore config and pbs file - cp the example files. 
-config_general.json
+*.json
 sbv/*/*.json
 sbv/*/*.pbs
 lambda.pbs
