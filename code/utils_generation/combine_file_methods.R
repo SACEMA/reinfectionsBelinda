@@ -1,3 +1,5 @@
+# Methods that are used in the data processing process
+
 .debug <- 'utils'
 .args <- if (interactive()) sprintf(c(
   file.path('utils', 'cleanup_methods.RData') # output
@@ -7,17 +9,9 @@ target <- tail(.args, 1)
 dir.create('utils')
 
 
-#Pad the empty rows/columns with NA so the bind_rows can work out
-pad_with_na <- function(x, max_length) {
-  if (length(x) < max_length) {
-    c(x, rep(NA, max_length - length(x)))
-  } else {
-    x
-  }
-}
-
-
-#combine raw results in raw folder (method_analysis/output/raw) and save it in output dir
+# combine raw results in raw folder (method_analysis/output/raw)  OR specified directory
+# and save it in output dir as file_name
+# This is used where date_first_below_10 and date_first_below_5 is available
 combineRawResults = function (method, seed, directory="DEFAULT", output_dir="DEFAULT", file_name="DEFAULT") { 
   if (directory=="DEFAULT")
     dir = paste0("sbv/method_",method,"_analysis/output/raw")
@@ -55,7 +49,9 @@ combineRawResults = function (method, seed, directory="DEFAULT", output_dir="DEF
     saveRDS(final_RDS, file=paste0(output_dir, '/', name_of_file))
 }
 
-#combine raw results in raw folder (method_analysis/output/raw) and save it in output dir
+# combine raw results in raw folder (method_analysis/output/raw)  OR specified directory
+# and save it in output dir as file_name
+# This is used where date_first_below_10 and date_first_below_5 is not available
 combineRawResultsOld = function (method, seed, directory="DEFAULT", output_dir="DEFAULT") { 
   if (directory=="DEFAULT")
     dir = paste0("sbv/method_",method,"_analysis/output/raw")
@@ -82,6 +78,9 @@ combineRawResultsOld = function (method, seed, directory="DEFAULT", output_dir="
     saveRDS(final_RDS, file=paste0(output_dir, '/', name_of_file))
 }
 
+
+# Function that conbines all the results in the specified direcoty
+# Returns a dataframe
 getAllResults <- function(method, directory = "DEFAULT") {
   if (directory=="DEFAULT") {
     dir = paste0("sbv/method_",method,"_analysis/output/")
@@ -98,16 +97,26 @@ getAllResults <- function(method, directory = "DEFAULT") {
   return (final_RDS)
 }
 
+# Function that returns results after excluding non-converging results 
+# (results where kappa and lambda does not converge)
 excludeResultsNonConverging <- function(method, results)  {
   #if converges column doesnt exist, create it
   if (!("converges" %in% colnames(results))){
-    results <- results %>% mutate(converges = ifelse(kappa_con <= 1.1 & lambda_con <= 1.1, TRUE, FALSE))
+    if (method=='third')
+      results <- results %>% mutate(converges = ifelse(kappa_con <= 1.1 & lambda_con <= 1.1 & lambda_2_con <= 1.1, TRUE, FALSE))
+    else 
+      results <- results %>% mutate(converges = ifelse(kappa_con <= 1.1 & lambda_con <= 1.1, TRUE, FALSE))
   } 
   results <- results[results$converges == TRUE,]
   return(results[rowSums(is.na(results)) < ncol(results), ])
 
 }  
 
+excluded_results_inc <- excludeResultsNonConverging('third', all_data_inc)
+
+# Function that returns results after excluding non-converging results
+# and results where clusters are outside projection interval during fitting period
+# Returns a dataframe
 excludeResultsAll <- function(method, results)  {
   #1. Remove where cluster below 10 before fit through exists
   results <- results[is.na(results$date_first_below_10),]
@@ -119,6 +128,8 @@ excludeResultsAll <- function(method, results)  {
   return(results[rowSums(is.na(results)) < ncol(results), ])
 }
 
+# Calculates the proportion of runs that converged (data is a vector of convergence diagnostics)
+# returning a number
 proportion_converence <- function(data){
   # Count how many values in data are less than 1.1
   count_less_than_1_1 <- sum(data <= 1.1)
@@ -129,7 +140,8 @@ proportion_converence <- function(data){
   return(proportion)
 }
 
-
+# Calculates the proportion of runs that converged (data1 & data2 is a vector of convergence diagnostics)
+# returning a number
 proportion_convergence_both <- function(data1, data2){
   # Count how many values in data are less than 1.1
   count_less_than_1_1 <- sum(data1 <= 1.1 & data2 <= 1.1)
@@ -140,6 +152,8 @@ proportion_convergence_both <- function(data1, data2){
   return(proportion)
 }
 
+# Calculates the proportion of runs that converged (data1 & data2 & data3 is a vector of convergence diagnostics)
+# returning a number
 proportion_convergence_three <- function(data1, data2, data3){
   # Count how many values in data are less than 1.1
   count_less_than_1_1 <- sum(data1 <= 1.1 & data2 <= 1.1 & data3 <= 1.1)
@@ -150,61 +164,9 @@ proportion_convergence_three <- function(data1, data2, data3){
   return(proportion)
 }
 
-getSummarisedResults <- function(method, directory) {
-  files <- list.files(path=paste0(directory), pattern="*.RDS", full.names=TRUE, recursive=FALSE)
-  
-  final_RDS <- data.frame()
-  
-  for (file in files) {
-    final_RDS <- rbind.data.frame(final_RDS, readRDS(file))
-  }
-  
-  
-  if (method==1)
-    rds_1 <- final_RDS %>% group_by(pscale) 
-  
-  if (method==2)
-    rds_1 <- final_RDS %>% group_by(pscale, pobs_2) 
-  
-  if (method==3) {
-    rds_1 <- final_RDS %>% group_by(pscale, pobs_1, pobs_2)
-  }
-  
-  if (method==4){
-    rds_1 <- final_RDS %>% group_by(pscale, pobs_1, pobs_2, dprob)
-  }
-  
-  if (method==5){
-    rds_1 <- final_RDS %>% group_by(pscale, pobs_1_min, pobs_1_max, pobs_2_max, pobs_2_min, xm, steep)
-  }
-  
-  if (method!=5)
-  calculate_values <- rds_1 %>% 
-    summarise(
-                convergence = proportion_convergence_both(lambda_con, kappa_con)
-              ,  kappa_con = proportion_converence(kappa_con)
-              , lambda_con = proportion_converence(lambda_con)
-              , proportion = median(proportion)
-              , date_first = median_cluster(date_first)
-              , proportion_after_wavesplit = median(proportion_after_wavesplit)
-              , date_first_after_wavesplit = median_cluster(date_first_after_wavesplit)
-              , .groups = 'drop')
-  else 
-    calculate_values <- rds_1 %>% 
-    summarise(
-      convergence = proportion_convergence_both(lambda_con, kappa_con)
-      ,  kappa_con = proportion_converence(kappa_con)
-      , lambda_con = proportion_converence(lambda_con)
-      , .groups = 'drop')
-  
-  rm(rds_1)
-  summary_RDS <- calculate_values %>% as.data.frame()
-  
-  saveRDS(summary_RDS, file=paste0("sbv/method_",method,"_analysis/combined_results.RDS"))
-  
-  return (summary_RDS)
-}
-
+# Calculates the median of the clusters 
+# Treats the NA values as  Inf to avoid having NA. 
+# If median is Inf, return NA
 median_cluster <- function (values) { 
   values[is.na(values)] <- Inf
   med <- median(values)
@@ -212,13 +174,14 @@ median_cluster <- function (values) {
     return (NA)
   return (med)
 }
-  
+
+# Checks if all the files inthe directory has extexted number of rows. 
 checkBatchesComplete <- function (expected, directory) {
   files <- list.files(path=directory, pattern="*.RDS", full.names=TRUE, recursive=FALSE)
   for (file in files) {
       data <- readRDS(file)
       if (nrow(data) != expected) {
-        message(paste("File", file, "does not have", expected, "rows"))
+        print(paste("File", file, "does not have", expected, "rows"))
       }
   }
 }
@@ -226,11 +189,9 @@ checkBatchesComplete <- function (expected, directory) {
 
 save(combineRawResults
      , combineRawResultsOld
-     , pad_with_na
      , getAllResults
      , excludeResultsAll
      , excludeResultsNonConverging
-      , getSummarisedResults
      , proportion_converence
      , proportion_convergence_both
      , median_cluster
