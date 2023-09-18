@@ -55,7 +55,7 @@ These files located are in the main directory:
 In `config_general.json`, the "omicron_date" refers to the date from which lambda2 should be fitted. 
 
 ### Data files
-The below file is in the `data` directory: 
+The below file is in available from https://zenodo.org/record/7426515 and should be placed in the `data` directory
 -   `ts_data.csv` - national daily time series of newly detected putative primary infections (cnt), suspected second infections (reinf), suspected third infections (third), and suspected fourth infections (fourth) by specimen receipt date (date). This dataset was obtained from https://zenodo.org/record/7426515.
 Scripts that prepare the data for the model will place the outputs in this directory.
 
@@ -90,11 +90,11 @@ The output files below are saved in `output`. n denotes the infection number bei
  -   `%n_posterior_90_null.RData` - posterior samples from the MCMC fitting procedure
  -   `%n_sim_90_null.RDS` - simulation results
 
-The following files were used in the paper: 
- -   `output/3_sim_90_null_l2_correctdata.RDS`
- -   `output/3_sim_90_null_correctdata.RDS`
- -   `output/3_posterior_90_null_l2_correctdata.RData`
- -   `output/3_posterior_90_null_correctdata.RData`
+The following files were used in the paper and can be found on https://zenodo.org/record/8354838. They should be placed in the output directory if the scripts will be used for plot creation.  
+ -   `3_sim_90_null_l2_correctdata.RDS`
+ -   `3_sim_90_null_correctdata.RDS`
+ -   `3_posterior_90_null_l2_correctdata.RData`
+ -   `3_posterior_90_null_correctdata.RData`
 
 ### Pipeline with the makefile
 The provided `makefile` can be used to do the above pipeline (`config_general.json` must exist by copying one of the example files)
@@ -142,8 +142,8 @@ _(Optional: this is for if you want to run the simulation-based validation for h
 -   jsonlite
 
 ### Data files
-The below file is in the `data` directory: 
--   `inf_for_sbv.RDS` - This contains an RDS file with a timeseries of simulated primary infections used for input in the simulation-based validation for reinfections.
+The below file can be placed in the data directory. It is available in https://zenodo.org/record/8354838
+-   `inf_for_sbv.RDS` - This contains an RDS file with a timeseries of simulated primary infections used for input in the simulation-based validation for reinfections. 
 
 ### File system setup
 For each data-generation scenario described in the paper, a directory exists in `sbv` names `method_%_analysis` where % corresponds to the respective scenario. 
@@ -210,6 +210,10 @@ The output of this is saved in the `sbv/plots` directory and `output/paper_plots
 
 ## Simulation-based validation for third infections
 The simulation-based validation done for the third infections in Chapter 3 is very similar to the simulation based validation for reinfections in the previous section.
+
+### Data files
+The below file can be placed in the data directory. It is available in https://zenodo.org/record/8354838
+-   `inf_for_sbv_third.RDS` - This contains an RDS file with a timeseries of simulated primary infections used for input in the simulation-based validation for third infections. 
 
 ### Additional utils
 The following utils are generated in additional to the utils being generated for the overall project: 
