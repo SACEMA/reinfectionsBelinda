@@ -1,12 +1,13 @@
-# Citation: Pulliam, JRC, C van Schalkwyk, N Govender, A von Gottberg, C 
+# File, code & functions adapted from
+# Pulliam, JRC, C van Schalkwyk, N Govender, A von Gottberg, C 
 # Cohen, MJ Groome, J Dushoff, K Mlisana, and H Moultrie. (2022) Increased
 # risk of SARS-CoV-2 reinfection associated with emergence of Omicron in
 # South Africa. _Science_ <https://www.science.org/doi/10.1126/science.abn4947>
 # 
-# Repository: <https://github.com/jrcpulliam/reinfection
-
-# File adjusted to include third infections
-
+# Repository: <https://github.com/jrcpulliam/reinfections>
+# 
+# File was adapted to include nth infections
+#
 # Purpose of this file: 
 ## This file is used to create a dataframe from the CSV file containing
 ## infection data. 

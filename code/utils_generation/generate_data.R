@@ -1,5 +1,5 @@
-#Includes the generic mcmc functions that can be used in any cases (first reinfection, second reinfections, third reinfections)
-
+# File to simulated data from a set of primary infections 
+# according to the described scenarios (in the thesis)
 
 .debug <- ''
 
@@ -11,6 +11,7 @@
 dir.create('utils')
 target <- tail(.args, 1)
 
+#Generates simulated time-series of observed primary infections & reinfections
 generate_data <- function(method, data_source, seed, parameters_file = NULL) {
   
   if (!is.null(parameters_file)) {
@@ -175,6 +176,8 @@ generate_data <- function(method, data_source, seed, parameters_file = NULL) {
   return (ts)
 }
 
+# Generates simulated time-series of observed primary infections & reinfections & third inefections
+# for a single increase in reinfection risk (wave_split) 
 generate_data_third <- function(data_source, seed, parameters_file = NULL) {
   if (!is.null(parameters_file)) {
     # If the argument is provided, use it
@@ -253,6 +256,8 @@ generate_data_third <- function(data_source, seed, parameters_file = NULL) {
   
 }
 
+# Generates simulated time-series of observed primary infections & reinfections & third inefections
+# for two increases in reinfection risk (wave_split_2) 
 generate_data_third_increase <- function(data_source, seed) {
 
   ##Get the data

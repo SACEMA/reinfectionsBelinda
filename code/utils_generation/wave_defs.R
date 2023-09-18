@@ -1,16 +1,13 @@
-# This file is made available under a CC-BY-NC 4.0 International License.
-# Details of the license can be found at
-# <https://creativecommons.org/licenses/by-nc/4.0/legalcode>. 
-# 
-# Giving appropriate credit includes citation of the related publication and
-# providing a link to the repository:
-# 
-# Citation: Pulliam, JRC, C van Schalkwyk, N Govender, A von Gottberg, C 
+# File, code & functions adapted from
+# Pulliam, JRC, C van Schalkwyk, N Govender, A von Gottberg, C 
 # Cohen, MJ Groome, J Dushoff, K Mlisana, and H Moultrie. (2022) Increased
 # risk of SARS-CoV-2 reinfection associated with emergence of Omicron in
 # South Africa. _Science_ <https://www.science.org/doi/10.1126/science.abn4947>
 # 
 # Repository: <https://github.com/jrcpulliam/reinfections>
+# 
+# File was adapted to include nth infections
+#
 
 suppressPackageStartupMessages({
   require(data.table)

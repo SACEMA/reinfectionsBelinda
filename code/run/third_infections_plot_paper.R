@@ -1,10 +1,11 @@
-
-# Citation: Pulliam, JRC, C van Schalkwyk, N Govender, A von Gottberg, C 
+# Plots code adapted from
+# Pulliam, JRC, C van Schalkwyk, N Govender, A von Gottberg, C 
 # Cohen, MJ Groome, J Dushoff, K Mlisana, and H Moultrie. (2022) Increased
 # risk of SARS-CoV-2 reinfection associated with emergence of Omicron in
 # South Africa. _Science_ <https://www.science.org/doi/10.1126/science.abn4947>
 # 
 # Repository: <https://github.com/jrcpulliam/reinfections>
+
 
 # File to create two simplots for third infections and position them below each other
 

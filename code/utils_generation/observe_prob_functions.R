@@ -1,3 +1,4 @@
+# Provides a function that calcualtes the observation probability based on the number of primary infecetions
 
 .debug <- '.'
 .args <- if (interactive()) sprintf(c(

@@ -1,4 +1,4 @@
-#These are settings used by the files that runs on the cluster
+#These are settings used by the files that runs on the cluster (pbs files for SBV)
 #E.g method_2_analysis/method_2_analysis_CHPC.R would use this
 
 .debug <- 'utils'

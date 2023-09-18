@@ -1,14 +1,11 @@
-#Includes the generic mcmc functions that can be used in any cases.
+# Includes the generic mcmc functions that can be used in any cases (nth case)
+# Adapted from repository: <https://github.com/jrcpulliam/reinfections>
 
-# Citation: Pulliam, JRC, C van Schalkwyk, N Govender, A von Gottberg, C 
-# Cohen, MJ Groome, J Dushoff, K Mlisana, and H Moultrie. (2022) Increased
-# risk of SARS-CoV-2 reinfection associated with emergence of Omicron in
-# South Africa. _Science_ <https://www.science.org/doi/10.1126/science.abn4947>
-# 
-# Repository: <https://github.com/jrcpulliam/reinfection
+# The MCMC sampler is based on code originally written by Steve Bellan as part of the 
+# International Clinics on Infectious Disease Dynamics and Data (ICI3D) program, 
+# which is made available via a CC-BY International license. (Bellan 2015)
+# https://github.com/ICI3D/RTutorials/blob/master/ICI3D_Lab8_MCMC-SI_HIV.R
 
-
-# It contains some adjusted functions used in the abovementioned file. 
 
 suppressPackageStartupMessages({
   library(coda)
