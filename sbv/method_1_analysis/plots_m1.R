@@ -19,7 +19,6 @@ summarised <- readRDS('sbv/method_1_analysis/output/summarised_results.RDS')
 
 styling_layers <- 
   list(
-    #scale_fill_gradient2(low='green', mid="white", high='yellow', midpoint=0.5)
      theme(panel.border = element_rect(colour = "black", size = 0.25)
           , panel.grid.minor = element_blank()) 
     , theme_minimal() 
