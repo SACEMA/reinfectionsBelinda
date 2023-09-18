@@ -1,4 +1,5 @@
 # To run this, datafiles must exist as RDS files in each scenario so that the plot generation scripts for each scenario can run. 
+# File to create proportion plot for all the methods 
 
 library('gridExtra')
 library('ggplot2')

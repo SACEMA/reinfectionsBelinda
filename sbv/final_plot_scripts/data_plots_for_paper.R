@@ -56,7 +56,7 @@ sim_data_reinf <- ggplot(data[data$pscale %in% c(1, 1.5, 2, 2.5),], aes(x=date))
                   geom_line(aes(y = ma_reinf, group=pscale, color= factor(pscale))) +
                   xlab('Date') + 
                   ylab('Reinfections') + 
-                  labs(color=expression(sigma[t])) +
+                  labs(color=expression(sigma)) +
                   theme(plot.title = element_text(hjust = 0.5)) +
                   theme(panel.border = element_rect(colour = "black", fill = NA, size = 0.25)
                 , panel.grid.minor = element_blank()) +

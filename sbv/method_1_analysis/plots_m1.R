@@ -12,9 +12,9 @@ dir <- paste0('sbv/method_',method,'_analysis/plots')
 
 dir.create(dir)
 
-final_RDS <- getAllResults(1, 'sbv/method_1_analysis/output/final_output_data/')
+final_RDS <- readRDS('sbv/method_1_analysis/output/all_data.RDS')
 
-summarised <- getSummarisedResults(1, 'sbv/method_1_analysis/output/final_output_data/')
+summarised <- readRDS('sbv/method_1_analysis/output/summarised_results.RDS')
 
 
 styling_layers <- 

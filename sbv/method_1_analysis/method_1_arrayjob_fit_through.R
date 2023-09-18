@@ -47,6 +47,16 @@ if (!exists("seed_arg") | is.na(seed_arg)) {
 }
 dir.create(paste0('sbv/raw_output/m', method,'/', seed_batch))
 
+# Pipeline for method adapted from
+# Pulliam, JRC, C van Schalkwyk, N Govender, A von Gottberg, C 
+# Cohen, MJ Groome, J Dushoff, K Mlisana, and H Moultrie. (2022) Increased
+# risk of SARS-CoV-2 reinfection associated with emergence of Omicron in
+# South Africa. _Science_ <https://www.science.org/doi/10.1126/science.abn4947>
+# 
+# Repository: <https://github.com/jrcpulliam/reinfections>
+# 
+
+
 
 results <- list()
 

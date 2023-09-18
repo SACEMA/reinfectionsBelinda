@@ -2,8 +2,6 @@ library(ggplot2)
 library(ggtext)
 library(patchwork)
 
-final_RDS_l2 <- readRDS(paste0('sbv/third_infections/l2_combined_results.RDS'))
-
 styling_layers <- 
   list(
     #scale_fill_gradient2(low='green', mid="white", high='yellow', midpoint=0.5)

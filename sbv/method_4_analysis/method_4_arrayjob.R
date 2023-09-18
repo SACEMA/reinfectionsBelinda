@@ -1,5 +1,11 @@
-write("start",file="arrayjob_m4.txt",append=TRUE)
-
+# Pipeline for method adapted from
+# Pulliam, JRC, C van Schalkwyk, N Govender, A von Gottberg, C 
+# Cohen, MJ Groome, J Dushoff, K Mlisana, and H Moultrie. (2022) Increased
+# risk of SARS-CoV-2 reinfection associated with emergence of Omicron in
+# South Africa. _Science_ <https://www.science.org/doi/10.1126/science.abn4947>
+# 
+# Repository: <https://github.com/jrcpulliam/reinfections>
+# 
 
 args = commandArgs(trailingOnly=TRUE)
 
@@ -9,7 +15,6 @@ results <- list()
 i<-strtoi(args[1])
 
 method <- 4
-write(paste0("set number", i),file="arrayjob_m4.txt",append=TRUE)
 
 dir.create(paste0('sbv/raw_output'))
 dir.create(paste0('sbv/raw_output/m', method))
@@ -39,7 +44,6 @@ attach(jsonlite::read_json(configpth))
 
 results <- list()
 
-write('running',file="arrayjob_m4.txt",append=TRUE) #comment to confirm that theres not a zombie node
 
 
 ts <- generate_data(4, data_source, seed = seed_batch)
@@ -48,8 +52,6 @@ ts_adjusted <- ts[, c("date", "observed", "ma_tot", "cases" )]
 #Run MCMC
 output <- do.mcmc(mcmc$n_chains, ts_adjusted)
 
-
-write('done mcmc',file="arrayjob_m4.txt",append=TRUE) #comment to confirm that theres not a zombie node
 
 #Save posterior
 lambda.post <- kappa.post <- numeric(0)
@@ -72,11 +74,9 @@ sim_reinf <- function(ii){
   return(rnbinom(length(ex2), size=1/kappa.post[ii], mu =c(0, diff(ex2))))
 }
 
-write('start sims',file="arrayjob_m4.txt",append=TRUE) #comment to confirm that theres not a zombie node
 
 sims <- sapply(rep(1:mcmc$n_posterior, n_sims_per_param), sim_reinf)
 
-write('end sims',file="arrayjob_m4.txt",append=TRUE) #comment to confirm that theres not a zombie node
 
 #6: analysis
 sri <- data.table(date = ts_adjusted$date, sims)
