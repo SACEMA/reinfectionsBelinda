@@ -23,7 +23,6 @@ result <- excluded_results[excluded_results$pscale==1,] %>%
   group_by(pscale, pobs_2) %>%
   summarise(count_kappa_lambda_lt_1.1 = sum(kappa_con < 1.1 & lambda_con < 1.1),
             count_date_not_na = sum(!is.na(date_first_after_wavesplit) & kappa_con < 1.1 & lambda_con < 1.1)) %>%
-  # Calculate the result of [ 1 - (count_date_not_na / count_kappa_lambda_lt_1.1) ]
   mutate(specificity = 1 - (count_date_not_na / count_kappa_lambda_lt_1.1))
 
 saveRDS(result, file=paste0('sbv/method_2_analysis/output/specificity_matrix.RDS'))
@@ -57,7 +56,7 @@ summarised <- summarised %>%
 
 saveRDS(summarised, file = 'sbv/method_2_analysis/output/summarised_results.RDS')
 
-#summarised_with_median_convergence
+#summarised with median convergence
 summarised <- excluded_results %>% group_by(pscale,  pobs_2)
 summarised <- summarised %>% 
   summarise(
@@ -77,7 +76,6 @@ result <- excluded_results %>%
   group_by(pscale, pobs_2) %>%
   summarise(count_kappa_lambda_lt_1.1 = sum(kappa_con < 1.1 & lambda_con < 1.1),
             count_date_not_na = sum(!is.na(date_first_after_wavesplit) & kappa_con < 1.1 & lambda_con < 1.1)) %>%
-  # Calculate the result of [ 1 - (count_date_not_na / count_kappa_lambda_lt_1.1) ]
   mutate(specificity = 1 - (count_date_not_na / count_kappa_lambda_lt_1.1))
 
 saveRDS(result, file=paste0('sbv/method_2_analysis/output/specificity_matrix.RDS'))
