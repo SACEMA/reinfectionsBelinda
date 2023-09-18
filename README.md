@@ -55,6 +55,7 @@ These files located are in the main directory:
 In `config_general.json`, the "omicron_date" refers to the date from which lambda2 should be fitted. 
 
 ### Data files
+NB: Create a data directory
 The below file is in available from https://zenodo.org/record/7426515 and should be placed in the `data` directory
 -   `ts_data.csv` - national daily time series of newly detected putative primary infections (cnt), suspected second infections (reinf), suspected third infections (third), and suspected fourth infections (fourth) by specimen receipt date (date). This dataset was obtained from https://zenodo.org/record/7426515.
 Scripts that prepare the data for the model will place the outputs in this directory.
