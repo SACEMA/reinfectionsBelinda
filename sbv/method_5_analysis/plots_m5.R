@@ -47,11 +47,9 @@ specifity_style <-
     scale_fill_gradientn(colours = rev(colorspace::terrain_hcl(100, c=200)), limits=c(0, 1))
   )
 
-
+# data
 final_RDS <- readRDS('sbv/method_5_analysis/output/all_data.RDS')
 excluded_results <- readRDS('sbv/method_5_analysis/output/all_data_excluded.RDS')
-
-
 summarised <- readRDS('sbv/method_5_analysis/output/summarised_results.RDS')
 summarised_all <- readRDS('sbv/method_5_analysis/output/summarised_results_all.RDS')
 
@@ -190,8 +188,8 @@ for (i in 1:nrow(pobs_2_values)){
                     + scale_x_continuous(breaks=c(3, 4, 5))
                     + geom_text(
                       aes(label = count_kappa_lambda_lt_1.1),
-                      position = position_dodge(width = 0.9),  # Adjust position if needed
-                      vjust = -0.5  # Adjust vertical position of labels
+                      position = position_dodge(width = 0.9),  
+                      vjust = -0.5  
                     )
     )
     assign(plot_name, specificity)

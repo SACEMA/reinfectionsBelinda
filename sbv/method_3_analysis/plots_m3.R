@@ -15,7 +15,6 @@ dir.create(dir)
 
 styling_layers <- 
   list(
-    #scale_fill_gradient2(low='green', mid="white", high='yellow', midpoint=0.5)
     theme(panel.border = element_rect(colour = "black", size = 0.25)
           , panel.grid.minor = element_blank()) 
     , theme_minimal() 
@@ -69,32 +68,29 @@ ggsave(con_plot_s3, filename=paste0(dir, '/con_plot_s3.png'))
 
 #Proportion outside for each pobs1 and pobs2
 pobs1_pobs_2_proportion <- (ggplot(summarised) 
-  + aes(x=pobs_1, y=pobs_2, fill=proportion_outside) 
-  + geom_tile()
-  + facet_wrap(~pscale)
-  #+ ggtitle(paste0('Method ', method, ': pobs 1 and pobs 2 vs proportion \nof points outside prediction interval'))
-  + labs(fill='Proportion'
-         , y=bquote(P[2])
-         , x=bquote(P[1])
-         )
-  + theme(
-    plot.title = element_text(hjust = 0.5
-                              , size = 9
-                              , margin = margin(0,0,0,0))
-    , axis.title = element_text(size=9)
-    , legend.title = element_text( size=9)
-    , legend.text = element_text( size=7)
-    , legend.spacing.y = unit(0.3, 'cm')
-    , axis.text = element_text(size=9)
-  ) 
-  + prop_style  
-  + ggtitle(bquote(sigma))
-  + scale_x_continuous(breaks = c(0.1, 0.3, 0.5))
-  + scale_y_continuous(breaks = c(0.1, 0.3, 0.5))
+                    + aes(x=pobs_1, y=pobs_2, fill=proportion_outside) 
+                    + geom_tile()
+                    + facet_wrap(~pscale)
+                    + labs(fill='Proportion'
+                           , y=bquote(P[2])
+                           , x=bquote(P[1])
+                           )
+                    + theme(
+                      plot.title = element_text(hjust = 0.5
+                                                , size = 9
+                                                , margin = margin(0,0,0,0))
+                      , axis.title = element_text(size=9)
+                      , legend.title = element_text( size=9)
+                      , legend.text = element_text( size=7)
+                      , legend.spacing.y = unit(0.3, 'cm')
+                      , axis.text = element_text(size=9)
+                    ) 
+                    + prop_style  
+                    + ggtitle(bquote(sigma))
+                    + scale_x_continuous(breaks = c(0.1, 0.3, 0.5))
+                    + scale_y_continuous(breaks = c(0.1, 0.3, 0.5))
 )
 ggsave(pobs1_pobs_2_proportion, filename=paste0(dir, '/pobs1_pobs_2_proportion.png'))
-
-
 
 
 
@@ -129,7 +125,7 @@ pobs1_pobs_2_first_day <- (ggplot(summarised)
                                    , y=bquote(P[2])
                                    , x=bquote(P[1])
                             )
-                           + ggtitle(bquote(sigma))
+                            + ggtitle(bquote(sigma))
                             + theme(plot.title = element_textbox_simple())
                             + styling_layers
                             + cluster_style
@@ -142,58 +138,51 @@ cluster_m3 <- (ggplot(summarised[summarised$pscale %in% c(1.2, 1.5, 2.5),])
                                    + aes(x=pobs_1, y=pobs_2, fill=date_first_above) 
                                    + geom_tile()
                                    + facet_wrap(~pscale)
-                                   #+ ggtitle(paste0('Method ', method, ': pobs 1 and pobs 2 vs date_first \nof points outside prediction interval'))
                                    + labs(fill='First day'
                                           , y=bquote(P[2])
                                           , x=bquote(P[1])
                                    )
                                   + styling_layers
                                   + cluster_style
-               + theme(
-                 plot.title = element_text(hjust = 0.5
-                                           , size = 9
-                                           , margin = margin(0,0,0,0))
-                 , axis.title = element_text(size=9)
-                 , legend.title = element_text( size=9)
-                 , legend.text = element_text( size=7)
-                 , legend.spacing.y = unit(0.3, 'cm')
-                 , axis.text = element_text(size=9)
-               )
+                                  + theme(
+                                   plot.title = element_text(hjust = 0.5
+                                                             , size = 9
+                                                             , margin = margin(0,0,0,0))
+                                   , axis.title = element_text(size=9)
+                                   , legend.title = element_text( size=9)
+                                   , legend.text = element_text( size=7)
+                                   , legend.spacing.y = unit(0.3, 'cm')
+                                   , axis.text = element_text(size=9)
+                                  )
                                   + ggtitle(expression(sigma))
 )
 
 ggsave(cluster_m3, filename=paste0(dir, '/pobs1_pobs_2_date_first_select.png'))
 
 
-
-
-# Plot the data with added lines
-summarised$proportion_outside <- replace(summarised$proportion_outside, summarised$proportion_outside==0, 0.000001)
-
-proportion_m3 <- ggplot(summarised[summarised$pscale %in% c(1, 1.2, 1.5, 2.5),]) +
-  aes(x = pobs_1, y = pobs_2, fill = proportion_outside) +
-  geom_tile() +
-  facet_wrap(~pscale, ncol=4) +
-  labs(
-    fill = 'Proportion'
-    , y=bquote(P[2])
-    , x=bquote(P[1])
-  ) +  styling_layers +
-
-  theme(
-    plot.title = element_text(hjust = 0.5
-                              , size = 9
-                              , margin = margin(0,0,0,0))
-    , axis.title = element_text(size=9)
-    , legend.title = element_text( size=9)
-    , legend.text = element_text( size=7)
-    , legend.spacing.y = unit(0.3, 'cm')
-    , axis.text = element_text(size=9)
-  ) +
-  prop_style  + ggtitle(expression(sigma))
-
-  
-
+proportion_m3 <- (ggplot(summarised[summarised$pscale %in% c(1, 1.2, 1.5, 2.5),]) 
+                      + aes(x = pobs_1, y = pobs_2, fill = proportion_outside) 
+                      + geom_tile() 
+                      + facet_wrap(~pscale, ncol=4) 
+                      + labs(
+                        fill = 'Proportion'
+                        , y=bquote(P[2])
+                        , x=bquote(P[1])
+                      ) 
+                      +  styling_layers
+                      +  theme(
+                        plot.title = element_text(hjust = 0.5
+                                                  , size = 9
+                                                  , margin = margin(0,0,0,0))
+                        , axis.title = element_text(size=9)
+                        , legend.title = element_text( size=9)
+                        , legend.text = element_text( size=7)
+                        , legend.spacing.y = unit(0.3, 'cm')
+                        , axis.text = element_text(size=9)
+                      ) 
+                      + prop_style  
+                      + ggtitle(expression(sigma))
+)
 
 ggsave(proportion_m3, filename=paste0(dir, '/pobs1_pobs_2_proportion_select.png'))
 

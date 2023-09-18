@@ -13,7 +13,6 @@ dir.create(dir)
 
 styling_layers <- 
   list(
-    #scale_fill_gradient2(low='green', mid="white", high='yellow', midpoint=0.5)
     theme(panel.border = element_rect(colour = "black", size = 0.25)
     , panel.grid.minor = element_blank()) 
     , theme_minimal() 
@@ -45,7 +44,7 @@ specifity_style <-
   , scale_y_continuous(breaks=seq(0.1, 0.5, 0.2))
   )
 
-
+# Get data
 summarised <- readRDS(paste0('sbv/method_',method,'_analysis/output/summarised_results.RDS'))
 excluded_results <- readRDS(paste0('sbv/method_',method,'_analysis/output/all_data_excluded.RDS'))
 summarised_all <- readRDS(paste0('sbv/method_',method,'_analysis/output/summarised_results_all.RDS'))
@@ -76,7 +75,6 @@ ggsave(con_plot_s4, file=paste0(dir,'/con_plot_s4.tiff'), dpi=1200, compression 
 
 ############# SPECIFICITY PLOT ###############
 
-  
 
 # plot
 result <- result[!is.na(result$pscale),]
@@ -90,9 +88,9 @@ specificity_m4 <- (ggplot(result)
                    )
                    + ggtitle(bquote(d[1]))
                    + theme(
-                     , plot.title = element_text(hjust = 0.5, size = 11)
+                     plot.title = element_text(hjust = 0.5, size = 11)
                    )
-                   +specifity_style
+                   + specifity_style
                    + geom_text(
                      aes(label = count_kappa_lambda_lt_1.1),
                      position = position_dodge(width = 0.2), size = 3, 
