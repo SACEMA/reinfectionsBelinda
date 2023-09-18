@@ -67,7 +67,8 @@ output/*.png
 output/*.RData
 output/*.tiff
 data/*.RDS
- 
+data/*.csv
+
 #utils
 utils
 oe_files
