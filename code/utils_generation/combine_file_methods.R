@@ -112,8 +112,6 @@ excludeResultsNonConverging <- function(method, results)  {
 
 }  
 
-excluded_results_inc <- excludeResultsNonConverging('third', all_data_inc)
-
 # Function that returns results after excluding non-converging results
 # and results where clusters are outside projection interval during fitting period
 # Returns a dataframe
