@@ -131,7 +131,7 @@ sim: $(SIM_OUTPUT)
 
 
 # Generate plots
-output/sim_plot_90_null.png: code/run/3_sim_plot.R $(SIM_OUTPUT) \
+$(SIM_PLOT_OUTPUT): code/run/3_sim_plot.R $(SIM_OUTPUT) \
 data/ts_data_for_analysis.RDS $(CONFIG_FILE) utils/plotting_fxns.RData $(infections)
 	${R}
 
