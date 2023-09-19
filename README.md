@@ -108,10 +108,9 @@ The makefile will:
 1. Create a convergence plot & simulation plot. 
 
 To run the makefile pipeline, the following command can be used: 
-- `make run %n`: This will run the pipeline for fitting lambda, lambda2 and kappa. 
-- `make run_without_l2 %n`: This will run the pipeline for fitting lambda & kappa. 
+- `make infections=%i L2=%l `: This will run the pipeline for fitting lambda, lambda2 and kappa. 
 
-The `%n` flag is optional and is the number of infections that should be applied to the model. If it is not provided, it will default to second infections. 
+The infections and L2 settings flags are optional. `infections` is number of infections that should be applied to the model (if not provided, it will default to 2) and `L2` is a TRUE or FALSE flag that specifies whether an increasing reinfection risk parameter should be fitted to the data after Omicron date specified in the JSON file (if not provided, it will default to FALSE) 
 
 ## Simulation-based validation for reinfections
 Code to run the simulation-based validation presented in Chapter are provided in this section. 
@@ -162,6 +161,8 @@ The following utils are generated in additional to the utils being generated for
     - The output of this is saved in `utils/generate_data.RData`
 - `code/utils_generation/settings.R`: This provides a list of everything that must be loaded for the SBV file to run (which get loaded with the `lapply` function)
   
+Note: running `make sbv` OR `make l2_sbv` will create all the necessary utils & parameter files for this scenario
+
 ### Configuration
 For each Scenario 1 to 5, an example configuration file is provided as it was run in the simulation-based validation study (`sbv/method_%_analysis/m%_config_general.json`). To run the analysis, this must be copied and the '.example' must be removed from the filename. 
 
@@ -228,6 +229,8 @@ The following utils are generated in additional to the utils being generated for
     - The output of this is saved in `utils/generate_data.RData`
     - In the third infections, the function `generate_data_third_increase` `and generate_data_third` are used to create the simulated third infection data. 
 - (similar to reinfections) `code/utils_generation/settings.R`: This provides a list of everything that must be loaded for the SBV file to run (which get loaded with the `lapply` function)
+
+Note: running `make sbv` OR `make l2_sbv` will create all the necessary utils & parameter files for this scenario
 
 ### Configuration
 An example configuration file is provided as it was run in the simulation-based validation study (`sbv/third_infections/third_array_job.pbs.example`). To run the analysis, this must be copied and the '.example' must be removed from the filename. 
