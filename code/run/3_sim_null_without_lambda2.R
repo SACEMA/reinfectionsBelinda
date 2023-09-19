@@ -47,7 +47,7 @@ load_path <- split_path(.args[1])
 load(file.path(rev(load_path[2:length(load_path)]), paste0(infections, '_', load_path[1])))
 
 if (infections > 3){
-  select <- c("date", ordinal(i), "ma_tot", ordinal(i-1))
+  select <- c("date", ordinal(as.numeric(infections)), "ma_tot", ordinal(as.numeric(infections)-1))
   ts_adjusted <- ts[, ..select]
   names(ts_adjusted) <- c("date", "observed", "ma_tot", "cases")
 } 

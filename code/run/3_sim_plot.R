@@ -65,10 +65,10 @@ if (infection == 2) {
   if (infection == 3)
     plot_column <- 'third'
   else 
-    plot_column <- ordinal(infection)  
+    plot_column <- ordinal(as.numeric(infection))
 }
 plot_column_ma <- paste0('ma_', plot_column)
-
+print(plot_column)
 eri <- sri_long[, .(exp_reinf = median(value)
                     , low_reinf = quantile(value, 0.025, na.rm = TRUE)
                     , upp_reinf = quantile(value, 0.975, na.rm = TRUE)), keyby = date]

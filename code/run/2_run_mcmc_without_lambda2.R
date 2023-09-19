@@ -53,7 +53,7 @@ target <- file.path(rev(target_path[2:length(target_path)]), paste0(infections, 
 
 
 if (infections > 3){
-  select <- c("date", ordinal(i), "ma_tot", ordinal(i-1))
+  select <- c("date", ordinal(as.numeric(infections)), "ma_tot", ordinal(as.numeric(infections)-1))
   ts_adjusted <- ts[, ..select]
   names(ts_adjusted) <- c("date", "observed", "ma_tot", "cases")
 } 
