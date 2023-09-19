@@ -4,7 +4,7 @@ ifeq ($(infections),)
 endif
 
 
-# IF L2 (second lambda argument) not provided, set it to 2. 
+# IF L2 (second lambda argument) not provided, set it to FALSE. 
 ifeq ($(L2),)
 	L2 := FALSE 
 endif
