@@ -1,19 +1,52 @@
+# IF infections argument not provided, set it to 2.
 ifeq ($(infections),)
 	infections := 2
 endif
 
+
+# IF L2 (second lambda argument) not provided, set it to 2. 
+ifeq ($(L2),)
+	L2 := FALSE 
+endif
+
+# Specify based on mcmc run 
+ifeq ($(L2),TRUE)
+CONFIG_FILE = config_general_l2.json
+MCMC_FUNCTIONS = utils/mcmc_functions_l2.RData
+MCMC_RUN = code/run/2_run_mcmc.R 
+MCMC_OUTPUT = output/posterior_90_null.RData
+SIM_RUN = code/run/3_sim_null.R 
+SIM_OUTPUT = output/sim_90_null.RDS
+CON_PLOT = code/run/convergence_plot.R
+CON_PLOT_OUTPUT = output/convergence_plot.png
+SIM_PLOT_OUTPUT = output/sim_plot_90_null.png
+else 
+CONFIG_FILE = config_general.json
+MCMC_FUNCTIONS = utils/mcmc_functions.RData
+MCMC_RUN = code/run/2_run_mcmc_without_lambda2.R 
+MCMC_OUTPUT = output/posterior_90_null_without_l2.RData
+SIM_RUN = code/run/3_sim_null_without_lambda2.R 
+SIM_OUTPUT = output/sim_90_null_without_l2.RDS
+CON_PLOT = code/run/convergence_plot_without_lambda2.R
+CON_PLOT_OUTPUT = output/convergence_plot_without_l2.png
+SIM_PLOT_OUTPUT = output/sim_plot_90_null_without_l2.png
+endif
+
+$(info DOING IT WITH LAMBDA 2: )
+$(info $(L2))
+
 R = Rscript $^ $@
 UTILS_SCRIPTS = code/utils_generation
-INFECTIONS = 2
+
 
 #run does the normal run
+
+
 run: install utils_run data mcmc sim plots
 
-#run_without_l2 will run the files where l2 is excluded
-run_without_l2: install utils_run_without_l2 data mcmc_without_l2 sim_without_l2 plots_without_l2
 
 #sbv setup for simulation-based-validation
-sbv: utils_sbv create_params_sbv 
+sbv: utils_sbv create_params_sbv utils/mcmc_functions.RData
 
 l2_sbv: utils_sbv create_params_sbv utils/mcmc_functions_l2.RData
 
@@ -22,12 +55,9 @@ utils: utils/fit_functions.RData \
 utils_sbv: utils utils/settings.RData \
 	utils/observe_prob_functions.RData \
 	utils/generate_data.RData  \
-	utils/mcmc_functions.RData \
 	utils/cleanup_methods.RData
 
-utils_run: utils utils/plotting_fxns.RData utils/mcmc_functions_l2.RData
-
-utils_run_without_l2: utils utils/plotting_fxns.RData utils/mcmc_functions.RData
+utils_run: utils utils/plotting_fxns.RData $(MCMC_FUNCTIONS)
 
 create_params_sbv: sbv/method_1_analysis/parameters.RData \
 	sbv/method_2_analysis/parameters.RData \
@@ -80,52 +110,35 @@ sbv/third_infections/parameters.RData: sbv/parameter_generation/create_parameter
 $(eval $(infections):;@:)
 
 #Create data for analysis
-data/ts_data_for_analysis.RDS: code/run/1_prep_ts_data.R data/ts_data.csv config_general.json $(infections)
+data/ts_data_for_analysis.RDS: code/run/1_prep_ts_data.R data/ts_data.csv $(CONFIG_FILE) $(infections)
 	${R} 
 	
 data: data/ts_data_for_analysis.RDS
 
 # Run MCMC
-output/posterior_90_null.RData: code/run/2_run_mcmc.R data/ts_data_for_analysis.RDS utils/mcmc_functions_l2.RData utils/fit_functions.RData config_general.json $(infections)
+$(MCMC_OUTPUT): $(MCMC_RUN) data/ts_data_for_analysis.RDS $(MCMC_FUNCTIONS) utils/fit_functions.RData $(CONFIG_FILE) $(infections)
 	${R}
 
-output/posterior_90_null_without_l2.RData: code/run/2_run_mcmc_without_lambda2.R data/ts_data_for_analysis.RDS utils/mcmc_functions.RData utils/fit_functions.RData config_general.json $(infections)
-	${R}
-
-mcmc: output/posterior_90_null.RData
-
-mcmc_without_l2: output/posterior_90_null_without_l2.RData
+mcmc: $(MCMC_OUTPUT)
 
 # Run Simulations
-output/sim_90_null.RDS: code/run/3_sim_null.R output/posterior_90_null.RData \
-data/ts_data_for_analysis.RDS utils/fit_functions.RData config_general.json $(infections)
+$(SIM_OUTPUT): $(SIM_RUN) $(MCMC_OUTPUT) \
+data/ts_data_for_analysis.RDS utils/fit_functions.RData $(CONFIG_FILE) $(infections)
 	${R}
 
-output/sim_90_null_without_l2.RDS: code/run/3_sim_null_without_lambda2.R output/posterior_90_null_without_l2.RData \
-data/ts_data_for_analysis.RDS utils/fit_functions.RData config_general.json $(infections)
-	${R}
 
-sim: output/sim_90_null.RDS
+sim: $(SIM_OUTPUT)
 
-sim_without_l2: output/sim_90_null_without_l2.RDS
 
 # Generate plots
-output/sim_plot_90_null.png: code/run/3_sim_plot.R output/sim_90_null.RDS \
-data/ts_data_for_analysis.RDS config_general.json utils/plotting_fxns.RData $(infections)
+output/sim_plot_90_null.png: code/run/3_sim_plot.R $(SIM_OUTPUT) \
+data/ts_data_for_analysis.RDS $(CONFIG_FILE) utils/plotting_fxns.RData $(infections)
 	${R}
 
-output/convergence_plot.png: code/run/convergence_plot.R \
-output/posterior_90_null.RData utils/fit_functions.RData config_general.json $(infections)
+$(CON_PLOT_OUTPUT): $(CON_PLOT) \
+$(MCMC_OUTPUT) utils/fit_functions.RData $(CONFIG_FILE) $(infections)
 	${R}
 	
-output/sim_plot_90_null_without_l2.png: code/run/3_sim_plot.R output/sim_90_null_without_l2.RDS \
-data/ts_data_for_analysis.RDS config_general.json utils/plotting_fxns.RData $(infections)
-	${R}
 
-output/convergence_plot_without_l2.png: code/run/convergence_plot_without_lambda2.R \
-output/posterior_90_null_without_l2.RData utils/fit_functions.RData config_general.json $(infections)
-	${R}
+plots: $(SIM_PLOT_OUTPUT) $(CON_PLOT_OUTPUT)
 
-plots: output/sim_plot_90_null.png output/convergence_plot.png
-
-plots_without_l2: output/sim_plot_90_null_without_l2.png output/convergence_plot_without_l2.png
