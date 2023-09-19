@@ -49,7 +49,7 @@ load_path <- split_path(.args[1])
 load(file.path(rev(load_path[2:length(load_path)]), paste0(infections, '_', load_path[1])))
 
 #data for plot (uncomment line if want to use the data used in the plot of the paper)
-load('output/3_posterior_90_null_correctdata.RData')
+#load('output/3_posterior_90_null_correctdata.RData')
 
 
 tmp <- data.table(rbind(

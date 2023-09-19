@@ -80,3 +80,4 @@ sims <- sapply(rep(1:mcmc$n_posterior, n_sims_per_param), sim_reinf)
   
   
 saveRDS(sims, file = target)
+
