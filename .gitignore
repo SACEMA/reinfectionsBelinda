@@ -72,3 +72,5 @@ data/*.csv
 #utils
 utils
 oe_files
+
+*.pdf
